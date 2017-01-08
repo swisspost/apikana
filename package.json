@@ -1,0 +1,31 @@
+{
+  "name": "apikana",
+  "version": "0.1.0",
+  "description": "Integrated tools for REST API design",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lbovet/apikana.git"
+  },
+  "keywords": [
+    "REST",
+    "API",
+    "design",
+    "documentation",
+    "contract-first"
+  ],
+  "author": "Laurent Bovet",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/lbovet/apikana/issues"
+  },
+  "homepage": "https://github.com/lbovet/apikana#readme",
+  "dependencies": {
+    "docson": "^1.0.2",
+    "swagger-ui": "^2.2.10",
+    "typson": "^0.6.0"
+  }
+}
