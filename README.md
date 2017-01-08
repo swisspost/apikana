@@ -1,2 +1,2 @@
-# apikana アピ
-Integrated tools for REST API design
+# apikana __*ｱﾋﾟ*__
+Integrated tools for REST design
