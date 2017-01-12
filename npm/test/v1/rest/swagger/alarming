@@ -1,0 +1,280 @@
+{
+  "apiVersion": "@project.version@",
+  "swaggerVersion": "1.2",
+  "basePath": " https://houston",
+  "apis": [
+    {
+      "path": "/communication/alarming/v1/antrittscheck/alarmings/{uuid}/context",
+      "description": "Request to trigger an alarming.",
+      "operations": [
+        {
+          "httpMethod": "PUT",
+          "summary": "Puts a request to trigger an alarming sequence.",
+          "notes": "?",
+          "nickname": "putAlarming",
+          "parameters": [
+            {
+              "name": "uuid",
+              "description": "alarming UUID",
+              "paramType": "path",
+              "required": true,
+              "allowMultiple": false,
+              "dataType": "string"
+            },
+            {
+              "name": "alarming",
+              "description": "the alarming to be triggered",
+              "paramType": "body",
+              "required": true,
+              "allowMultiple": false,
+              "dataType": "Alarming"
+            }
+          ],
+          "responseMessages": [
+            {
+              "code": 200,
+              "reason": "OK"
+            },
+            {
+              "code": 400,
+              "reason": "Invalid Request"
+            },
+            {
+              "code": 500,
+              "reason": "Internal Server Error"
+            }
+          ]
+        },
+        {
+          "httpMethod": "GET",
+          "summary": "Retrieves an alarming",
+          "notes": "?",
+          "nickname": "getAlarming",
+          "type": "Alarming",
+          "parameters": [
+            {
+              "name": "uuid",
+              "description": "Alarming uuid",
+              "paramType": "path",
+              "required": true,
+              "allowMultiple": false,
+              "dataType": "string"
+            }
+          ],
+          "responseMessages": [
+            {
+              "code": 200,
+              "reason": "OK"
+            },
+            {
+              "code": 400,
+              "reason": "Invalid Request"
+            },
+            {
+              "code": 404,
+              "reason": "Not found"
+            },
+            {
+              "code": 500,
+              "reason": "Internal Server Error"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/communication/alarming/v1/alarmings",
+      "description": "Retrieves a list of alarmings",
+      "operations": [
+        {
+          "httpMethod": "GET",
+          "summary": "Retrieves a list of alarmings",
+          "notes": "?",
+          "nickname": "getAlarmings",
+          "type": "Alarmings",
+          "responseMessages": [
+            {
+              "code": 200,
+              "reason": "OK"
+            },
+            {
+              "code": 400,
+              "reason": "Invalid Request"
+            },
+            {
+              "code": 500,
+              "reason": "Internal Server Error"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/communication/alarming/v1/alarmings/{uuid}/status",
+      "description": "Retrieves status-information of an alarming.",
+      "operations": [
+        {
+          "httpMethod": "PUT",
+          "summary": "PUT status-information of an alarming including progress information",
+          "notes": "?",
+          "nickname": "putAlarmingStatus",
+          "parameters": [
+            {
+              "name": "uuid",
+              "description": "Alarming uuid",
+              "paramType": "path",
+              "required": true,
+              "allowMultiple": false,
+              "dataType": "string"
+            },
+            {
+              "name": "status",
+              "description": "the alarming status",
+              "paramType": "body",
+              "required": true,
+              "allowMultiple": false,
+              "dataType": "AlarmingStatus"
+            }
+          ],
+          "responseMessages": [
+            {
+              "code": 200,
+              "reason": "OK"
+            },
+            {
+              "code": 400,
+              "reason": "Invalid Request"
+            },
+            {
+              "code": 404,
+              "reason": "Not found"
+            },
+            {
+              "code": 500,
+              "reason": "Internal Server Error"
+            }
+          ]
+        },
+        {
+          "httpMethod": "GET",
+          "summary": "GET status-information of an alarming including progress information",
+          "notes": "?",
+          "nickname": "getAlarmingStatus",
+          "type": "AlarmingStatus",
+          "parameters": [
+            {
+              "name": "uuid",
+              "description": "Alarming uuid",
+              "paramType": "path",
+              "required": true,
+              "allowMultiple": false,
+              "dataType": "string"
+            }
+          ],
+          "responseMessages": [
+            {
+              "code": 200,
+              "reason": "OK"
+            },
+            {
+              "code": 400,
+              "reason": "Invalid Request"
+            },
+            {
+              "code": 404,
+              "reason": "Not found"
+            },
+            {
+              "code": 500,
+              "reason": "Internal Server Error"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/communication/alarming/v1/alarmings/{uuid}/cancel/request",
+      "description": "Retrieves status-information of an alarming",
+      "operations": [
+        {
+          "httpMethod": "PUT",
+          "summary": "PUT a Cancel request for an alarming",
+          "notes": "?",
+          "nickname": "putCancelRequest",
+          "parameters": [
+            {
+              "name": "uuid",
+              "description": "Alarming uuid",
+              "paramType": "path",
+              "required": true,
+              "allowMultiple": false,
+              "dataType": "string"
+            },
+            {
+              "name": "status",
+              "description": "the cancel Request",
+              "paramType": "body",
+              "required": true,
+              "allowMultiple": false,
+              "dataType": "CancelRequest"
+            }
+          ],
+          "responseMessages": [
+            {
+              "code": 200,
+              "reason": "OK"
+            },
+            {
+              "code": 400,
+              "reason": "Invalid Request"
+            },
+            {
+              "code": 404,
+              "reason": "Not found"
+            },
+            {
+              "code": 500,
+              "reason": "Internal Server Error"
+            }
+          ]
+        },
+        {
+          "httpMethod": "GET",
+          "summary": "GET a Cancel request for an alarming",
+          "notes": "?",
+          "nickname": "getCancelRequest",
+          "type": "CancelRequest",
+          "parameters": [
+            {
+              "name": "uuid",
+              "description": "Alarming uuid",
+              "paramType": "path",
+              "required": true,
+              "allowMultiple": false,
+              "dataType": "string"
+            }
+          ],
+          "responseMessages": [
+            {
+              "code": 200,
+              "reason": "OK"
+            },
+            {
+              "code": 400,
+              "reason": "Invalid Request"
+            },
+            {
+              "code": 404,
+              "reason": "Not found"
+            },
+            {
+              "code": 500,
+              "reason": "Internal Server Error"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tsModels": "../../model/ts/alarming.ts"
+}

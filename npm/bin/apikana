@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+var path=require('path');
+var gutil = require('gulp-util');
+
+var source='src/api';
+var target='dist';
+var base=path.basename(path.resolve(__dirname,'../..'))==='node_modules' ? path.resolve(__dirname,'../../..') : path.resolve(__dirname,'..');
+var argc=process.argv.length;
+if (argc>2){
+    source=process.argv[2];
+}
+if (argc>3){
+    target=process.argv[3];
+}
+console.log('Base:   '+base);
+console.log('Source: '+source);
+console.log('Target: '+target);
+console.log('Env:    '+JSON.stringify(gutil.env,null,2));
+
+require('../src/generate').generate(base,path.resolve(base,source),path.resolve(base,target));
