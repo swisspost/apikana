@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+var path=require('path');
+var gutil = require('gulp-util');
+
+var target='dist';
+var port=parseInt(gutil.env.port) || 8080;
+var argc=process.argv.length;
+var base=gutil.env.env==='dev' ? path.resolve(__dirname,'..') : path.resolve(__dirname,'../../..');
+if (argc>2){
+    target=process.argv[2];
+}
+
+var root=path.resolve(base,target,'ui');
+
+console.log('Base:    '+base);
+console.log('Target:  '+target);
+console.log('Serving: '+root);
+console.log('URL:     http://localhost:'+port);
+
+var server=require('node-http-server');
+server.deploy({
+    port: 8080,
+    root: root,
+    server:{
+        index:'index.html'
+    }
+});

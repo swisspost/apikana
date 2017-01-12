@@ -12,6 +12,7 @@ if (argc>2){
 if (argc>3){
     target=process.argv[3];
 }
+
 console.log('Base:   '+base);
 console.log('Source: '+source);
 console.log('Target: '+target);
