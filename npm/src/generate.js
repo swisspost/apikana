@@ -14,10 +14,11 @@ var traverse = require('traverse');
 module.exports = {
     generate: function (base, source, dest) {
         var uiPath = path.resolve(dest, 'ui');
-        var apikanaPath = path.resolve(base, gutil.env.env === 'dev' ? '' : 'node_modules/apikana');
+        var modulesPath = path.resolve(base, 'node_modules');
+        var apikanaPath = gutil.env.env === 'dev' ? base : path.resolve(modulesPath, 'apikana');
 
         gulp.task('copy-swagger', function () {
-            return gulp.src('node_modules/swagger-ui/dist/**', {cwd: apikanaPath})
+            return gulp.src('swagger-ui/dist/**', {cwd: modulesPath})
                 .pipe(gulp.dest(uiPath));
         });
 
@@ -27,21 +28,21 @@ module.exports = {
         });
 
         gulp.task('copy-deps', function () {
-            gulp.src(['requirejs/require.js'], {cwd: apikanaPath + '/node_modules'})
+            gulp.src(['requirejs/require.js'], {cwd: modulesPath})
                 .pipe(gulp.dest('custom', {cwd: uiPath}));
             return gulp.src('src/deps/*.js', {cwd: apikanaPath})
                 .pipe(gulp.dest('custom', {cwd: uiPath}));
         });
 
         gulp.task('copy-deps-unref', function () {
-            gulp.src('traverse/index.js', {cwd: apikanaPath + '/node_modules'})
+            gulp.src('traverse/index.js', {cwd: modulesPath})
                 .pipe(rename('traverse.js'))
                 .pipe(replace('module.exports =', ''))
                 .pipe(gulp.dest('vendor', {cwd: uiPath}));
             return gulp.src([
                     'typson/lib/typson-schema.js', 'underscore/underscore.js', 'q/q.js', 'traverse/traverse.js',
                     'superagent/superagent.js', 'typson/lib/typson.js', 'typson/vendor/typescriptServices.js'],
-                {cwd: apikanaPath + '/node_modules'})
+                {cwd: modulesPath})
                 .pipe(gulp.dest('vendor', {cwd: uiPath}));
         });
 

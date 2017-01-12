@@ -1,7 +1,7 @@
 var jq = $;  //save jQuery
 $ = function (f) {
     $ = jq;  //restore jQuery
-    var lodash = _;  //save lodash (will be overwritten by typson -> underscore)
+    var lodash = _;  //save lodash (will be overwritten by underscore by typson)
     require(["vendor/typson-schema"], function (typson) {
         fetch('/src/rest/OpenAPI/swagger.json').then(function (res) {
             return res.json();

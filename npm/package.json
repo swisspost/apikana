@@ -4,7 +4,8 @@
   "description": "Integrated tools for REST API design - ｱﾋﾟ",
   "main": "index.js",
   "bin": {
-    "apikana": "./bin/apikana"
+    "apikana": "./bin/apikana",
+    "apikana-serve": "./bin/apikana-serve"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
