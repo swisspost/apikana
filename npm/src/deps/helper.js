@@ -1,3 +1,21 @@
+var jq = $;
+$ = function (f) {
+    $ = jq;
+    var lodash = _;
+    require(["vendor/typson-schema"], function (typson) {
+        typson.schema("user.ts").done(function (schema) {
+            fetch('swagger.json').then(function (res) {
+                return res.json();
+            }).then(function (json) {
+                _ = lodash;
+                spec = json;
+                spec.definitions = schema.definitions;
+                f();
+            });
+        });
+    });
+};
+
 function getAbsoluteUrl(relativeUrl) {
     console.log("getAbsoluteUrl: Relative: " + relativeUrl);
     var base = document.URL;
@@ -9,7 +27,7 @@ function getAbsoluteUrl(relativeUrl) {
 
 function getURLParameter(name) {
     return decodeURI(
-        (new RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,''])[1]
+        (new RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, ''])[1]
     );
 }
 

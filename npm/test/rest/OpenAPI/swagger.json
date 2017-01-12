@@ -48,20 +48,12 @@
       "get": {
         "description": "bla",
         "operationId": "getUsers",
-        "parameters": [
-          {
-            "description": "the user to be added",
-            "in": "body",
-            "name": "user",
-            "required": true,
+        "responses": {
+          "200": {
+            "description": "ok",
             "schema": {
               "$ref": "#/definitions/Users"
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "ok"
           },
           "400": {
             "description": "invalid request"
