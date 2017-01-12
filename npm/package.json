@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "test-build": "node bin/apikana test test-dist --javaPackage=apikana.test --apiVersion=v1 --env=dev",
+    "test-build": "node bin/apikana test test-dist --javaPackage=apikana.test --env=dev",
     "test-serve": "node bin/apikana-serve test-dist --env=dev"
   },
   "repository": {

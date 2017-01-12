@@ -53,13 +53,12 @@ module.exports = {
         });
 
         gulp.task('generate-schema', function () {
-            var v = gutil.env.apiVersion || 'v1';
-            gulp.src(v + '/model/**/*.ts', {cwd: source})
+            gulp.src('model/**/*.ts', {cwd: source})
                 .pipe(generateSchemas())
-                .pipe(rename({dirname: v + '/json-schema-v4'}))
+                .pipe(rename({dirname: 'model/json-schema-v4'}))
                 .pipe(gulp.dest(dest))
                 .pipe(convertToV3())
-                .pipe(rename({dirname: v + '/json-schema-v3'}))
+                .pipe(rename({dirname: 'model/json-schema-v3'}))
                 .pipe(gulp.dest(dest))
         });
 

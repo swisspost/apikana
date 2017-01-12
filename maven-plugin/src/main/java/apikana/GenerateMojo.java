@@ -61,9 +61,6 @@ public class GenerateMojo extends AbstractMojo {
     @Parameter(defaultValue = "target")
     private String output;
 
-    @Parameter(defaultValue = "v1")
-    private String apiVersion;
-
     @Parameter(defaultValue = "apikana.sample")
     private String javaPackage;
 
@@ -73,14 +70,14 @@ public class GenerateMojo extends AbstractMojo {
             generatePackageJson();
             installApikana();
             runApikana();
-            projectHelper.attachArtifact(mavenProject, createApiJar(apiJarFile()), "api-" + apiVersion);
+            projectHelper.attachArtifact(mavenProject, createApiJar(apiJarFile()), "api");
         } catch (Exception e) {
             throw new MojoExecutionException("Problem running apikana", e);
         }
     }
 
     private File apiJarFile() {
-        return new File("target/" + mavenProject.getArtifactId() + "-" + mavenProject.getVersion() + "-api-" + apiVersion + ".jar");
+        return new File("target/" + mavenProject.getArtifactId() + "-" + mavenProject.getVersion() + "-api.jar");
     }
 
     private File createApiJar(File out) throws IOException {
@@ -89,12 +86,12 @@ public class GenerateMojo extends AbstractMojo {
         mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
         mainAttributes.put(Attributes.Name.MAIN_CLASS, ApiServer.class.getName());
         try (JarOutputStream zs = new JarOutputStream(new FileOutputStream(out), manifest)) {
-            addDirToZip(zs, output + "/" + apiVersion + "/json-schema-v3");
-            addDirToZip(zs, output + "/" + apiVersion + "/json-schema-v4");
+            addDirToZip(zs, output + "/model/json-schema-v3");
+            addDirToZip(zs, output + "/model/json-schema-v4");
             addDirToZip(zs, output + "/ui");
             addClassToZip(zs, ApiServer.class);
             addJettyToZip(zs);
-            addDirToZip(zs, input + "/" + apiVersion + "/model");
+            addDirToZip(zs, input + "/model");
         }
         return out;
     }
@@ -197,7 +194,7 @@ public class GenerateMojo extends AbstractMojo {
 
     private void runApikana() throws MojoExecutionException {
         executeFrontend("npm", configuration(
-                element("arguments", "run apikana " + input + " " + output + " -- --javaPackage=" + javaPackage + " --apiVersion=" + apiVersion)
+                element("arguments", "run apikana " + input + " " + output + " -- --javaPackage=" + javaPackage)
         ));
     }
 
