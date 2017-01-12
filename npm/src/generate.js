@@ -13,10 +13,10 @@ var traverse = require('traverse');
 module.exports = {
     generate: function (base, source, dest) {
         var uiPath = path.resolve(dest, 'ui');
+        var apikanaPath = gutil.env.env === 'dev' ? '' : 'node_modules/apikana/';
 
         gulp.task('copy-swagger', function () {
-            var path = gutil.env.env === 'dev' ? '' : 'apikana/node_modules';
-            return gulp.src('node_modules/' + path + '/swagger-ui/dist/**', {cwd: base})
+            return gulp.src(apikanaPath + 'node_modules/swagger-ui/dist/**', {cwd: base})
                 .pipe(gulp.dest(uiPath));
         });
 
@@ -25,14 +25,29 @@ module.exports = {
                 .pipe(gulp.dest('custom', {cwd: uiPath}));
         });
 
-        gulp.task('inject-css', ['copy-swagger', 'copy-custom'], function () {
-            var customCssStart = "<link href='css/print.css' media='print' rel='stylesheet' type='text/css'/>";
-            var customCssEnd = '<script src=';
+        gulp.task('copy-patch', function () {
+            return gulp.src(apikanaPath + 'src/swagger-*.js', {cwd: base})
+                .pipe(gulp.dest('custom', {cwd: uiPath}));
+        });
+
+        gulp.task('inject-css', ['copy-swagger', 'copy-custom', 'copy-patch'], function () {
             return gulp.src('index.html', {cwd: uiPath})
                 .pipe(inject(gulp.src('custom/**/*.css', {cwd: uiPath, read: false}), {
                     relative: true,
-                    starttag: customCssStart,
-                    endtag: customCssEnd
+                    starttag: "<link href='css/print.css' media='print' rel='stylesheet' type='text/css'/>",
+                    endtag: '<script '
+                }))
+                .pipe(inject(gulp.src('custom/**/swagger-ref-*.js', {cwd: uiPath, read: false}), {
+                    relative: true,
+                    starttag: "<!-- <script src='lang/en.js' type='text/javascript'></script> -->",
+                    endtag: '<script '
+                }))
+                .pipe(inject(gulp.src('custom/**/swagger-inc-set-url.js', {cwd: uiPath, read: true}), {
+                    starttag: 'var url = window.location.search.match(/url=([^&]+)/);',
+                    endtag: 'if (url && url.length > 1) {',
+                    transform: function (path, file) {
+                        return file.contents.toString('utf8');
+                    }
                 }))
                 .pipe(gulp.dest(uiPath));
         });
