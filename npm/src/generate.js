@@ -15,7 +15,8 @@ module.exports = {
         var uiPath = path.resolve(dest, 'ui');
 
         gulp.task('copy-swagger', function () {
-            return gulp.src('node_modules/apikana/node_modules/swagger-ui/dist/**', {cwd: base})
+            var path = gutil.env.env === 'dev' ? '' : 'apikana/node_modules';
+            return gulp.src('node_modules/' + path + '/swagger-ui/dist/**', {cwd: base})
                 .pipe(gulp.dest(uiPath));
         });
 

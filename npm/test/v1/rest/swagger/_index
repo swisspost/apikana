@@ -2,14 +2,14 @@
   "apiVersion": "@project.version@",
   "swaggerVersion": "1.2",
   "info": {
-    "title": "PA-ISA Communication-Alarming API",
-    "description": "API for alarming",
-    "contact": "juerg.kilchenmann@post.ch"
+    "title": "User API",
+    "description": "API for users",
+    "contact": "user@all.users"
   },
   "apis": [
     {
-      "path": "/../alarming",
-      "description": "alarming"
+      "path": "/../user",
+      "description": "user"
     }
   ]
 }
