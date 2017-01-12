@@ -1,17 +1,34 @@
-var jq = $;
+var jq = $;  //save jQuery
 $ = function (f) {
-    $ = jq;
-    var lodash = _;
+    $ = jq;  //restore jQuery
+    var lodash = _;  //save lodash (will be overwritten by typson -> underscore)
     require(["vendor/typson-schema"], function (typson) {
-        typson.schema("user.ts").done(function (schema) {
-            fetch('swagger.json').then(function (res) {
-                return res.json();
-            }).then(function (json) {
-                _ = lodash;
-                spec = json;
-                spec.definitions = schema.definitions;
-                f();
-            });
+        fetch('/src/rest/OpenAPI/swagger.json').then(function (res) {
+            return res.json();
+        }).then(function (json) {
+            spec = json;
+            spec.tsModels = spec.tsModels || [];
+            spec.definitions = spec.definitions || {};
+            var models = spec.tsModels.length;
+            for (var i = 0; i < models; i++) {
+                typson.schema('/src/rest/OpenAPI/' + spec.tsModels[i]).then(
+                    function (schema) {
+                        for (var def in schema.definitions) {
+                            spec.definitions[def] = schema.definitions[def];
+                        }
+                        loaded();
+                    }, function (fail) {
+                        loaded();
+                    });
+            }
+
+            function loaded() {
+                models--;
+                if (models === 0) {
+                    _ = lodash;  //restore lodash
+                    f();
+                }
+            }
         });
     });
 };

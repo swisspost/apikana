@@ -106,5 +106,5 @@
       "name": "user"
     }
   ],
-  "tsModels": "../../model/ts/user.ts"
+  "tsModels": ["../../model/ts/user.ts"]
 }

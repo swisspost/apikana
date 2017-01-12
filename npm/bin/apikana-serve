@@ -2,25 +2,47 @@
 var path=require('path');
 var gutil = require('gulp-util');
 
+var source='src/api';
 var target='dist';
-var port=parseInt(gutil.env.port) || 8080;
-var argc=process.argv.length;
 var base=gutil.env.env==='dev' ? path.resolve(__dirname,'..') : path.resolve(__dirname,'../../..');
+var argc=process.argv.length;
 if (argc>2){
-    target=process.argv[2];
+    source=process.argv[2];
+}
+if (argc>3){
+    target=process.argv[3];
 }
 
-var root=path.resolve(base,target,'ui');
+var port=parseInt(gutil.env.port) || 8080;
 
-console.log('Base:    '+base);
-console.log('Target:  '+target);
-console.log('Serving: '+root);
+console.log('Base:   '+base);
+console.log('Source: '+source);
+console.log('Target: '+target);
 console.log('URL:     http://localhost:'+port);
+console.log('Env:    '+JSON.stringify(gutil.env,null,2));
 
 var server=require('node-http-server');
+server.onRequest=function(req,res,serve){
+    //console.log(req.url);
+
+    if (route(req,'src/',source)) {}
+    else if (route(req,'',target+'/ui'));
+
+    //console.log(req.url);
+};
+
+function route(req,from,to){
+    if (startsWith(req.url,'/'+from)){
+        req.url='/'+to+'/'+req.url.substring(from.length+1);
+        return true;
+    }
+    return false;
+}
+
 server.deploy({
+    //verbose:true,
     port: 8080,
-    root: root,
+    root: base,
     server:{
         index:'index.html',
         noCache: true
@@ -36,3 +58,7 @@ server.deploy({
         ts      : 'text/plain'
     }
 });
+
+function startsWith(s,sub){
+    return s.substring(0,sub.length)===sub;
+}
