@@ -64,9 +64,11 @@ $ = function (f) {
         var regex = /@(.*?)@/g;
         var res;
         while ((res = regex.exec(text)) !== null) {
-            var val = objectPath.get(packageJson, res[1]);
-            text = text.substring(0, res.index) + val + text.substring(res.index + res[0].length);
-            regex.lastIndex = res.index;
+            var val = objectPath.get(variables, res[1]);
+            if (val) {
+                text = text.substring(0, res.index) + val + text.substring(res.index + res[0].length);
+                regex.lastIndex = res.index;
+            }
         }
         return text;
     }

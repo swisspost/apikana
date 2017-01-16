@@ -9,6 +9,7 @@ var path = require('path');
 var through = require('through2');
 var typson = require('typson');
 var traverse = require('traverse');
+var objectPath = require('object-path');
 
 
 module.exports = {
@@ -29,8 +30,8 @@ module.exports = {
 
         gulp.task('copy-package', function () {
             return gulp.src('package.json', {cwd: base})
-                .pipe(rename('package.js'))
-                .pipe(replace(/\{/, 'var packageJson={'))
+                .pipe(rename('variables.js'))
+                .pipe(enrichWithEnv())
                 .pipe(gulp.dest('custom', {cwd: uiPath}));
         });
 
@@ -83,6 +84,20 @@ module.exports = {
         });
 
         gulp.start(['inject-css', 'copy-deps-unref', 'generate-schema']);
+
+        function enrichWithEnv() {
+            return through.obj(function (file, enc, cb) {
+                var json = JSON.parse(file.contents);
+                for (var prop in gutil.env) {
+                    objectPath.set(json, prop, gutil.env[prop]);
+                }
+                this.push(new gutil.File({
+                    path: file.path,
+                    contents: new Buffer('var variables=' + JSON.stringify(json, null, 2))
+                }));
+                cb();
+            });
+        }
 
         function generateSchemas() {
             return through.obj(function (file, enc, cb) {
