@@ -1,5 +1,6 @@
 package apikana;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.AbstractMojo;
@@ -21,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -66,14 +68,24 @@ public class GenerateMojo extends AbstractMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
+            final String projectProps = writeProjectProps();
             installNode();
             generatePackageJson();
             installApikana();
-            runApikana();
+            runApikana(projectProps);
             projectHelper.attachArtifact(mavenProject, createApiJar(apiJarFile()), "api");
         } catch (Exception e) {
             throw new MojoExecutionException("Problem running apikana", e);
         }
+    }
+
+    private String writeProjectProps() throws IOException {
+        final Map<String, Object> propectProps = new ProjectSerializer().serialize(mavenProject);
+        final String filename = "target/properties.json";
+        final File file = new File(filename);
+        file.getParentFile().mkdirs();
+        new ObjectMapper().writeValue(file, propectProps);
+        return filename;
     }
 
     private File apiJarFile() {
@@ -86,12 +98,13 @@ public class GenerateMojo extends AbstractMojo {
         mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
         mainAttributes.put(Attributes.Name.MAIN_CLASS, ApiServer.class.getName());
         try (JarOutputStream zs = new JarOutputStream(new FileOutputStream(out), manifest)) {
-            addDirToZip(zs, output + "/model/json-schema-v3");
-            addDirToZip(zs, output + "/model/json-schema-v4");
-            addDirToZip(zs, output + "/ui");
+            addDirToZip(zs, output + "/model/json-schema-v3", "model/json-schema-v3");
+            addDirToZip(zs, output + "/model/json-schema-v4", "model/json-schema-v4");
+            addDirToZip(zs, output + "/ui", "ui");
             addClassToZip(zs, ApiServer.class);
+            addClassToZip(zs, ApiServer.PathResourceHandler.class);
             addJettyToZip(zs);
-            addDirToZip(zs, input + "/model");
+            addDirToZip(zs, input, "src");
         }
         return out;
     }
@@ -138,29 +151,30 @@ public class GenerateMojo extends AbstractMojo {
                 while ((read = in.read(buf)) > 0) {
                     zs.write(buf, 0, read);
                 }
+                in.close();
             }
             zs.closeEntry();
         } catch (ZipException e) {
-            System.out.println(e);
+            if (!e.getMessage().startsWith("duplicate entry")) {
+                e.printStackTrace();
+            }
         }
-        in.close();
     }
 
-    private void addDirToZip(ZipOutputStream zs, String dir) throws IOException {
-        final Path pp = Paths.get(dir);
-        Files.walk(pp)
-                .forEach(path -> {
-                    final String name = pp.getParent().relativize(path).toString().replace('\\', '/');
-                    try {
-                        if (Files.isDirectory(path)) {
-                            addResourceToZip(zs, name + "/", null);
-                        } else {
-                            addResourceToZip(zs, name, Files.newInputStream(path));
-                        }
-                    } catch (Exception e) {
-                        System.err.println(e);
-                    }
-                });
+    private void addDirToZip(ZipOutputStream zs, String source, String target) throws IOException {
+        final Path pp = Paths.get(source);
+        Files.walk(pp).forEach(path -> {
+            final String name = target + "/" + pp.relativize(path).toString().replace('\\', '/');
+            try {
+                if (Files.isDirectory(path)) {
+                    addResourceToZip(zs, name + (name.endsWith("/") ? "" : "/"), null);
+                } else {
+                    addResourceToZip(zs, name, Files.newInputStream(path));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void generatePackageJson() throws IOException {
@@ -168,10 +182,10 @@ public class GenerateMojo extends AbstractMojo {
         if (!file.exists()) {
             try (final PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
                 out.println("{");
-                out.println("  \"name\": \"" + mavenProject.getArtifactId() + "\"");
-                out.println("  \"version\": \"" + mavenProject.getVersion() + "\"");
-                out.println("  \"scripts\": {\"apikana\": \"apikana\"}");
-                out.println("  \"dependencies\": {\"apikana\": \"^0.0.1\"}");
+                out.println("  \"name\": \"" + mavenProject.getArtifactId() + "\",");
+                out.println("  \"version\": \"" + mavenProject.getVersion() + "\",");
+                out.println("  \"scripts\": {\"apikana\": \"apikana\"},");
+                out.println("  \"dependencies\": {\"apikana\": \"^0.1.0\"}");
                 out.println("}");
             }
         }
@@ -187,14 +201,18 @@ public class GenerateMojo extends AbstractMojo {
 
     private void installApikana() throws MojoExecutionException {
         executeFrontend("npm", configuration(
-                //TODO no path, but just install!!
-                element("arguments", "install c:/work/projects/apikana/npm/apikana-0.1.0.tgz")
+//                TODO no path, but just install!!
+                element("arguments", "install c:/work/projects/apikana-nidi/npm/apikana-0.1.0.tgz")
         ));
+//        executeFrontend("npm", configuration(
+//                TODO no path, but just install!!
+//                element("arguments", "install")
+//        ));
     }
 
-    private void runApikana() throws MojoExecutionException {
+    private void runApikana(String config) throws MojoExecutionException {
         executeFrontend("npm", configuration(
-                element("arguments", "run apikana " + input + " " + output + " -- --javaPackage=" + javaPackage)
+                element("arguments", "run apikana " + input + " " + output + " -- --javaPackage=" + javaPackage + " --config=" + config)
         ));
     }
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 var path=require('path');
+var fs=require('fs');
 var gutil = require('gulp-util');
 
 var source='src/api';
@@ -11,6 +12,15 @@ if (argc>2){
 }
 if (argc>3){
     target=process.argv[3];
+}
+if (gutil.env.config){
+    var config=fs.readFileSync(path.resolve(base,gutil.env.config));
+    var configObj=JSON.parse(config);
+    for(var prop in configObj){
+        if (!gutil.env[prop]){
+            gutil.env[prop]=configObj[prop];
+        }
+    }
 }
 
 console.log('Base:   '+base);

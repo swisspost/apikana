@@ -6,6 +6,7 @@ var replace = require('gulp-replace');
 var colors = gutil.colors;
 var log = gutil.log;
 var path = require('path');
+var fs = require('fs');
 var through = require('through2');
 var typson = require('typson');
 var traverse = require('traverse');
@@ -17,9 +18,25 @@ module.exports = {
         var uiPath = path.resolve(dest, 'ui');
         var modulesPath = path.resolve(base, 'node_modules');
         var apikanaPath = gutil.env.env === 'dev' ? base : path.resolve(modulesPath, 'apikana');
+        var flatModules = gutil.env.env === 'dev' || !fs.existsSync(path.resolve(apikanaPath, 'node_modules'));
+
+        console.log('flat: ' + flatModules);
+        console.log('modules: ' + modulesPath);
+
+        function module(pattern) {
+            var p = Array.isArray(pattern) ? pattern.map(resolve) : resolve(pattern);
+            console.log('copy ' + p);
+            return gulp.src(p, {cwd: modulesPath});
+
+            function resolve(p) {
+                return flatModules
+                    ? p.replace(/.*?\/\//, '')
+                    : 'apikana/node_modules/' + p.replace(/(.*?)\/\//, '$1/node_modules/');
+            }
+        }
 
         gulp.task('copy-swagger', function () {
-            return gulp.src('swagger-ui/dist/**', {cwd: modulesPath})
+            return module('swagger-ui/dist/**')
                 .pipe(gulp.dest(uiPath));
         });
 
@@ -36,9 +53,9 @@ module.exports = {
         });
 
         gulp.task('copy-deps', function () {
-            gulp.src(['requirejs/require.js', 'yamljs/dist/yaml.js'], {cwd: modulesPath})
+            module(['typson//requirejs/require.js', 'yamljs/dist/yaml.js'])
                 .pipe(gulp.dest('custom', {cwd: uiPath}));
-            gulp.src(['object-path/index.js'], {cwd: modulesPath})
+            module(['object-path/index.js'])
                 .pipe(rename('object-path.js'))
                 .pipe(gulp.dest('custom', {cwd: uiPath}));
             return gulp.src('src/deps/*.js', {cwd: apikanaPath})
@@ -46,14 +63,13 @@ module.exports = {
         });
 
         gulp.task('copy-deps-unref', function () {
-            gulp.src('traverse/index.js', {cwd: modulesPath})
+            module('traverse/index.js')
                 .pipe(rename('traverse.js'))
                 .pipe(replace('module.exports =', ''))
                 .pipe(gulp.dest('vendor', {cwd: uiPath}));
-            return gulp.src([
-                    'typson/lib/typson-schema.js', 'underscore/underscore.js', 'q/q.js', 'traverse/traverse.js',
-                    'superagent/superagent.js', 'typson/lib/typson.js', 'typson/vendor/typescriptServices.js'],
-                {cwd: modulesPath})
+            return module([
+                'typson/lib/typson-schema.js', 'typson//underscore/underscore.js', 'typson//q/q.js',
+                'traverse/traverse.js', 'typson//superagent/superagent.js', 'typson/lib/typson.js', 'typson/vendor/typescriptServices.js'])
                 .pipe(gulp.dest('vendor', {cwd: uiPath}));
         });
 
