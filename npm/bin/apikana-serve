@@ -54,6 +54,7 @@ server.deploy({
         js      : 'text/javascript',
         png     : 'image/png',
         json    : 'application/json',
+        yaml    : 'application/yaml',
         gif     : 'image/gif',
         ts      : 'text/plain'
     }

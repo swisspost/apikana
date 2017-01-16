@@ -30,16 +30,17 @@
   },
   "homepage": "https://github.com/lbovet/apikana#readme",
   "dependencies": {
-    "docson": "^1.0.2",
-    "gulp": "^3.9.1",
-    "gulp-inject": "^4.2.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-replace": "^0.5.4",
-    "gulp-util": "^3.0.8",
-    "node-http-server": "^6.2.1",
-    "swagger-ui": "^2.2.10",
-    "through2": "^2.0.3",
+    "docson": "1.0.2",
+    "gulp": "3.9.1",
+    "gulp-inject": "4.2.0",
+    "gulp-rename": "1.2.2",
+    "gulp-replace": "0.5.4",
+    "gulp-util": "3.0.8",
+    "node-http-server": "6.2.1",
+    "swagger-ui": "2.2.10",
+    "through2": "2.0.3",
     "traverse": "0.6.6",
-    "typson": "^0.6.0"
+    "typson": "0.6.0",
+    "yamljs": "0.2.8"
   }
 }

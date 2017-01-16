@@ -2,16 +2,15 @@ var jq = $;  //save jQuery
 $ = function (f) {
     $ = jq;  //restore jQuery
     var lodash = _;  //save lodash (will be overwritten by underscore by typson)
+    var path = '/rest/openapi/';
     require(["vendor/typson-schema"], function (typson) {
-        fetch('/src/rest/OpenAPI/swagger.json').then(function (res) {
-            return res.json();
-        }).then(function (json) {
+        fetchApi().then(function (json) {
             spec = json;
             spec.tsModels = spec.tsModels || [];
             spec.definitions = spec.definitions || {};
             var models = spec.tsModels.length;
             for (var i = 0; i < models; i++) {
-                typson.schema('/src/rest/OpenAPI/' + spec.tsModels[i]).then(
+                typson.schema('/src' + path + spec.tsModels[i]).then(
                     function (schema) {
                         for (var def in schema.definitions) {
                             spec.definitions[def] = schema.definitions[def];
@@ -29,9 +28,37 @@ $ = function (f) {
                     f();
                 }
             }
+        }).catch(function (err) {
+            alert('Problem loading api: ' + err);
         });
     });
+
+    function fetchApi() {
+        return fetch('/src' + path + 'api.json').then(function (res) {
+            if (res.ok) {
+                return res.json();
+            }
+            return fetchYaml();
+        }).catch(function (err) {
+            if (err instanceof TypeError) { //when a network error occurred
+                return fetchYaml();
+            }
+            throw err;
+        });
+    }
+
+    function fetchYaml() {
+        return fetch('/src' + path + 'api.yaml').then(function (res) {
+            if (res.ok) {
+                return res.text();
+            }
+            throw Error('Neither ' + path + 'api.json nor ' + path + 'api.yaml found.');
+        }).then(function (yaml) {
+            return YAML.parse(yaml);
+        });
+    }
 };
+
 
 function getAbsoluteUrl(relativeUrl) {
     console.log("getAbsoluteUrl: Relative: " + relativeUrl);

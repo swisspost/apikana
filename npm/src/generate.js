@@ -28,7 +28,7 @@ module.exports = {
         });
 
         gulp.task('copy-deps', function () {
-            gulp.src(['requirejs/require.js'], {cwd: modulesPath})
+            gulp.src(['requirejs/require.js','yamljs/dist/yaml.js'], {cwd: modulesPath})
                 .pipe(gulp.dest('custom', {cwd: uiPath}));
             return gulp.src('src/deps/*.js', {cwd: apikanaPath})
                 .pipe(gulp.dest('custom', {cwd: uiPath}));
