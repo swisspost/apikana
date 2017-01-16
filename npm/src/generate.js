@@ -27,8 +27,18 @@ module.exports = {
                 .pipe(gulp.dest('custom', {cwd: uiPath}));
         });
 
+        gulp.task('copy-package', function () {
+            return gulp.src('package.json', {cwd: base})
+                .pipe(rename('package.js'))
+                .pipe(replace(/\{/, 'var packageJson={'))
+                .pipe(gulp.dest('custom', {cwd: uiPath}));
+        });
+
         gulp.task('copy-deps', function () {
-            gulp.src(['requirejs/require.js','yamljs/dist/yaml.js'], {cwd: modulesPath})
+            gulp.src(['requirejs/require.js', 'yamljs/dist/yaml.js'], {cwd: modulesPath})
+                .pipe(gulp.dest('custom', {cwd: uiPath}));
+            gulp.src(['object-path/index.js'], {cwd: modulesPath})
+                .pipe(rename('object-path.js'))
                 .pipe(gulp.dest('custom', {cwd: uiPath}));
             return gulp.src('src/deps/*.js', {cwd: apikanaPath})
                 .pipe(gulp.dest('custom', {cwd: uiPath}));
@@ -46,7 +56,7 @@ module.exports = {
                 .pipe(gulp.dest('vendor', {cwd: uiPath}));
         });
 
-        gulp.task('inject-css', ['copy-swagger', 'copy-custom', 'copy-deps'], function () {
+        gulp.task('inject-css', ['copy-swagger', 'copy-custom', 'copy-deps', 'copy-package'], function () {
             return gulp.src('index.html', {cwd: uiPath})
                 .pipe(inject(gulp.src('custom/**/*.css', {cwd: uiPath, read: false}), {
                     relative: true,

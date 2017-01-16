@@ -36,7 +36,9 @@ $ = function (f) {
     function fetchApi() {
         return fetch('/src' + path + 'api.json').then(function (res) {
             if (res.ok) {
-                return res.json();
+                return res.text().then(function (json) {
+                    return JSON.parse(replaceVariables(json));
+                });
             }
             return fetchYaml();
         }).catch(function (err) {
@@ -54,8 +56,19 @@ $ = function (f) {
             }
             throw Error('Neither ' + path + 'api.json nor ' + path + 'api.yaml found.');
         }).then(function (yaml) {
-            return YAML.parse(yaml);
+            return YAML.parse(replaceVariables(yaml));
         });
+    }
+
+    function replaceVariables(text) {
+        var regex = /@(.*?)@/g;
+        var res;
+        while ((res = regex.exec(text)) !== null) {
+            var val = objectPath.get(packageJson, res[1]);
+            text = text.substring(0, res.index) + val + text.substring(res.index + res[0].length);
+            regex.lastIndex = res.index;
+        }
+        return text;
     }
 };
 
