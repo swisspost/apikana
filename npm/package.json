@@ -30,6 +30,8 @@
   },
   "homepage": "https://github.com/lbovet/apikana#readme",
   "dependencies": {
+    "brfs": "1.4.3",
+    "browserify": "13.0.0",
     "docson": "1.0.2",
     "gulp": "3.9.1",
     "gulp-inject": "4.2.0",
@@ -42,6 +44,8 @@
     "through2": "2.0.3",
     "traverse": "0.6.6",
     "typson": "0.6.0",
+    "vinyl-buffer": "1.0.0",
+    "vinyl-source-stream": "1.1.0",
     "yamljs": "0.2.8"
   }
 }

@@ -1,9 +1,27 @@
+function renderDocson() {
+    $('.docson').each(function (index, elem) {
+        docson.doc(elem, spec.definitions[$(elem).text()]);
+    });
+}
+
 var jq = $;  //save jQuery
 $ = function (f) {
     $ = jq;  //restore jQuery
     var lodash = _;  //save lodash (will be overwritten by underscore by typson)
+
+    SwaggerUi.partials.signature.getModelSignature = function (name, schema, models, modelPropertyMacro) {
+        return '<div class="docson"><script>alert("u")</script>' + name + '</div>';
+    };
+
+    SwaggerUi.partials.signature.getParameterModelSignature = function (type, definitions) {
+        return '<div class="docson"><script>alert("u")</script>' + type + '</div>'
+    };
+
+    Handlebars.templates.signature = Handlebars.compile('{{sanitize signature}}');
+
+
     var path = '/rest/openapi/';
-    require(["vendor/typson-schema"], function (typson) {
+    require(['vendor/typson-schema'], function (typson) {
         fetchApi().then(function (json) {
             spec = json;
             spec.tsModels = spec.tsModels || [];

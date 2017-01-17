@@ -7,4 +7,5 @@ interface User {
     firstName: string //the given name
     lastName: string; //the family name
     age?: number;
+    parent?: User;
 }
