@@ -57,14 +57,17 @@ public class GenerateMojo extends AbstractMojo {
     @Parameter
     private String downloadRoot;
 
-    @Parameter(defaultValue = "src/api")
+    @Parameter(defaultValue = "src")
     private String input;
 
-    @Parameter(defaultValue = "target")
+    @Parameter(defaultValue = "target/api")
     private String output;
 
     @Parameter(defaultValue = "apikana.sample")
     private String javaPackage;
+
+    @Parameter()
+    private boolean deploy;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
@@ -212,7 +215,7 @@ public class GenerateMojo extends AbstractMojo {
 
     private void runApikana(String config) throws MojoExecutionException {
         executeFrontend("npm", configuration(
-                element("arguments", "run apikana " + input + " " + output + " -- --javaPackage=" + javaPackage + " --config=" + config)
+                element("arguments", "run apikana " + input + " " + output + " -- --javaPackage=" + javaPackage + " --deploy=" + deploy + " --config=" + config)
         ));
     }
 

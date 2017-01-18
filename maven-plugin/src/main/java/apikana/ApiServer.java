@@ -11,9 +11,6 @@ import java.awt.*;
 import java.io.*;
 import java.net.URI;
 
-/**
- * Created by niederhauste on 10.01.2017.
- */
 public class ApiServer {
     public static void main(String[] args) throws Exception {
         try (Writer out = new OutputStreamWriter(new FileOutputStream(new File("log.txt")))) {

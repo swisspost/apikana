@@ -28,7 +28,7 @@ $ = function (f) {
             spec.definitions = spec.definitions || {};
             var models = spec.tsModels.length;
             for (var i = 0; i < models; i++) {
-                typson.definitions('/src' + path + spec.tsModels[i],'#').then(
+                typson.definitions('src' + path + spec.tsModels[i],'#').then(
                     function (schema) {
                         for (var def in schema) {
                             spec.definitions[def] = schema[def];
@@ -52,7 +52,7 @@ $ = function (f) {
     });
 
     function fetchApi() {
-        return fetch('/src' + path + 'api.json').then(function (res) {
+        return fetch('src' + path + 'api.json').then(function (res) {
             if (res.ok) {
                 return res.text().then(function (json) {
                     return JSON.parse(replaceVariables(json));
@@ -68,7 +68,7 @@ $ = function (f) {
     }
 
     function fetchYaml() {
-        return fetch('/src' + path + 'api.yaml').then(function (res) {
+        return fetch('src' + path + 'api.yaml').then(function (res) {
             if (res.ok) {
                 return res.text();
             }

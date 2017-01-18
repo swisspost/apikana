@@ -13,9 +13,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by niederhauste on 16.01.2017.
- */
 public class ProjectSerializer {
     @JsonFilter("configurationContainer")
     private interface ConfigurationContainerMixIn {
@@ -39,11 +36,11 @@ public class ProjectSerializer {
                 .addMixIn(ConfigurationContainer.class, ConfigurationContainerMixIn.class)
                 .addMixIn(Build.class, BuildMixIn.class)
                 .addMixIn(Model.class, ModelMixIn.class);
-        SimpleFilterProvider filter = new SimpleFilterProvider()
+        final SimpleFilterProvider filter = new SimpleFilterProvider()
                 .addFilter("configurationContainer", SimpleBeanPropertyFilter.serializeAllExcept("configuration"))
                 .addFilter("build", SimpleBeanPropertyFilter.serializeAllExcept("plugins", "pluginManagement", "pluginsAsMap"))
                 .addFilter("model", SimpleBeanPropertyFilter.serializeAllExcept("dependencies", "repositories", "pluginRepositories"));
-        Map<String, Object> modelMap = mapper.readValue(mapper.writer(filter).writeValueAsString(project.getModel()), Map.class);
+        final Map<String, Object> modelMap = mapper.readValue(mapper.writer(filter).writeValueAsString(project.getModel()), Map.class);
         props.put("basedir", project.getBasedir());
         props.put("project", modelMap);
         return props;
