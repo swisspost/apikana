@@ -1,6 +1,6 @@
 function renderDocson() {
     $('.docson').each(function (index, elem) {
-        docson.doc(elem, spec.definitions[$(elem).text()]);
+        docson.doc(elem, spec.definitions, $(elem).text());
     });
 }
 
@@ -10,11 +10,11 @@ $ = function (f) {
     var lodash = _;  //save lodash (will be overwritten by underscore by typson)
 
     SwaggerUi.partials.signature.getModelSignature = function (name, schema, models, modelPropertyMacro) {
-        return '<div class="docson"><script>alert("u")</script>' + name + '</div>';
+        return '<div class="docson">' + name + '</div>';
     };
 
     SwaggerUi.partials.signature.getParameterModelSignature = function (type, definitions) {
-        return '<div class="docson"><script>alert("u")</script>' + type + '</div>'
+        return '<div class="docson">' + type + '</div>'
     };
 
     Handlebars.templates.signature = Handlebars.compile('{{sanitize signature}}');
@@ -28,10 +28,10 @@ $ = function (f) {
             spec.definitions = spec.definitions || {};
             var models = spec.tsModels.length;
             for (var i = 0; i < models; i++) {
-                typson.schema('/src' + path + spec.tsModels[i]).then(
+                typson.definitions('/src' + path + spec.tsModels[i],'#').then(
                     function (schema) {
-                        for (var def in schema.definitions) {
-                            spec.definitions[def] = schema.definitions[def];
+                        for (var def in schema) {
+                            spec.definitions[def] = schema[def];
                         }
                         loaded();
                     }, function (fail) {
