@@ -5,9 +5,7 @@ var gutil = require('gulp-util');
 var replace = require('gulp-replace');
 var path = require('path');
 var fs = require('fs');
-var through = require('through2');
 var traverse = require('traverse');
-var objectPath = require('object-path');
 
 module.exports = {
     generate: function (base, source, dest) {
@@ -43,10 +41,9 @@ module.exports = {
         });
 
         gulp.task('copy-package', function () {
-            return gulp.src('package.json', {cwd: base})
-                .pipe(rename('variables.js'))
-                .pipe(enrichWithEnv())
-                .pipe(gulp.dest('patch', {cwd: uiPath}));
+            return require('./generate-env').generate(
+                gulp.src('package.json', {cwd: base}),
+                gulp.dest('patch', {cwd: uiPath}));
         });
 
         gulp.task('copy-deps', function () {
@@ -104,20 +101,6 @@ module.exports = {
         });
 
         gulp.start(['inject-css', 'copy-deps-unref', 'generate-schema']);
-
-        function enrichWithEnv() {
-            return through.obj(function (file, enc, cb) {
-                var json = JSON.parse(file.contents);
-                for (var prop in gutil.env) {
-                    objectPath.set(json, prop, gutil.env[prop]);
-                }
-                this.push(new gutil.File({
-                    path: file.path,
-                    contents: new Buffer('var variables=' + JSON.stringify(json, null, 2))
-                }));
-                cb();
-            });
-        }
     }
 };
 
