@@ -51,12 +51,6 @@ module.exports = {
             return gulp.src('**/*.css', {cwd: source}).pipe(gulp.dest('custom', {cwd: uiPath}));
         });
 
-        gulp.task('copy-src', function () {
-            if (gutil.env.deploy && gutil.env.deploy != 'false') {
-                return gulp.src('**/*', {cwd: source}).pipe(gulp.dest('src', {cwd: uiPath}));
-            }
-        });
-
         gulp.task('copy-package', function () {
             return require('./generate-env').generate(
                 gulp.src('package.json', {cwd: base}),
@@ -72,15 +66,10 @@ module.exports = {
             return gulp.src('src/deps/*.js', {cwd: apikanaPath}).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
-        gulp.task('copy-deps-unref', function () {
-            module('traverse/index.js')
-                .pipe(rename('traverse.js'))
-                .pipe(replace('module.exports =', ''))
-                .pipe(gulp.dest('vendor', {cwd: uiPath}));
-            return module([
-                'typson/lib/typson-schema.js', 'typson//underscore/underscore.js', 'typson//q/q.js',
-                'traverse/traverse.js', 'typson//superagent/superagent.js', 'typson/lib/typson.js', 'typson/vendor/typescriptServices.js'])
-                .pipe(gulp.dest('vendor', {cwd: uiPath}));
+        gulp.task('browserify-docson', function () {
+            return require('./generate-docson').generate(
+                path.resolve(apikanaPath, 'src/docson.js'),
+                gulp.dest('patch', {cwd: uiPath}));
         });
 
         gulp.task('inject-css', ['copy-swagger', 'copy-custom', 'copy-deps', 'copy-package', 'browserify-docson'], function () {
@@ -103,6 +92,17 @@ module.exports = {
                 .pipe(gulp.dest(uiPath));
         });
 
+        gulp.task('copy-deps-unref', function () {
+            module('traverse/index.js')
+                .pipe(rename('traverse.js'))
+                .pipe(replace('module.exports =', ''))
+                .pipe(gulp.dest('vendor', {cwd: uiPath}));
+            return module([
+                'typson/lib/typson-schema.js', 'typson//underscore/underscore.js', 'typson//q/q.js',
+                'traverse/traverse.js', 'typson//superagent/superagent.js', 'typson/lib/typson.js', 'typson/vendor/typescriptServices.js'])
+                .pipe(gulp.dest('vendor', {cwd: uiPath}));
+        });
+
         gulp.task('generate-schema', function () {
             return require('./generate-schema').generate(
                 gulp.src('model/**/*.ts', {cwd: source}),
@@ -111,13 +111,19 @@ module.exports = {
                 });
         });
 
-        gulp.task('browserify-docson', function () {
-            return require('./generate-docson').generate(
-                path.resolve(apikanaPath, 'src/docson.js'),
-                gulp.dest('patch', {cwd: uiPath}));
+        gulp.task('generate-constants', function () {
+            return require('./generate-constants').generate(
+                gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source}),
+                gulp.dest('model',{cwd:dest}));
         });
 
-        gulp.start(['inject-css', 'copy-deps-unref', 'generate-schema', 'copy-src']);
+        gulp.task('copy-src', function () {
+            if (gutil.env.deploy && gutil.env.deploy != 'false') {
+                return gulp.src('**/*', {cwd: source}).pipe(gulp.dest('src', {cwd: uiPath}));
+            }
+        });
+
+        gulp.start(['inject-css', 'copy-deps-unref', 'generate-schema', 'generate-constants', 'copy-src']);
     }
 };
 

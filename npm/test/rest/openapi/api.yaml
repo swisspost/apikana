@@ -6,7 +6,12 @@ info:
   title: User API
   version: @version@
 paths:
-  /v1/users/{id}:
+  /communication/alarming/v1/antrittscheck/alarmings/{uuid}/context:
+  /communication/alarming/v1/alarmings:
+  /communication/alarming/v1/alarmings/{uuid}/status:
+  /communication/alarming/v1/alarmings/{uuid}/cancel/request:
+
+  /sample/v1/users/{id}:
     get:
       operationId: getUser
       parameters:
@@ -29,7 +34,7 @@ paths:
       summary: Retrieve a user
       tags:
         - user
-  /v1/users:
+  /sample/v1/users:
     get:
       description: bla
       operationId: getUsers
