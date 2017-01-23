@@ -84,15 +84,14 @@ public class GenerateMojo extends AbstractMojo {
 
     private String writeProjectProps() throws IOException {
         final Map<String, Object> propectProps = new ProjectSerializer().serialize(mavenProject);
-        final String filename = "target/properties.json";
-        final File file = new File(filename);
+        final File file = new File(mavenProject.getBuild().getDirectory(), "properties.json");
         file.getParentFile().mkdirs();
         new ObjectMapper().writeValue(file, propectProps);
-        return filename;
+        return file.getAbsolutePath();
     }
 
     private File apiJarFile() {
-        return new File("target/" + mavenProject.getArtifactId() + "-" + mavenProject.getVersion() + "-api.jar");
+        return new File(mavenProject.getBuild().getDirectory(),  mavenProject.getArtifactId() + "-" + mavenProject.getVersion() + "-api.jar");
     }
 
     private File createApiJar(File out) throws IOException {
@@ -165,7 +164,7 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     private void addDirToZip(ZipOutputStream zs, String source, String target) throws IOException {
-        final Path pp = Paths.get(source);
+        final Path pp = Paths.get(mavenProject.getBasedir().getAbsolutePath(), source);
         Files.walk(pp).forEach(path -> {
             final String name = target + "/" + pp.relativize(path).toString().replace('\\', '/');
             try {
@@ -181,7 +180,7 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     private void generatePackageJson() throws IOException {
-        final File file = new File("package.json");
+        final File file = new File(mavenProject.getBasedir(), "package.json");
         if (!file.exists()) {
             try (final PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
                 out.println("{");
@@ -221,6 +220,7 @@ public class GenerateMojo extends AbstractMojo {
 
     private void executeFrontend(String goal, Xpp3Dom config) throws MojoExecutionException {
         final String rc = new File(".npmrc").exists() ? "--userconfig .npmrc " : "";
+        config.addChild(element("workingDirectory", mavenProject.getBasedir().getAbsolutePath()).toDom());
         final Xpp3Dom arguments = config.getChild("arguments");
         if (arguments != null) {
             arguments.setValue(rc + arguments.getValue());
