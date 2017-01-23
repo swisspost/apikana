@@ -67,10 +67,12 @@ module.exports = {
             function findParameterType(apiPath, param) {
                 for (var m in apiPath) {
                     var method = apiPath[m];
-                    for (var p in method.parameters) {
-                        var parameter = method.parameters[p];
-                        if (parameter.name === param) {
-                            return parameter.type || 'string';
+                    if (method) {
+                        for (var p in method.parameters) {
+                            var parameter = method.parameters[p];
+                            if (parameter.name === param) {
+                                return parameter.type || 'string';
+                            }
                         }
                     }
                 }

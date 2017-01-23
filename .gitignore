@@ -39,6 +39,7 @@ jspm_packages
 .idea/
 *.iml
 test-dist/
+test-deploy/
 target/
 
 

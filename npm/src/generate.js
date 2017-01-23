@@ -114,7 +114,7 @@ module.exports = {
         gulp.task('generate-constants', function () {
             return require('./generate-constants').generate(
                 gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source}),
-                gulp.dest('model',{cwd:dest}));
+                gulp.dest('model/java', {cwd: dest}));
         });
 
         gulp.task('copy-src', function () {
