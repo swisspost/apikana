@@ -35,6 +35,7 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public class GenerateMojo extends AbstractMojo {
+    private static final String VERSION = "0.1.0";
 
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject mavenProject;
@@ -91,7 +92,7 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     private File apiJarFile() {
-        return new File(mavenProject.getBuild().getDirectory(),  mavenProject.getArtifactId() + "-" + mavenProject.getVersion() + "-api.jar");
+        return new File(mavenProject.getBuild().getDirectory(), mavenProject.getArtifactId() + "-" + mavenProject.getVersion() + "-api.jar");
     }
 
     private File createApiJar(File out) throws IOException {
@@ -187,7 +188,7 @@ public class GenerateMojo extends AbstractMojo {
                 out.println("  \"name\": \"" + mavenProject.getArtifactId() + "\",");
                 out.println("  \"version\": \"" + mavenProject.getVersion() + "\",");
                 out.println("  \"scripts\": {\"apikana\": \"apikana\"},");
-                out.println("  \"dependencies\": {\"apikana\": \"^0.1.0\"}");
+                out.println("  \"dependencies\": {\"apikana\": \"" + VERSION + "\"}");
                 out.println("}");
             }
         }
@@ -201,10 +202,19 @@ public class GenerateMojo extends AbstractMojo {
         ));
     }
 
-    private void installApikana() throws MojoExecutionException {
+    private void installApikana() throws IOException, MojoExecutionException {
+        final File apikanaPackage = new File(mavenProject.getBasedir(), "node_modules/apikana/package.json");
+        if (apikanaPackage.exists()) {
+            Map pack = new ObjectMapper().readValue(apikanaPackage, Map.class);
+            final String version = (String) pack.get("version");
+            if (VERSION.equals(version)) {
+                getLog().info("apikana " + VERSION + " already installed.");
+                return;
+            }
+        }
         executeFrontend("npm", configuration(
 //                TODO no path, but just install!!
-                element("arguments", "install c:/work/projects/apikana-nidi/npm/apikana-0.1.0.tgz")
+                element("arguments", "install c:/work/projects/apikana-nidi/npm/apikana-" + VERSION + ".tgz")
         ));
 //        executeFrontend("npm", configuration(
 //                TODO no path, but just install!!
