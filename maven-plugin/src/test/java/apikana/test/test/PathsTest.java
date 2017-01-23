@@ -1,5 +1,6 @@
 package apikana.test.test;
 
+import apikana.test.Paths;
 import org.junit.Test;
 
 import static apikana.test.Paths2.alarmings;
@@ -18,5 +19,9 @@ public class PathsTest {
         assertEquals("http://base/communication/alarming/v1/alarmings/bla/cancel/request", alarmings.uuid("bla").cancel.request.url());
         assertEquals("/communication/alarming/v1/alarmings/bla/status", alarmings.uuid("bla").status.path());
         assertEquals("http://base/communication/alarming/v1/alarmings/bla/status", alarmings.uuid("bla").status.url());
+
+        Paths.alarming.v1.alarmings.path();
+        Paths.v1.users.path();
+        Paths.v1.users.id(42).path();
     }
 }

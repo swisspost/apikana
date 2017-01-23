@@ -3,21 +3,21 @@ package apikana.test;
 public class Paths2 {
     private static final String BASE_URL = "http://base";
 
-    interface Path {
-        String path();
+    private static abstract class Path {
+        public abstract String path();
 
-        default String url() {
+        public String url() {
             return BASE_URL + path();
         }
 
-        default String url(String base) {
+        public String url(String base) {
             return base + path();
         }
     }
 
     public static Alarmings alarmings = new Alarmings();
 
-    public static class Alarmings implements Path {
+    public static class Alarmings extends Path {
         private Alarmings() {
         }
 
@@ -52,7 +52,7 @@ public class Paths2 {
                     return Uuid.this.path() + "/cancel";
                 }
 
-                public final class Request implements Path {
+                public final class Request extends Path {
                     private Request() {
                     }
 
@@ -62,7 +62,7 @@ public class Paths2 {
                 }
             }
 
-            public final class Status implements Path {
+            public final class Status extends Path {
                 private Status() {
                 }
 

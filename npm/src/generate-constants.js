@@ -1,9 +1,10 @@
 var gutil = require('gulp-util');
+var colors = gutil.colors;
+var log = gutil.log;
 var through = require('through2');
 var path = require('path');
 var fs = require('fs');
 var yaml = require('yamljs');
-var objectPath = require('object-path');
 
 module.exports = {
     generate: function (source, dest) {
@@ -12,85 +13,143 @@ module.exports = {
             .pipe(dest);
 
         function createConstantsFile(javaPackage) {
-            var contents = 'package ' + javaPackage + ';\n\n' +
-                'public class Paths {\n' +
-                '    public interface Path{}\n' +
-                '    public interface Elem{}\n' +
-                '    public interface Param{}\n';
+            var contents = 'package ' + javaPackage + ';\n\n';
 
-
-            return through.obj(addConstants, end);
-
-            function addConstants(file, enc, cb) {
+            return through.obj(function (file, enc, cb) {
                 var api = fileContents(file);
-                contents += '    static final String BASE_URL = "' + (api.basePath || '') + '";\n';
-                contents += '    public static String path(Path path) {\n' +
-                    '        return path.getClass().toString();\n' +
-                    '    }\n';
                 var model = {};
+                var prefix = '';
                 for (var path in api.paths) {
-                    var prefix = path.replace(/^\/(.*?\/v\d[^\/]*).*/, '$1');
-                    var rest = path.substring(prefix.length + 2).replace(/\//g, '.');
-                    var existing = objectPath.get(model, rest);
-                    if (existing) {
-                        existing['/prefix'] = prefix;
-                    } else {
-                        objectPath.set(model, rest, {'/prefix': prefix});
-                    }
-                    console.log(prefix, rest)
-
-                    // var p1 = rest;
-                    // var s;
-                    // while ((s = p1.lastIndexOf('/')) >= 0) {
-                    //     var tail = p1 === rest ? '' : '/';
-                    //     createLine(p1, prefix + p1 + tail);
-                    //     p1 = p1.substring(0, s);
-                    //     if (s > 0) {
-                    //         var segments = rest.substring(s + 1);
-                    //         createLine(p1 + '$' + segments, segments);
-                    //         if (segments.indexOf('{') === 0) {
-                    //             var v = segments.substring(0, segments.indexOf('}') + 1);
-                    //             createLine(p1 + '$' + v, v);
-                    //             createLine(p1 + '$' + v + '$', v.substring(1, v.length - 1));
-                    //         }
-                    //     }
-                    // }
+                    prefix = commonPrefix(prefix, path);
                 }
-                console.log(JSON.stringify(model))
-                write(model, 1);
+                var pathsName = classOf(prefix) + 'Paths';
+                for (var path in api.paths) {
+                    var elems = path.substring(prefix.length).split('/');
+                    var m = model;
+                    for (var i = 0; i < elems.length; i++) {
+                        var elem = elems[i];
+                        var type = null;
+                        if (/\{.*?\}/.test(elem)) {
+                            elem = elem.substring(1, elem.length - 1);
+                            type = findParameterType(api.paths[path], elem);
+                        }
+                        if (!m[elem]) {
+                            m[elem] = {'/param': type};
+                        }
+                        m = m[elem];
+                    }
+                    m['/end'] = true;
+                }
+
+                contents += 'public class ' + pathsName + ' {\n' +
+                    '    private static final String BASE_URL = "' + (api.basePath || '') + '";\n' +
+                    '    private static abstract class Path {\n' +
+                    '        public abstract String path();\n' +
+                    '        public String url() {\n' +
+                    '            return BASE_URL + path();\n' +
+                    '        }\n' +
+                    '        public String url(String base) {\n' +
+                    '            return base + path();\n' +
+                    '        }\n' +
+                    '    }\n';
+
+                write(model, prefix, 1);
+                contents += '}';
+
+                this.push(new gutil.File({
+                    path: javaPackage.replace(/\./g, '/') + '/' + pathsName + '.java',
+                    contents: new Buffer(contents)
+                }));
+                gutil.log('Generated', colors.magenta(pathsName + '.java'));
                 cb();
+            });
+
+            function findParameterType(apiPath, param) {
+                for (var m in apiPath) {
+                    var method = apiPath[m];
+                    for (var p in method.parameters) {
+                        var parameter = method.parameters[p];
+                        if (parameter.name === param) {
+                            return parameter.type || 'string';
+                        }
+                    }
+                }
+                return 'string';
             }
 
-            function write(obj, level) {
+            function javaType(type) {
+                switch (type) {
+                    case 'number':
+                        return 'long';
+                    case 'integer':
+                        return 'int';
+                    case 'boolean':
+                        return 'boolean';
+                    default:
+                        return 'String';
+                }
+            }
+
+            function commonPrefix(a, b) {
+                if (!a) {
+                    return b;
+                }
+                var i = 0;
+                while (i < a.length && i < b.length && a.charAt(i) === b.charAt(i)) {
+                    i++;
+                }
+                return a.substring(0, i);
+            }
+
+            function write(obj, parent, level) {
+                function line(s) {
+                    contents += pad(level) + s + '\n';
+                }
+
                 var keys = Object.keys(obj);
                 keys.sort();
-                if (obj['/prefix']) {
-                    contents += pad(level * 4) + 'static final String PREFIX = "' + obj['/prefix'] + '";\n';
-                }
+                var stat = level === 1 ? 'static ' : '';
                 for (var i = 0; i < keys.length; i++) {
                     var name = keys[i];
                     if (name.charAt(0) !== '/') {
-                        var ifaces = [];
-                        if (obj[keys[i]]['/prefix']) {
-                            ifaces.push('Path');
+                        var endpoint = obj[name]['/end'];
+                        var param = obj[name]['/param'];
+
+                        var child = 'public ' + stat + classOf(name) + ' ' + fieldOf(name) +
+                            (param
+                                ? '(' + javaType(param) + ' ' + fieldOf(name) + '){ return new ' + classOf(name) + '(' + fieldOf(name) + '); }'
+                                : ' = new ' + classOf(name) + '();');
+
+                        var constructor = 'private ' + classOf(name) +
+                            (param
+                                ? '(' + javaType(param) + ' ' + fieldOf(name) + '){ this.value = ' + fieldOf(name) + '; }'
+                                : '(){}');
+
+                        var pathMethod = (endpoint ? 'public' : 'private') + ' String path() { return ' +
+                            (level === 1
+                                ? '"' + parent + name + '"; }'
+                                : classOf(parent) + '.this.path() + "/' + name + '"; }');
+
+                        line(child);
+                        line('public ' + stat + 'class ' + classOf(name) + (endpoint ? ' extends Path' : '') + ' {');
+
+                        level++;
+                        if (param) {
+                            line('private final ' + javaType(param) + ' value;');
                         }
-                        if (/\{.*?\}/.test(name)) {
-                            name = name.substring(1, name.length - 1);
-                            ifaces.push('Param');
-                        }
-                        if (keys.length === 1) {
-                            ifaces.push('Elem');
-                        }
-                        contents += pad(level * 4) + 'public static class ' + javaize(name) + (ifaces.length === 0 ? '' : ' implements ' + ifaces.join()) + ' {\n';
-                        write(obj[keys[i]], level + 1);
-                        contents += pad(level * 4) + '}\n';
+                        line(constructor);
+                        line(pathMethod);
+                        write(obj[name], name, level);
+                        level--;
+
+                        line('}');
                     }
                 }
             }
 
             function pad(n) {
                 var s = '';
-                while (s.length < n) {
+                while (s.length < 4 * n) {
                     s += ' ';
                 }
                 return s;
@@ -102,38 +161,29 @@ module.exports = {
                     ? yaml.parse(raw) : JSON.parse(raw);
             }
 
-            function createLine(p, q) {
-                var constant = p
-                    .replace(/[^A-Za-z0-9{}$]/g, '_')
-                    .replace(/[$_]([^{]*)/g, upper)
-                    .replace(/[{}]/g, '')
-                    .substring(1);
-                lineSet[constant] = '        ' + constant + ' = "' + q + '";\n';
+            function classOf(name) {
+                var java = javaOf(name);
+                return java.substring(0, 1).toUpperCase() + java.substring(1);
             }
 
-            function upper(x) {
-                return x.toUpperCase();
+            function fieldOf(name) {
+                var java = javaOf(name);
+                return java.substring(0, 1).toLowerCase() + java.substring(1);
             }
 
-            function javaize(name) {
-                return name.substring(0, 1).toUpperCase() + name.substring(1);
-            }
-
-            function end(cb) {
-                // var lines = Object.keys(lineSet);
-                // lines.sort(function (a, b) {
-                //     return a.replace(/\$/g, '|').localeCompare(b.replace(/\$/g, '|'));
-                // });
-                // for (var i = 0; i < lines.length; i++) {
-                //     contents += lineSet[lines[i]];
-                // }
-                contents += '}';
-                this.push(new gutil.File({
-                    path: javaPackage.replace(/\./g, '/') + '/Paths.java',
-                    contents: new Buffer(contents)
-                }));
-                // gutil.log('Generated ' + lines.length + ' constants');
-                cb();
+            function javaOf(name) {
+                var s = '';
+                var removed = false;
+                for (var i = 0; i < name.length; i++) {
+                    var c = name.charAt(i);
+                    if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
+                        s += removed ? c.toUpperCase() : c;
+                        removed = false;
+                    } else {
+                        removed = true;
+                    }
+                }
+                return s;
             }
         }
     }
