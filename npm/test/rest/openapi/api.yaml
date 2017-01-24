@@ -6,11 +6,12 @@ info:
   title: User API
   version: @version@
 paths:
-  /sample/v1/antrittscheck/alarmings/{uuid}/context:
-  /sample/v1/alarmings:
-  /sample/v1/alarmings/{uuid}/status:
-  /sample/v1/alarmings/{uuid}/cancel/req-._uest:
-
+#  /sample/v1/antrittscheck/alarmings/{uuid}/context:
+#  /sample/v1/alarmings:
+#  /sample/v1/alarmings/{uuid}/status:
+#  /sample/v1/alarmings/{uuid}/cancel/req-._uest:
+#
+#  /sample/v1:
   /sample/v1/users/{id}:
     get:
       operationId: getUser

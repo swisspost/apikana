@@ -21,6 +21,10 @@ module.exports = {
                 var prefix = '';
                 for (var path in api.paths) {
                     prefix = commonPrefix(prefix, path);
+                    if (prefix === path) {
+                        //avoid empty path
+                        prefix = prefix.substring(0, prefix.lastIndexOf('/', prefix.length - 1) + 1);
+                    }
                 }
                 var pathsName = classOf(prefix) + 'Paths';
                 for (var path in api.paths) {

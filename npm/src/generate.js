@@ -8,6 +8,9 @@ var replace = require('gulp-replace');
 var path = require('path');
 var fs = require('fs');
 var traverse = require('traverse');
+var through = require('through2');
+var yaml = require('yamljs');
+
 
 module.exports = {
     generate: function (base, source, dest) {
@@ -99,17 +102,38 @@ module.exports = {
                 .pipe(gulp.dest('vendor', {cwd: uiPath}));
             return module([
                 'typson/lib/typson-schema.js', 'typson//underscore/underscore.js', 'typson//q/q.js',
-                'traverse/traverse.js', 'typson//superagent/superagent.js', 'typson/lib/typson.js', 'typson/vendor/typescriptServices.js'])
+                'traverse/traverse.js', 'typson//superagent/superagent.js', 'typson/lib/typson.js', 'typson/vendor/typescriptServices.js',
+                'typescript/lib/lib.d.ts'])
                 .pipe(gulp.dest('vendor', {cwd: uiPath}));
         });
 
-        gulp.task('generate-schema', function () {
+        var referencedModels = [];
+        gulp.task('referenced-models', function () {
+            return gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source})
+                .pipe(through.obj(function (file, enc, cb) {
+                    var api = fileContents(file);
+                    for (var i = 0; i < api.tsModels.length; i++) {
+                        referencedModels.push(path.resolve(source, 'rest/openapi', api.tsModels[i]));
+                    }
+                    cb();
+                }));
+        });
+
+        gulp.task('generate-schema', ['referenced-models'], function () {
+            referencedModels.push('model/ts/**/*.ts');
             return require('./generate-schema').generate(
-                gulp.src('model/**/*.ts', {cwd: source}),
+                gulp.src(referencedModels, {cwd: source}),
                 function () {
                     return gulp.dest(dest);
                 });
         });
+
+        function fileContents(file) {
+            var raw = file.contents.toString();
+            return file.path.substring(file.path.lastIndexOf('.') + 1) === 'yaml'
+                ? yaml.parse(raw) : JSON.parse(raw);
+        }
+
 
         gulp.task('generate-constants', function () {
             return require('./generate-constants').generate(
@@ -123,7 +147,32 @@ module.exports = {
             }
         });
 
-        gulp.start(['inject-css', 'copy-deps-unref', 'generate-schema', 'generate-constants', 'copy-src']);
+        // gulp.task('generate-tsconfig', function () {
+        //     var tsconfig = path.resolve(source, 'model/ts/tsconfig.json');
+        //     if (!fs.existsSync(tsconfig)) {
+        //         fs.writeFileSync(tsconfig, '{}');
+        //     }
+        //     return gulp.src(tsconfig)
+        //         .pipe(through.obj(function (file, enc, cb) {
+        //             var config = JSON.parse(file);
+        //             var e = json.compilerOptions;
+        //             if (!e) {
+        //                 e = json.compilerOptions = {};
+        //             }
+        //             if (!e.paths) {
+        //                 e.paths = {};
+        //             }
+        //             if (!e.paths['*']) {
+        //                 e.paths['*'] = {};
+        //             }
+        //
+        //             cb();
+        //         }))
+        //         .pipe(gulp.dest(''));
+        // });
+
+
+        gulp.start(['inject-css', 'copy-deps-unref', 'generate-schema', 'generate-constants', 'copy-src'/*, 'generate-tsconfig'*/]);
     }
 };
 
