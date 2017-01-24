@@ -1,41 +1,40 @@
 package apikana;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 import java.io.*;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.Attributes;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
+import java.util.jar.*;
 
+import static apikana.IoUtils.*;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
-@Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
+@Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_RESOURCES,
+        requiresDependencyResolution = ResolutionScope.COMPILE)
 public class GenerateMojo extends AbstractMojo {
-    private static final String VERSION = "0.1.0";
+    private static class Version {
+        static final String
+                APIKANA = "0.1.0",
+                TYPESCRIPT = "^2.1.0";
+    }
+
+    private static final String TS_DIR = "/model/ts/";
 
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject mavenProject;
@@ -72,27 +71,73 @@ public class GenerateMojo extends AbstractMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
+            unpackModelDependencies();
+            configTypescript();
             final String projectProps = writeProjectProps();
             installNode();
             generatePackageJson();
             installApikana();
             runApikana(projectProps);
             projectHelper.attachArtifact(mavenProject, createApiJar(apiJarFile()), "api");
+            mavenProject.addCompileSourceRoot(file(output + "/model/java").getAbsolutePath());
+            projectHelper.addResource(mavenProject, file(input).getAbsolutePath(), Arrays.asList("model/**/*"), null);
         } catch (Exception e) {
             throw new MojoExecutionException("Problem running apikana", e);
         }
     }
 
+    private void unpackModelDependencies() throws IOException {
+        for (final Artifact a : mavenProject.getArtifacts()) {
+            final JarFile jar = new JarFile(a.getFile());
+            final Enumeration<JarEntry> entries = jar.entries();
+            while (entries.hasMoreElements()) {
+                final JarEntry entry = entries.nextElement();
+                if (!entry.isDirectory() && entry.getName().startsWith(TS_DIR)) {
+                    final File modelFile = target(entry.getName());
+                    modelFile.getParentFile().mkdirs();
+                    try (final FileOutputStream out = new FileOutputStream(modelFile)) {
+                        copy(jar.getInputStream(entry), out);
+                    }
+                }
+            }
+        }
+    }
+
+    private void configTypescript() throws IOException {
+        final File configFile = file(input + TS_DIR + "tsconfig.json");
+        if (!configFile.exists()) {
+            try (final Writer out = new OutputStreamWriter(new FileOutputStream(configFile))) {
+                out.write("{}");
+            }
+        }
+        final Map<String, Object> config = new ObjectMapper().readValue(configFile, Map.class);
+        Map<String, Object> compilerOptions = (Map) config.get("compilerOptions");
+        if (compilerOptions == null) {
+            compilerOptions = new HashMap<>();
+            config.put("compilerOptions", compilerOptions);
+        }
+        compilerOptions.put("baseUrl", configFile.getParentFile().toPath().relativize(target(TS_DIR).toPath()).toString().replace('\\', '/'));
+        new ObjectMapper().writer().withDefaultPrettyPrinter().writeValue(configFile, config);
+    }
+
+    private File file(String name) {
+        return new File(mavenProject.getBasedir(), name);
+    }
+
+    private File target(String name) {
+        return new File(mavenProject.getBuild().getDirectory(), name);
+    }
+
     private String writeProjectProps() throws IOException {
         final Map<String, Object> propectProps = new ProjectSerializer().serialize(mavenProject);
-        final File file = new File(mavenProject.getBuild().getDirectory(), "properties.json");
+        final File file = target("properties.json");
         file.getParentFile().mkdirs();
         new ObjectMapper().writeValue(file, propectProps);
         return file.getAbsolutePath();
     }
 
     private File apiJarFile() {
-        return new File(mavenProject.getBuild().getDirectory(), mavenProject.getArtifactId() + "-" + mavenProject.getVersion() + "-api.jar");
+        return target(mavenProject.getArtifactId() + "-" + mavenProject.getVersion() + "-api.jar");
     }
 
     private File createApiJar(File out) throws IOException {
@@ -101,13 +146,13 @@ public class GenerateMojo extends AbstractMojo {
         mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
         mainAttributes.put(Attributes.Name.MAIN_CLASS, ApiServer.class.getName());
         try (JarOutputStream zs = new JarOutputStream(new FileOutputStream(out), manifest)) {
-            addDirToZip(zs, output + "/model/json-schema-v3", "model/json-schema-v3");
-            addDirToZip(zs, output + "/model/json-schema-v4", "model/json-schema-v4");
-            addDirToZip(zs, output + "/ui", "ui");
+            addDirToZip(zs, file(output + "/model/json-schema-v3"), "model/json-schema-v3");
+            addDirToZip(zs, file(output + "/model/json-schema-v4"), "model/json-schema-v4");
+            addDirToZip(zs, file(output + "/ui"), "ui");
             addClassToZip(zs, ApiServer.class);
             addClassToZip(zs, ApiServer.PathResourceHandler.class);
             addJettyToZip(zs);
-            addDirToZip(zs, input, "src");
+            addDirToZip(zs, file(input), "src");
         }
         return out;
     }
@@ -117,78 +162,18 @@ public class GenerateMojo extends AbstractMojo {
         addZipsToZip(zs, "javax/servlet");
     }
 
-    private void addZipsToZip(JarOutputStream zs, String base) throws IOException {
-        final Enumeration<URL> jetty = getClass().getClassLoader().getResources(base);
-        while (jetty.hasMoreElements()) {
-            final URL url = jetty.nextElement();
-            final String path = url.getPath();
-            final int jarEnd = path.indexOf(".jar!/");
-            if (jarEnd > 0) {
-                addZipToZip(zs, path.substring(6, jarEnd + 4));
-            }
-        }
-    }
-
-    private void addZipToZip(ZipOutputStream zs, String zip) throws IOException {
-        try (final ZipFile file = new ZipFile(new File(zip))) {
-            final Enumeration<? extends ZipEntry> entries = file.entries();
-            while (entries.hasMoreElements()) {
-                final ZipEntry entry = entries.nextElement();
-                addResourceToZip(zs, entry.getName(), file.getInputStream(entry));
-            }
-        }
-    }
-
-    private void addClassToZip(ZipOutputStream zs, Class<?> clazz) throws IOException {
-        final String name = clazz.getName().replace('.', '/') + ".class";
-        addResourceToZip(zs, name, getClass().getResourceAsStream("/" + name));
-    }
-
-    private void addResourceToZip(ZipOutputStream zs, String name, InputStream in) throws IOException {
-        final ZipEntry zipEntry = new ZipEntry(name);
-        try {
-            zs.putNextEntry(zipEntry);
-            if (in != null) {
-                final byte[] buf = new byte[1024];
-                int read;
-                while ((read = in.read(buf)) > 0) {
-                    zs.write(buf, 0, read);
-                }
-                in.close();
-            }
-            zs.closeEntry();
-        } catch (ZipException e) {
-            if (!e.getMessage().startsWith("duplicate entry")) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void addDirToZip(ZipOutputStream zs, String source, String target) throws IOException {
-        final Path pp = Paths.get(mavenProject.getBasedir().getAbsolutePath(), source);
-        Files.walk(pp).forEach(path -> {
-            final String name = target + "/" + pp.relativize(path).toString().replace('\\', '/');
-            try {
-                if (Files.isDirectory(path)) {
-                    addResourceToZip(zs, name + (name.endsWith("/") ? "" : "/"), null);
-                } else {
-                    addResourceToZip(zs, name, Files.newInputStream(path));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
     private void generatePackageJson() throws IOException {
-        final File file = new File(mavenProject.getBasedir(), "package.json");
+        final File file = file("package.json");
         if (!file.exists()) {
             try (final PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
                 out.println("{");
                 out.println("  \"name\": \"" + mavenProject.getArtifactId() + "\",");
                 out.println("  \"version\": \"" + mavenProject.getVersion() + "\",");
                 out.println("  \"scripts\": {\"apikana\": \"apikana\"},");
-                out.println("  \"dependencies\": {\"apikana\": \"" + VERSION + "\"}");
+                out.println("  \"devDependencies\": {");
+                out.println("    \"apikana\": \"" + Version.APIKANA + "\",");
+                out.println("    \"typescript\": \"" + Version.TYPESCRIPT + "\",");
+                out.println("  }");
                 out.println("}");
             }
         }
@@ -203,18 +188,18 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     private void installApikana() throws IOException, MojoExecutionException {
-        final File apikanaPackage = new File(mavenProject.getBasedir(), "node_modules/apikana/package.json");
+        final File apikanaPackage = file("node_modules/apikana/package.json");
         if (apikanaPackage.exists()) {
             Map pack = new ObjectMapper().readValue(apikanaPackage, Map.class);
             final String version = (String) pack.get("version");
-            if (VERSION.equals(version)) {
-                getLog().info("apikana " + VERSION + " already installed.");
+            if (Version.APIKANA.equals(version)) {
+                getLog().info("apikana " + Version.APIKANA + " already installed.");
                 return;
             }
         }
         executeFrontend("npm", configuration(
 //                TODO no path, but just install!!
-                element("arguments", "install c:/work/projects/apikana-nidi/npm/apikana-" + VERSION + ".tgz")
+                element("arguments", "install c:/work/projects/apikana-nidi/npm/apikana-" + Version.APIKANA + ".tgz")
         ));
 //        executeFrontend("npm", configuration(
 //                TODO no path, but just install!!
