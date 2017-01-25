@@ -30,8 +30,10 @@ $ = function (f) {
             files.push('src' + path + spec.tsModels[i]);
         }
         var schema = schemaGen.generate('src/model/ts/tsconfig.json', files);
-        for (var def in schema.definitions) {
-            spec.definitions[def] = schema.definitions[def];
+        if (schema) {
+            for (var def in schema.definitions) {
+                spec.definitions[def] = schema.definitions[def];
+            }
         }
         _ = lodash;  //restore lodash
         f();

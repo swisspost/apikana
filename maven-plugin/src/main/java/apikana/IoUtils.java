@@ -57,12 +57,21 @@ class IoUtils {
 
 
     public static void addDirToZip(ZipOutputStream zs, File source, String target) throws IOException {
+        //add directory entries for all parents
+        int pos = 0;
+        while (true) {
+            pos = target.indexOf('/', pos + 1);
+            if (pos < 0) {
+                break;
+            }
+            addDirEntryToZip(zs, target.substring(0, pos));
+        }
         final Path pp = source.toPath();
         Files.walk(pp).forEach(path -> {
             final String name = target + "/" + pp.relativize(path).toString().replace('\\', '/');
             try {
                 if (Files.isDirectory(path)) {
-                    addResourceToZip(zs, name + (name.endsWith("/") ? "" : "/"), null);
+                    addDirEntryToZip(zs, name);
                 } else {
                     addResourceToZip(zs, name, Files.newInputStream(path));
                 }
@@ -70,6 +79,10 @@ class IoUtils {
                 e.printStackTrace();
             }
         });
+    }
+
+    private static void addDirEntryToZip(ZipOutputStream zs, String dir) throws IOException {
+        addResourceToZip(zs, dir + (dir.endsWith("/") ? "" : "/"), null);
     }
 
     public static void addResourceToZip(ZipOutputStream zs, String name, InputStream in) throws IOException {

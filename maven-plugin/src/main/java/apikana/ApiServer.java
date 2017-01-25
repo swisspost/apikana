@@ -5,6 +5,9 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.server.handler.ShutdownHandler;
+import org.eclipse.jetty.util.FutureCallback;
+import org.eclipse.jetty.util.UrlEncoded;
 import org.eclipse.jetty.util.resource.Resource;
 
 import java.awt.*;
@@ -12,21 +15,30 @@ import java.io.*;
 import java.net.URI;
 
 public class ApiServer {
+    private static final int PORT = 34945;
+
     public static void main(String[] args) throws Exception {
         try (Writer out = new OutputStreamWriter(new FileOutputStream(new File("log.txt")))) {
             try {
-                final Server server = new Server(8080);
+                //preload classes needed for shutdown, they can be unavailable when jar file has changed while server ran
+                UrlEncoded.class.toString();
+                FutureCallback.class.toString();
+                final Server server = new Server(PORT);
                 final ResourceHandler uiResource = new ResourceHandler();
                 uiResource.setBaseResource(Resource.newClassPathResource("/ui")); // / -> /ui
                 final ResourceHandler srcResource = new PathResourceHandler("/src"); // /src -> /src
                 srcResource.setBaseResource(Resource.newClassPathResource("/src"));
+                final ResourceHandler targetResource = new PathResourceHandler("/target/model"); // /src -> /src
+                targetResource.setBaseResource(Resource.newClassPathResource("/target/model"));
 
                 HandlerList handlers = new HandlerList();
-                handlers.setHandlers(new Handler[]{uiResource, srcResource, new DefaultHandler()});
+                handlers.setHandlers(new Handler[]{
+                        uiResource, srcResource, targetResource,
+                        new ShutdownHandler("666", true, true), new DefaultHandler()});
                 server.setHandler(handlers);
 
                 server.start();
-                Desktop.getDesktop().browse(new URI("http://localhost:8080"));
+                Desktop.getDesktop().browse(new URI("http://localhost:" + PORT));
                 server.join();
             } catch (Throwable e) {
                 e.printStackTrace(new PrintWriter(out));

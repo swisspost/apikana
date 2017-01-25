@@ -85,7 +85,7 @@ module.exports = {
         });
 
         task('copy-deps', function () {
-            module(['typson//requirejs/require.js', 'yamljs/dist/yaml.js'])
+            module([/*'typson//requirejs/require.js',*/ 'yamljs/dist/yaml.js'])
                 .pipe(gulp.dest('patch', {cwd: uiPath}));
             module(['object-path/index.js'])
                 .pipe(rename('object-path.js'))
@@ -106,7 +106,7 @@ module.exports = {
                     starttag: "<link href='css/print.css' media='print' rel='stylesheet' type='text/css'/>",
                     endtag: '<script '
                 }))
-                .pipe(inject(gulp.src(['helper.js', 'browserify.js', 'object-path.js', 'require.js', 'variables.js', 'yaml.js'], {
+                .pipe(inject(gulp.src(['helper.js', 'browserify.js', 'object-path.js', 'variables.js', 'yaml.js'], {
                     cwd: uiPath + '/patch',
                     read: false
                 }), {
@@ -127,7 +127,7 @@ module.exports = {
             return module([
                /* 'typson/lib/typson-schema.js', 'typson//underscore/underscore.js', 'typson//q/q.js',
                 'traverse/traverse.js', 'typson//superagent/superagent.js', 'typson/lib/typson.js', 'typson/vendor/typescriptServices.js',*/
-                'typescript/lib/lib.d.ts'])
+                'typescript-json-schema//typescript/lib/lib.d.ts'])
                 .pipe(gulp.dest('vendor', {cwd: uiPath}));
         });
 

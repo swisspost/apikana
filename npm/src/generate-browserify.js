@@ -11,6 +11,7 @@ module.exports = {
             transform: [brfs]
         })
             .ignore('source-map-support')
+            .ignore('fs')
             .bundle()
             .pipe(sourceStream('browserify.js'))
             .pipe(buffer())

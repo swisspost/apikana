@@ -31,9 +31,7 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
         requiresDependencyResolution = ResolutionScope.COMPILE)
 public class GenerateMojo extends AbstractMojo {
     private static class Version {
-        static final String
-                APIKANA = "0.1.2",
-                TYPESCRIPT = "^2.1.0";
+        static final String APIKANA = "0.1.2";
     }
 
     private static final String TS_DIR = "model/ts/";
@@ -75,11 +73,11 @@ public class GenerateMojo extends AbstractMojo {
         try {
             unpackModelDependencies();
             configTypescript();
-            final String projectProps = writeProjectProps();
+            writeProjectProps();
             installNode();
             generatePackageJson();
             installApikana();
-            runApikana(projectProps);
+            runApikana();
             projectHelper.attachArtifact(mavenProject, createApiJar(apiJarFile()), "api");
             mavenProject.addCompileSourceRoot(file(output + "/model/java").getAbsolutePath());
             projectHelper.addResource(mavenProject, file(input).getAbsolutePath(), Arrays.asList("model/**/*"), null);
@@ -109,7 +107,7 @@ public class GenerateMojo extends AbstractMojo {
         final File file = file(input + "/" + TS_DIR + "tsconfig.json");
         updateJson(file, config -> {
             final Map<String, Object> compilerOptions = (Map) config.merge("compilerOptions", new HashMap<>(), (oldVal, newVal) -> oldVal);
-            compilerOptions.put("baseUrl", file.getParentFile().toPath().relativize(target(TS_DIR).toPath()).toString().replace('\\', '/'));
+            compilerOptions.put("baseUrl", relative(file.getParentFile(), target(TS_DIR)));
         });
     }
 
@@ -128,12 +126,19 @@ public class GenerateMojo extends AbstractMojo {
         return new File(mavenProject.getBuild().getDirectory(), name);
     }
 
-    private String writeProjectProps() throws IOException {
+    private File working(String name) {
+        return target("npm/" + name);
+    }
+
+    private String relative(File base, File f) {
+        return base.toPath().relativize(f.toPath()).toString().replace('\\', '/');
+    }
+
+    private void writeProjectProps() throws IOException {
         final Map<String, Object> propectProps = new ProjectSerializer().serialize(mavenProject);
-        final File file = target("properties.json");
+        final File file = working("properties.json");
         file.getParentFile().mkdirs();
         new ObjectMapper().writeValue(file, propectProps);
-        return file.getAbsolutePath();
     }
 
     private File apiJarFile() {
@@ -153,6 +158,7 @@ public class GenerateMojo extends AbstractMojo {
             addClassToZip(zs, ApiServer.PathResourceHandler.class);
             addJettyToZip(zs);
             addDirToZip(zs, file(input), "src");
+            addDirToZip(zs, target("model/ts"), "target/model/ts");
         }
         return out;
     }
@@ -163,14 +169,13 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     private void generatePackageJson() throws IOException {
-        updateJson(file("package.json"), pack -> {
+        updateJson(working("package.json"), pack -> {
             pack.put("name", mavenProject.getArtifactId());
             pack.put("version", mavenProject.getVersion());
             final Map<String, String> scripts = (Map) pack.merge("scripts", new HashMap<>(), (oldVal, newVal) -> oldVal);
             scripts.put("apikana", "apikana");
             final Map<String, String> devDependencies = (Map) pack.merge("devDependencies", new HashMap<>(), (oldVal, newVal) -> oldVal);
             devDependencies.put("apikana", Version.APIKANA);
-            devDependencies.put("typescript", Version.TYPESCRIPT);
         });
     }
 
@@ -192,22 +197,27 @@ public class GenerateMojo extends AbstractMojo {
                 return;
             }
         }
-//        executeFrontend("npm", configuration(
 //                TODO no path, but just install!!
-//                element("arguments", "install c:/work/projects/apikana-nidi/npm/apikana-" + Version.APIKANA + ".tgz")
-//        ));
-        executeFrontend("npm", configuration(element("arguments", "install")));
+        executeFrontend("npm", configuration(
+                element("arguments", "install c:/work/projects/apikana-nidi/npm/apikana-" + Version.APIKANA + ".tgz")
+        ));
+//        executeFrontend("npm", configuration(element("arguments", "install")));
     }
 
-    private void runApikana(String config) throws MojoExecutionException {
+    private void runApikana() throws MojoExecutionException {
         executeFrontend("npm", configuration(
-                element("arguments", "run apikana " + input + " " + output + " -- --javaPackage=" + javaPackage + " --deploy=" + deploy + " --config=" + config)
+                element("arguments", "run apikana " +
+                        relative(working(""), file(input)) + " " +
+                        relative(working(""), file(output)) +
+                        " -- --javaPackage=" + javaPackage +
+                        " --deploy=" + deploy +
+                        " --config=properties.json")
         ));
     }
 
     private void executeFrontend(String goal, Xpp3Dom config) throws MojoExecutionException {
         final String rc = new File(".npmrc").exists() ? "--userconfig .npmrc " : "";
-        config.addChild(element("workingDirectory", mavenProject.getBasedir().getAbsolutePath()).toDom());
+        config.addChild(element("workingDirectory", working("").getAbsolutePath()).toDom());
         final Xpp3Dom arguments = config.getChild("arguments");
         if (arguments != null) {
             arguments.setValue(rc + arguments.getValue());
