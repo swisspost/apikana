@@ -19,71 +19,25 @@ $ = function (f) {
 
     Handlebars.templates.signature = Handlebars.compile('{{sanitize signature}}');
 
-    // fetch('vendor/lib.d.ts').then(function (res) {
-    //     return res.text();
-    // }).then(function (lib) {
-    //     typescript.sys.addFile('lib.d.ts', lib);
-    // var prg = tjs.programFromConfig('tsconfig.json');
     var path = '/rest/openapi/';
 
-    function simpleRefs(def) {
-        for (var prop in def) {
-            var v = def[prop];
-            if (prop === '$ref') {
-                def[prop] = v.replace('/definitions', '');
-            }
-            if (typeof v === 'object') {
-                simpleRefs(v);
-            }
-        }
-    }
-
-    // require(['vendor/typson-schema'], function (typson) {
     fetchApi().then(function (json) {
         spec = json;
         spec.tsModels = spec.tsModels || [];
         spec.definitions = spec.definitions || {};
-        var models = spec.tsModels.length;
-        var compilerArgs = {};
-        if (typescript.sys.fileExists('src/model/ts/tsconfig.json')) {
-            var config = JSON.parse(typescript.sys.readFile('src/model/ts/tsconfig.json'));
-            if (config.compilerOptions) {
-                compilerArgs.baseUrl = 'src/model/ts/' + config.compilerOptions.baseUrl;
-            }
+        var files = [];
+        for (var i = 0; i < spec.tsModels.length; i++) {
+            files.push('src' + path + spec.tsModels[i]);
         }
-        spec.tsModels.forEach(function (model) {
-            var prg = tjs.getProgramFromFiles(['src' + path + model], compilerArgs);
-            var schema = tjs.generateSchema(prg, '*');
-            simpleRefs(schema.definitions);
-            for (var def in schema.definitions) {
-                schema.definitions[def].id = def;
-                spec.definitions[def] = schema.definitions[def];
-            }
-            loaded();
-        });
-
-        // typson.definitions('src' + path + spec.tsModels[i], '#').then(
-        //     function (schema) {
-        //         for (var def in schema) {
-        //             spec.definitions[def] = schema[def];
-        //         }
-        //         loaded();
-        //     }, function (fail) {
-        //         loaded();
-        //     });
-
-
-        function loaded() {
-            models--;
-            if (models === 0) {
-                _ = lodash;  //restore lodash
-                f();
-            }
+        var schema = schemaGen.generate('src/model/ts/tsconfig.json', files);
+        for (var def in schema.definitions) {
+            spec.definitions[def] = schema.definitions[def];
         }
+        _ = lodash;  //restore lodash
+        f();
     }).catch(function (err) {
         alert('Problem loading api: ' + err);
     });
-    // });
 
     function fetchApi() {
         return fetch('src' + path + 'api.json').then(function (res) {
@@ -124,9 +78,6 @@ $ = function (f) {
         }
         return text;
     }
-
-    // });
-
 };
 
 

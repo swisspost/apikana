@@ -1,6 +1,7 @@
 window.docson = require('docson');
 window.tjs = require('typescript-json-schema');
 window.typescript = require('typescript');
+
 window.typescript.sys = (function () {
     var files = {};
 
@@ -9,12 +10,17 @@ window.typescript.sys = (function () {
             f = 'vendor/lib.d.ts';
         }
         if (files[f]) {
-            return files[f];
+            var res = files[f];
+            delete files[f];
+            return res;
         }
         var request = new XMLHttpRequest();
         request.open('GET', f, false);
         request.send(null);
-        return request.status === 200 ? files[f] = request.responseText : null;
+        if (request.status === 200) {
+            return files[f] = request.responseText;
+        }
+        return null;
     }
 
     return {
@@ -52,3 +58,5 @@ window.typescript.sys = (function () {
         }
     };
 }());
+
+window.schemaGen = require('./schema-gen');

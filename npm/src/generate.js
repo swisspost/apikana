@@ -46,21 +46,45 @@ module.exports = {
             }
         }
 
-        gulp.task('copy-swagger', function () {
+        function task(name, deps, func) {
+            if (!func) {
+                func = deps;
+                deps = [];
+            }
+            gulp.task(name, deps, function () {
+                var start = Date.now();
+                var first;
+                // log('start', colors.blue(name));
+                return func()
+                    .on('readable', function () {
+                        if (!first) {
+                            first = Date.now();
+                        }
+                    })
+                    .on('finish', function () {
+                        log('Done', colors.blue(name), 'in', first ? (Date.now() - first) / 1000 : '?', 's');
+                    })
+                    .on('error', function (err) {
+                        log('Error in', colors.blue(name), colors.red(err));
+                    });
+            })
+        }
+
+        task('copy-swagger', function () {
             return module('swagger-ui/dist/**').pipe(gulp.dest(uiPath));
         });
 
-        gulp.task('copy-custom', function () {
+        task('copy-custom', function () {
             return gulp.src('**/*.css', {cwd: source}).pipe(gulp.dest('custom', {cwd: uiPath}));
         });
 
-        gulp.task('copy-package', function () {
+        task('copy-package', function () {
             return require('./generate-env').generate(
                 gulp.src('package.json', {cwd: base}),
                 gulp.dest('patch', {cwd: uiPath}));
         });
 
-        gulp.task('copy-deps', function () {
+        task('copy-deps', function () {
             module(['typson//requirejs/require.js', 'yamljs/dist/yaml.js'])
                 .pipe(gulp.dest('patch', {cwd: uiPath}));
             module(['object-path/index.js'])
@@ -69,20 +93,20 @@ module.exports = {
             return gulp.src('src/deps/*.js', {cwd: apikanaPath}).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
-        gulp.task('browserify-docson', function () {
-            return require('./generate-docson').generate(
-                path.resolve(apikanaPath, 'src/docson.js'),
+        task('browserify', function () {
+            return require('./generate-browserify').generate(
+                path.resolve(apikanaPath, 'src/browserify.js'),
                 gulp.dest('patch', {cwd: uiPath}));
         });
 
-        gulp.task('inject-css', ['copy-swagger', 'copy-custom', 'copy-deps', 'copy-package', 'browserify-docson'], function () {
+        task('inject-css', ['copy-swagger', 'copy-custom', 'copy-deps', 'copy-package', 'browserify'], function () {
             return gulp.src('index.html', {cwd: uiPath})
                 .pipe(inject(gulp.src('custom/**/*.css', {cwd: uiPath, read: false}), {
                     relative: true,
                     starttag: "<link href='css/print.css' media='print' rel='stylesheet' type='text/css'/>",
                     endtag: '<script '
                 }))
-                .pipe(inject(gulp.src(['helper.js', 'docson.js', 'object-path.js', 'require.js', 'variables.js', 'yaml.js'], {
+                .pipe(inject(gulp.src(['helper.js', 'browserify.js', 'object-path.js', 'require.js', 'variables.js', 'yaml.js'], {
                     cwd: uiPath + '/patch',
                     read: false
                 }), {
@@ -95,20 +119,22 @@ module.exports = {
                 .pipe(gulp.dest(uiPath));
         });
 
-        gulp.task('copy-deps-unref', function () {
-            module('traverse/index.js')
-                .pipe(rename('traverse.js'))
-                .pipe(replace('module.exports =', ''))
-                .pipe(gulp.dest('vendor', {cwd: uiPath}));
+        task('copy-deps-unref', function () {
+            // module('traverse/index.js')
+            //     .pipe(rename('traverse.js'))
+            //     .pipe(replace('module.exports =', ''))
+            //     .pipe(gulp.dest('vendor', {cwd: uiPath}));
             return module([
-                'typson/lib/typson-schema.js', 'typson//underscore/underscore.js', 'typson//q/q.js',
-                'traverse/traverse.js', 'typson//superagent/superagent.js', 'typson/lib/typson.js', 'typson/vendor/typescriptServices.js',
+               /* 'typson/lib/typson-schema.js', 'typson//underscore/underscore.js', 'typson//q/q.js',
+                'traverse/traverse.js', 'typson//superagent/superagent.js', 'typson/lib/typson.js', 'typson/vendor/typescriptServices.js',*/
                 'typescript/lib/lib.d.ts'])
                 .pipe(gulp.dest('vendor', {cwd: uiPath}));
         });
 
+        //
+        //needed?
         var referencedModels = [];
-        gulp.task('referenced-models', function () {
+        task('referenced-models', function () {
             return gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source})
                 .pipe(through.obj(function (file, enc, cb) {
                     var api = fileContents(file);
@@ -119,32 +145,30 @@ module.exports = {
                 }));
         });
 
-        gulp.task('generate-schema', ['referenced-models'], function () {
-            referencedModels.push('model/ts/**/*.ts');
-            return require('./generate-schema').generate(
-                gulp.src(referencedModels, {cwd: source}),
-                function () {
-                    return gulp.dest(dest);
-                });
-        });
-
         function fileContents(file) {
             var raw = file.contents.toString();
             return file.path.substring(file.path.lastIndexOf('.') + 1) === 'yaml'
                 ? yaml.parse(raw) : JSON.parse(raw);
         }
 
+        task('generate-schema', ['referenced-models'], function () {
+            referencedModels.push('model/ts/**/*.ts');
+            return require('./generate-schema').generate(
+                path.resolve(source, 'model/ts/tsconfig.json'),
+                gulp.src(referencedModels, {cwd: source}), dest);
+        });
 
-        gulp.task('generate-constants', function () {
+        task('generate-constants', function () {
             return require('./generate-constants').generate(
                 gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source}),
                 gulp.dest('model/java', {cwd: dest}));
         });
 
-        gulp.task('copy-src', function () {
+        task('copy-src', function () {
             if (gutil.env.deploy && gutil.env.deploy != 'false') {
                 return gulp.src('**/*', {cwd: source}).pipe(gulp.dest('src', {cwd: uiPath}));
             }
+            return gulp.src([]);
         });
 
         // gulp.task('generate-tsconfig', function () {
@@ -171,8 +195,7 @@ module.exports = {
         //         .pipe(gulp.dest(''));
         // });
 
-
-        gulp.start(['inject-css', 'copy-deps-unref', 'generate-schema', 'generate-constants', 'copy-src'/*, 'generate-tsconfig'*/]);
+        gulp.start();
     }
 };
 

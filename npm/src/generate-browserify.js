@@ -10,9 +10,8 @@ module.exports = {
         return browserify(source, {
             transform: [brfs]
         }).bundle()
-            .pipe(sourceStream('docson.js'))
+            .pipe(sourceStream('browserify.js'))
             .pipe(buffer())
-            .on('error', gutil.log)
             .pipe(dest);
     }
 };
