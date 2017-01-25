@@ -1,6 +1,6 @@
 {
   "name": "apikana",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Integrated tools for REST API design - ｱﾋﾟ",
   "main": "index.js",
   "bin": {
@@ -25,6 +25,9 @@
     "contract-first"
   ],
   "author": "Laurent Bovet",
+  "contributors": [
+    "Stefan Niederhauser"
+  ],
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/lbovet/apikana/issues"
@@ -41,7 +44,6 @@
     "gulp-util": "3.0.8",
     "node-http-server": "6.2.1",
     "object-path": "0.11.3",
-    "source-map-support": "0.4.10",
     "swagger-ui": "2.2.10",
     "through2": "2.0.3",
     "traverse": "0.6.6",

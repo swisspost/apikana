@@ -13,10 +13,12 @@ module.exports = {
         mkdir(schemaDir('v4'));
 
         var files = [];
-        return source.pipe(through.obj(function (file, enc, cb) {
-            files.push(file.path);
-            cb();
-        })).on('finish', generateSchemas);
+        return source
+            .pipe(through.obj(function (file, enc, cb) {
+                files.push(file.path);
+                cb();
+            }))
+            .on('finish', generateSchemas);
 
         function generateSchemas() {
             var schemas = schemaGen.generate(tsconfig, files);

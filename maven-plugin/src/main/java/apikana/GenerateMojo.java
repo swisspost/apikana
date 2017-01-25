@@ -13,12 +13,14 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.jar.Attributes;
 import java.util.jar.*;
 
@@ -30,11 +32,11 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 public class GenerateMojo extends AbstractMojo {
     private static class Version {
         static final String
-                APIKANA = "0.1.0",
+                APIKANA = "0.1.2",
                 TYPESCRIPT = "^2.1.0";
     }
 
-    private static final String TS_DIR = "/model/ts/";
+    private static final String TS_DIR = "model/ts/";
 
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject mavenProject;
@@ -93,7 +95,7 @@ public class GenerateMojo extends AbstractMojo {
             while (entries.hasMoreElements()) {
                 final JarEntry entry = entries.nextElement();
                 if (!entry.isDirectory() && entry.getName().startsWith(TS_DIR)) {
-                    final File modelFile = target(entry.getName());
+                    final File modelFile = target(TS_DIR + a.getArtifactId() + entry.getName().substring(TS_DIR.length() - 1));
                     modelFile.getParentFile().mkdirs();
                     try (final FileOutputStream out = new FileOutputStream(modelFile)) {
                         copy(jar.getInputStream(entry), out);
@@ -104,20 +106,18 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     private void configTypescript() throws IOException {
-        final File configFile = file(input + TS_DIR + "tsconfig.json");
-        if (!configFile.exists()) {
-            try (final Writer out = new OutputStreamWriter(new FileOutputStream(configFile))) {
-                out.write("{}");
-            }
-        }
-        final Map<String, Object> config = new ObjectMapper().readValue(configFile, Map.class);
-        Map<String, Object> compilerOptions = (Map) config.get("compilerOptions");
-        if (compilerOptions == null) {
-            compilerOptions = new HashMap<>();
-            config.put("compilerOptions", compilerOptions);
-        }
-        compilerOptions.put("baseUrl", configFile.getParentFile().toPath().relativize(target(TS_DIR).toPath()).toString().replace('\\', '/'));
-        new ObjectMapper().writer().withDefaultPrettyPrinter().writeValue(configFile, config);
+        final File file = file(input + "/" + TS_DIR + "tsconfig.json");
+        updateJson(file, config -> {
+            final Map<String, Object> compilerOptions = (Map) config.merge("compilerOptions", new HashMap<>(), (oldVal, newVal) -> oldVal);
+            compilerOptions.put("baseUrl", file.getParentFile().toPath().relativize(target(TS_DIR).toPath()).toString().replace('\\', '/'));
+        });
+    }
+
+    private void updateJson(File file, Consumer<Map<String, Object>> updater) throws IOException {
+        final ObjectMapper mapper = new ObjectMapper();
+        final Map<String, Object> json = file.exists() ? mapper.readValue(file, Map.class) : new HashMap<>();
+        updater.accept(json);
+        mapper.writer().withDefaultPrettyPrinter().writeValue(file, json);
     }
 
     private File file(String name) {
@@ -163,20 +163,15 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     private void generatePackageJson() throws IOException {
-        final File file = file("package.json");
-        if (!file.exists()) {
-            try (final PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-                out.println("{");
-                out.println("  \"name\": \"" + mavenProject.getArtifactId() + "\",");
-                out.println("  \"version\": \"" + mavenProject.getVersion() + "\",");
-                out.println("  \"scripts\": {\"apikana\": \"apikana\"},");
-                out.println("  \"devDependencies\": {");
-                out.println("    \"apikana\": \"" + Version.APIKANA + "\",");
-                out.println("    \"typescript\": \"" + Version.TYPESCRIPT + "\",");
-                out.println("  }");
-                out.println("}");
-            }
-        }
+        updateJson(file("package.json"), pack -> {
+            pack.put("name", mavenProject.getArtifactId());
+            pack.put("version", mavenProject.getVersion());
+            final Map<String, String> scripts = (Map) pack.merge("scripts", new HashMap<>(), (oldVal, newVal) -> oldVal);
+            scripts.put("apikana", "apikana");
+            final Map<String, String> devDependencies = (Map) pack.merge("devDependencies", new HashMap<>(), (oldVal, newVal) -> oldVal);
+            devDependencies.put("apikana", Version.APIKANA);
+            devDependencies.put("typescript", Version.TYPESCRIPT);
+        });
     }
 
     private void installNode() throws MojoExecutionException {
@@ -197,14 +192,11 @@ public class GenerateMojo extends AbstractMojo {
                 return;
             }
         }
-        executeFrontend("npm", configuration(
-//                TODO no path, but just install!!
-                element("arguments", "install c:/work/projects/apikana-nidi/npm/apikana-" + Version.APIKANA + ".tgz")
-        ));
 //        executeFrontend("npm", configuration(
 //                TODO no path, but just install!!
-//                element("arguments", "install")
+//                element("arguments", "install c:/work/projects/apikana-nidi/npm/apikana-" + Version.APIKANA + ".tgz")
 //        ));
+        executeFrontend("npm", configuration(element("arguments", "install")));
     }
 
     private void runApikana(String config) throws MojoExecutionException {

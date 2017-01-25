@@ -6,10 +6,12 @@ var buffer = require('vinyl-buffer');
 var gutil = require('gulp-util');
 
 module.exports = {
-    generate: function (source,dest) {
+    generate: function (source, dest) {
         return browserify(source, {
             transform: [brfs]
-        }).bundle()
+        })
+            .ignore('source-map-support')
+            .bundle()
             .pipe(sourceStream('browserify.js'))
             .pipe(buffer())
             .pipe(dest);

@@ -18,8 +18,10 @@ exports = {
         type = type || '*';
         var prg = tjs.getProgramFromFiles(files, compilerOpts());
         var schema = tjs.generateSchema(prg, type, generatorOpts());
-        addIds(schema, type === '*');
-        cleanRefs(schema, type === '*');
+        if (schema) {
+            addIds(schema, type === '*');
+            cleanRefs(schema, type === '*');
+        }
         return schema;
 
         function compilerOpts() {
@@ -67,4 +69,4 @@ exports = {
     }
 };
 
-if(module)module.exports=exports;
+if (module)module.exports = exports;
