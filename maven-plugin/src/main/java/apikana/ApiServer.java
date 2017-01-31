@@ -20,23 +20,10 @@ public class ApiServer {
     public static void main(String[] args) throws Exception {
         try (Writer out = new OutputStreamWriter(new FileOutputStream(new File("log.txt")))) {
             try {
-                //preload classes needed for shutdown, they can be unavailable when jar file has changed while server ran
-                UrlEncoded.class.toString();
-                FutureCallback.class.toString();
+                preloadClasses();
+
                 final Server server = new Server(PORT);
-                final ResourceHandler uiResource = new ResourceHandler();
-                uiResource.setBaseResource(Resource.newClassPathResource("/ui")); // / -> /ui
-                final ResourceHandler srcResource = new PathResourceHandler("/src"); // /src -> /src
-                srcResource.setBaseResource(Resource.newClassPathResource("/src"));
-                final ResourceHandler targetResource = new PathResourceHandler("/target/model"); // /src -> /src
-                targetResource.setBaseResource(Resource.newClassPathResource("/target/model"));
-
-                HandlerList handlers = new HandlerList();
-                handlers.setHandlers(new Handler[]{
-                        uiResource, srcResource, targetResource,
-                        new ShutdownHandler("666", true, true), new DefaultHandler()});
-                server.setHandler(handlers);
-
+                server.setHandler(createHandlers());
                 server.start();
                 Desktop.getDesktop().browse(new URI("http://localhost:" + PORT));
                 server.join();
@@ -44,6 +31,28 @@ public class ApiServer {
                 e.printStackTrace(new PrintWriter(out));
             }
         }
+    }
+
+    private static HandlerList createHandlers() {
+        final ResourceHandler uiResource = new ResourceHandler();
+        uiResource.setBaseResource(Resource.newClassPathResource("/ui")); // / -> /ui
+        final ResourceHandler srcResource = new PathResourceHandler("/src"); // /src -> /src
+        srcResource.setBaseResource(Resource.newClassPathResource("/src"));
+        final ResourceHandler targetResource = new PathResourceHandler("/target/model"); // /src -> /src
+        targetResource.setBaseResource(Resource.newClassPathResource("/target/model"));
+
+        final HandlerList handlers = new HandlerList();
+        handlers.setHandlers(new Handler[]{
+                uiResource, srcResource, targetResource,
+                new ShutdownHandler("666", true, true), new DefaultHandler()});
+        return handlers;
+    }
+
+    private static void preloadClasses() throws ClassNotFoundException {
+        //preload classes needed for shutdown, they can be unavailable when jar file has changed while server ran
+        UrlEncoded.class.toString();
+        FutureCallback.class.toString();
+        Class.forName("org.eclipse.jetty.server.handler.ShutdownHandler$1");
     }
 
     static class PathResourceHandler extends ResourceHandler {

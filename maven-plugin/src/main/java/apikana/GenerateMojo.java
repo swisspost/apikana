@@ -188,7 +188,7 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     private void installApikana() throws IOException, MojoExecutionException {
-        final File apikanaPackage = file("node_modules/apikana/package.json");
+        final File apikanaPackage = working("node_modules/apikana/package.json");
         if (apikanaPackage.exists()) {
             Map pack = new ObjectMapper().readValue(apikanaPackage, Map.class);
             final String version = (String) pack.get("version");
