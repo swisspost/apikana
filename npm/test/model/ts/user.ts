@@ -11,12 +11,17 @@ interface User {
      */
     id: number
     /**
+     * the given name
      * @pattern [a-z]
+     *
      */
-    firstName: string //the given name
-    lastName: string //the family name
+    firstName: string
+    lastName: string // the family name @pattern [A-Z]
     /**
+     * @type integer
      * @format integer
+     * @pattern bla
+     * @bla blu
      */
     age?: number
     parent?: User

@@ -6,7 +6,7 @@ if (!readFile.patched) {
     typescript.sys.readFile = function (name) {
         var file = readFile(name);
         if (name.substring(name.length - 3) === '.ts' && name.substring(name.length - 5) !== '.d.ts') {
-            file = file.replace(/^([^\/\n]+)\/\/([^\n]+)$/gm, "/** $2 */ $1 ");
+            file = file.replace(/^([^\/\n]+)\/\/([^\n]+)$/gm, '/** $2 */ $1 ');
         }
         return file;
     };
