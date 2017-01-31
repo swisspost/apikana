@@ -26,7 +26,7 @@ module.exports = {
                         prefix = prefix.substring(0, prefix.lastIndexOf('/', prefix.length - 1) + 1);
                     }
                 }
-                var pathsName = classOf(prefix) + 'Paths';
+
                 for (var path in api.paths) {
                     var elems = path.substring(prefix.length).split('/');
                     var m = model;
@@ -45,8 +45,12 @@ module.exports = {
                     m['/end'] = true;
                 }
 
+                if (prefix.charAt(0) === '/') {
+                    prefix = prefix.substring(1);
+                }
+                var pathsName = classOf(prefix) + 'Api';
                 contents += 'public class ' + pathsName + ' {\n' +
-                    '    private static final String BASE_URL = "' + (api.basePath || '') + '";\n' +
+                    '    public static final String BASE_URL = "' + (api.basePath || '') + '";\n' +
                     '    private static abstract class Path {\n' +
                     '        public abstract String path();\n' +
                     '        public String url() {\n' +
@@ -57,7 +61,7 @@ module.exports = {
                     '        }\n' +
                     '    }\n';
 
-                write(model, prefix, 1);
+                write(model, prefix.substring(0, prefix.length - 1), prefix, 1);
                 contents += '}';
 
                 this.push(new gutil.File({
@@ -107,7 +111,7 @@ module.exports = {
                 return a.substring(0, i);
             }
 
-            function write(obj, parent, level) {
+            function write(obj, path, parent, level) {
                 function line(s) {
                     contents += pad(level) + s + '\n';
                 }
@@ -131,21 +135,24 @@ module.exports = {
                                 ? '(' + javaType(param) + ' ' + fieldOf(name) + '){ this.value = ' + fieldOf(name) + '; }'
                                 : '(){}');
 
+                        var pathElem = param ? 'value' : ('"' + name + '"');
                         var pathMethod = (endpoint ? 'public' : 'private') + ' String path() { return ' +
                             (level === 1
-                                ? '"' + parent + name + '"; }'
-                                : classOf(parent) + '.this.path() + "/' + name + '"; }');
+                                ? '"' + parent + '" + ' + pathElem + '; }'
+                                : classOf(parent) + '.this.path() + "/" + ' + pathElem + '; }');
 
                         line(child);
                         line('public ' + stat + 'class ' + classOf(name) + (endpoint ? ' extends Path' : '') + ' {');
 
                         level++;
+                        var newPath = path + '/' + (param ? '{' + name + '}' : name);
+                        line('public static final String PATH = "' + newPath + '";');
                         if (param) {
                             line('private final ' + javaType(param) + ' value;');
                         }
                         line(constructor);
                         line(pathMethod);
-                        write(obj[name], name, level);
+                        write(obj[name], newPath, name, level);
                         level--;
 
                         line('}');
