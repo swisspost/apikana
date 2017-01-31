@@ -9,6 +9,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build":"browserify src/browserify.js -t brfs -i source-map-support > dist/browserify.js",
     "test-build": "node bin/apikana test test-dist --javaPackage=apikana.test --env=dev",
     "test-deploy": "node bin/apikana test test-deploy --javaPackage=apikana.test --env=dev --deploy",
     "test-serve": "node bin/apikana-serve test test-dist --env=dev"
@@ -34,9 +35,6 @@
   },
   "homepage": "https://github.com/lbovet/apikana#readme",
   "dependencies": {
-    "brfs": "1.4.3",
-    "browserify": "13.0.0",
-    "docson": "1.0.2",
     "gulp": "3.9.1",
     "gulp-inject": "4.2.0",
     "gulp-rename": "1.2.2",
@@ -51,5 +49,10 @@
     "vinyl-buffer": "1.0.0",
     "vinyl-source-stream": "1.1.0",
     "yamljs": "0.2.8"
+  },
+  "devDependencies":{
+    "browserify": "13.0.0",
+    "brfs": "1.4.3",
+    "docson": "1.0.2"
   }
 }

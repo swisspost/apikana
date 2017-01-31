@@ -25,6 +25,12 @@ $ = function (f) {
         spec = json;
         spec.tsModels = spec.tsModels || [];
         spec.definitions = spec.definitions || {};
+        //keep swagger ui happy
+        for (var p in spec.paths) {
+            if (spec.paths[p] === null) {
+                spec.paths[p] = {};
+            }
+        }
         var files = [];
         for (var i = 0; i < spec.tsModels.length; i++) {
             files.push('src' + path + spec.tsModels[i]);
