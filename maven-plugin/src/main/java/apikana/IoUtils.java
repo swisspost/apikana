@@ -57,6 +57,10 @@ class IoUtils {
 
 
     public static void addDirToZip(ZipOutputStream zs, File source, String target) throws IOException {
+        if (!source.exists()){
+            return;
+        }
+
         //add directory entries for all parents
         int pos = 0;
         while (true) {
@@ -66,9 +70,10 @@ class IoUtils {
             }
             addDirEntryToZip(zs, target.substring(0, pos));
         }
-        final Path pp = source.toPath();
-        Files.walk(pp).forEach(path -> {
-            final String name = target + "/" + pp.relativize(path).toString().replace('\\', '/');
+
+        final Path sourcePath = source.toPath();
+        Files.walk(sourcePath).forEach(path -> {
+            final String name = target + "/" + sourcePath.relativize(path).toString().replace('\\', '/');
             try {
                 if (Files.isDirectory(path)) {
                     addDirEntryToZip(zs, name);

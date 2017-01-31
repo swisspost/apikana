@@ -7,7 +7,7 @@ window.typescript.sys = (function () {
 
     function readFile(f) {
         if (f === 'lib.d.ts') {
-            f = 'vendor/lib.d.ts';
+            f = 'patch/lib.d.ts';
         }
         if (files[f]) {
             var res = files[f];

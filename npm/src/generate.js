@@ -85,19 +85,18 @@ module.exports = {
         });
 
         task('copy-deps', function () {
-            module([/*'typson//requirejs/require.js',*/ 'yamljs/dist/yaml.js'])
-                .pipe(gulp.dest('patch', {cwd: uiPath}));
+            module(['yamljs/dist/yaml.js']).pipe(gulp.dest('patch', {cwd: uiPath}));
             module(['object-path/index.js'])
                 .pipe(rename('object-path.js'))
                 .pipe(gulp.dest('patch', {cwd: uiPath}));
             return gulp.src('src/deps/*.js', {cwd: apikanaPath}).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
-        task('copy-browserify', function () {
-            return gulp.src('dist/*.js', {cwd: apikanaPath}).pipe(gulp.dest('patch',{cwd:uiPath}));
+        task('copy-lib', function () {
+            return gulp.src('lib/*.js', {cwd: apikanaPath}).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
-        task('inject-css', ['copy-swagger', 'copy-custom', 'copy-deps', 'copy-package', 'copy-browserify'], function () {
+        task('inject-css', ['copy-swagger', 'copy-custom', 'copy-deps', 'copy-package', 'copy-lib'], function () {
             return gulp.src('index.html', {cwd: uiPath})
                 .pipe(inject(gulp.src('custom/**/*.css', {cwd: uiPath, read: false}), {
                     relative: true,
@@ -118,15 +117,7 @@ module.exports = {
         });
 
         task('copy-deps-unref', function () {
-            // module('traverse/index.js')
-            //     .pipe(rename('traverse.js'))
-            //     .pipe(replace('module.exports =', ''))
-            //     .pipe(gulp.dest('vendor', {cwd: uiPath}));
-            return module([
-                /* 'typson/lib/typson-schema.js', 'typson//underscore/underscore.js', 'typson//q/q.js',
-                 'traverse/traverse.js', 'typson//superagent/superagent.js', 'typson/lib/typson.js', 'typson/vendor/typescriptServices.js',*/
-                'typescript-json-schema//typescript/lib/lib.d.ts'])
-                .pipe(gulp.dest('vendor', {cwd: uiPath}));
+            return module(['typescript/lib/lib.d.ts']).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
         //

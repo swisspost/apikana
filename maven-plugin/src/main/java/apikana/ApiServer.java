@@ -53,6 +53,7 @@ public class ApiServer {
         UrlEncoded.class.toString();
         FutureCallback.class.toString();
         Class.forName("org.eclipse.jetty.server.handler.ShutdownHandler$1");
+        Class.forName("org.eclipse.jetty.io.ManagedSelector$CloseEndPoints");
     }
 
     static class PathResourceHandler extends ResourceHandler {
