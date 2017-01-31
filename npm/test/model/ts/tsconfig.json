@@ -1,5 +1,5 @@
 {
-  "compilerOptions" : {
-    "baseUrl" : ".."
+  "compilerOptions": {
+    "baseUrl": "../../../node_modules/$api"
   }
 }

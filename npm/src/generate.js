@@ -160,29 +160,41 @@ module.exports = {
             return gulp.src([]);
         });
 
-        // gulp.task('generate-tsconfig', function () {
-        //     var tsconfig = path.resolve(source, 'model/ts/tsconfig.json');
-        //     if (!fs.existsSync(tsconfig)) {
-        //         fs.writeFileSync(tsconfig, '{}');
-        //     }
-        //     return gulp.src(tsconfig)
-        //         .pipe(through.obj(function (file, enc, cb) {
-        //             var config = JSON.parse(file);
-        //             var e = json.compilerOptions;
-        //             if (!e) {
-        //                 e = json.compilerOptions = {};
-        //             }
-        //             if (!e.paths) {
-        //                 e.paths = {};
-        //             }
-        //             if (!e.paths['*']) {
-        //                 e.paths['*'] = {};
-        //             }
-        //
-        //             cb();
-        //         }))
-        //         .pipe(gulp.dest(''));
-        // });
+        task('unpack-apis', function () {
+            return gulp.src('**/node_modules/*/src/model/ts/**/*.ts', {cwd: base, read: true})
+                .pipe(rename(function (path) {
+                    var dir = path.dirname.replace(/\\/g, '/');
+                    dir = dir.substring(dir.lastIndexOf('node_modules/') + 13);
+                    var ms = dir.indexOf('src/model/ts');
+                    dir = dir.substring(0, ms - 1) + dir.substring(ms + 12);
+                    path.dirname = dir;
+                }))
+                .pipe(gulp.dest('$api', {cwd: modulesPath}));
+        });
+
+        task('generate-tsconfig', function () {
+            var tsconfig = path.resolve(source, 'model/ts/tsconfig.json');
+            if (!fs.existsSync(tsconfig)) {
+                fs.writeFileSync(tsconfig, '{}');
+            }
+            return gulp.src(tsconfig)
+                .pipe(through.obj(function (file, enc, cb) {
+                    var config = JSON.parse(file.contents);
+                    var co = config.compilerOptions;
+                    if (!co) {
+                        co = config.compilerOptions = {};
+                    }
+                    var configDir = path.dirname(file.path);
+                    var apiDir = path.resolve(modulesPath, '$api');
+                    co.baseUrl = path.relative(configDir, apiDir).replace(/\\/g, '/');
+                    this.push(new gutil.File({
+                        path: file.path,
+                        contents: new Buffer(JSON.stringify(config, null, 2))
+                    }));
+                    cb();
+                }))
+                .pipe(gulp.dest(''));
+        });
 
         gulp.start();
     }
