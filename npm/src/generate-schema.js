@@ -26,6 +26,13 @@ module.exports = {
                 for (var type in schemas.definitions) {
                     log('Found definition', colors.magenta(type));
                     var schema = schemaGen.generate(tsconfig, files, type);
+                    //TODO move some manipulations from convertToV3 up here
+                    traverse(schema).forEach(function (value) {
+                        if (this.key === '$ref' && value.substring(0, 14) === '#/definitions/') {
+                            this.update(schemaName(value.substring(14)));
+                        }
+                    });
+                    schema.definitions = [];
                     fs.writeFileSync(schemaFile(type, 'v4'), JSON.stringify(schema, null, 2));
                     convertToV3(schema);
                     fs.writeFileSync(schemaFile(type, 'v3'), JSON.stringify(schema, null, 2));
@@ -41,7 +48,11 @@ module.exports = {
         }
 
         function schemaFile(type, version) {
-            return path.resolve(schemaDir(version), type.toLowerCase() + '.json');
+            return path.resolve(schemaDir(version), schemaName(type));
+        }
+
+        function schemaName(type) {
+            return type.replace(/([^^])([A-Z]+)/g, '$1-$2').toLowerCase() + '.json';
         }
 
         function schemaDir(version) {
@@ -59,12 +70,11 @@ module.exports = {
                         value.properties[prop].required = true;
                     }
                 }
-                if (value.type == 'object' && this.path.length === 2 && this.path[0] === 'definitions') {
+                if (this.path.length === 2 && this.path[0] === 'definitions') {
                     value.javaType = javaType(this.key);
-                    value.javaInterfaces = ['java.io.Serializable'];
-                }
-                if (value.enum) {
-                    value.javaType = javaType(value.id);
+                    if (value.type === 'object') {
+                        value.javaInterfaces = ['java.io.Serializable'];
+                    }
                 }
                 this.update(value);
             });

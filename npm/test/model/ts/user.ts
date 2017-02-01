@@ -1,15 +1,22 @@
-import {Company} from "company";
+import {CompanyInfo} from "./company";
 
 interface Users {
     count: number
     data: User[]
 }
 
+enum Gender{
+    MALE, FEMALE
+}
+
+type Int=number // @TJS-type integer
+type UUID=string // @format uuid
+
 interface User {
     /**
      * the id
      */
-    id: number
+    id: UUID
     /**
      * the given name
      * @pattern [a-z]
@@ -17,21 +24,11 @@ interface User {
      */
     firstName: string
     lastName: string // the family name @pattern [A-Z]
-    /**
-     * @type integer
-     * @format integer
-     * @pattern bla
-     * @bla blu
-     */
-    age?: number
+    age?: Int
+    gender: Gender
+    birthday: string
     parent?: User
-    company: Company
+    company: CompanyInfo
 }
 
-type Companies = Company[];
-interface List<T> {
-    values: T[];
-}
-interface UserList extends List<User> {
-}
 
