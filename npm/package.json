@@ -45,8 +45,8 @@
     "swagger-ui": "2.2.10",
     "through2": "2.0.3",
     "traverse": "0.6.6",
-    "typescript": "2.0.10",
-    "typescript-json-schema": "0.3.5",
+    "typescript": "2.1.5",
+    "typescript-json-schema": "0.9.0",
     "vinyl-buffer": "1.0.0",
     "vinyl-source-stream": "1.1.0",
     "yamljs": "0.2.8"
