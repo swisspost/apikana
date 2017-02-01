@@ -31,7 +31,7 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
         requiresDependencyResolution = ResolutionScope.COMPILE)
 public class GenerateMojo extends AbstractMojo {
     private static class Version {
-        static final String APIKANA = "0.1.2";
+        static final String APIKANA = "0.1.3";
     }
 
     private static final String TS_DIR = "model/ts/";
@@ -72,18 +72,24 @@ public class GenerateMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             unpackModelDependencies();
-            configTypescript();
             writeProjectProps();
             installNode();
             generatePackageJson();
             installApikana();
             runApikana();
-            projectHelper.attachArtifact(mavenProject, createApiJar(apiJarFile()), "api");
+            overwriteDependentSchemas();
             mavenProject.addCompileSourceRoot(file(output + "/model/java").getAbsolutePath());
             projectHelper.addResource(mavenProject, file(input).getAbsolutePath(), Arrays.asList("model/**/*"), null);
+            projectHelper.addResource(mavenProject, file(output).getAbsolutePath(), Arrays.asList("model/**/*"), null);
+
+            projectHelper.attachArtifact(mavenProject, createApiJar(apiJarFile()), "api");
         } catch (Exception e) {
             throw new MojoExecutionException("Problem running apikana", e);
         }
+    }
+
+    private void overwriteDependentSchemas() {
+
     }
 
     private void unpackModelDependencies() throws IOException {
@@ -101,14 +107,6 @@ public class GenerateMojo extends AbstractMojo {
                 }
             }
         }
-    }
-
-    private void configTypescript() throws IOException {
-        final File file = file(input + "/" + TS_DIR + "tsconfig.json");
-        updateJson(file, config -> {
-            final Map<String, Object> compilerOptions = (Map) config.merge("compilerOptions", new HashMap<>(), (oldVal, newVal) -> oldVal);
-            compilerOptions.put("baseUrl", relative(file.getParentFile(), target(TS_DIR)));
-        });
     }
 
     private void updateJson(File file, Consumer<Map<String, Object>> updater) throws IOException {
@@ -211,7 +209,8 @@ public class GenerateMojo extends AbstractMojo {
                         relative(working(""), file(output)) +
                         " -- --javaPackage=" + javaPackage +
                         " --deploy=" + deploy +
-                        " --config=properties.json")
+                        " --config=properties.json" +
+                        " --dependencyPath=" + relative(working(""), target(TS_DIR)))
         ));
     }
 
