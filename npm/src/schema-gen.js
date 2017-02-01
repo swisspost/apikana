@@ -6,7 +6,12 @@ if (!readFile.patched) {
     typescript.sys.readFile = function (name) {
         var file = readFile(name);
         if (name.substring(name.length - 3) === '.ts' && name.substring(name.length - 5) !== '.d.ts') {
+            //convert inline comments into jsdoc comments
             file = file.replace(/^([^\/\n]+)\/\/([^\n]+)$/gm, '/** $2 */ $1 ');
+            //make enums use strings
+            file = file.replace(/(enum [^]*?\{)([^]*?\})/gm, function (match, s1, s2) {
+                return s1 + s2.replace(/(.*?)([A-Z_0-9]+)/gm, '$1 $2="$2" as any');
+            });
         }
         return file;
     };
