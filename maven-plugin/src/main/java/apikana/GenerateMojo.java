@@ -34,8 +34,6 @@ public class GenerateMojo extends AbstractMojo {
         static final String APIKANA = "0.1.3";
     }
 
-    private static final String TS_DIR = "model/ts/";
-
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject mavenProject;
 
@@ -77,19 +75,14 @@ public class GenerateMojo extends AbstractMojo {
             generatePackageJson();
             installApikana();
             runApikana();
-            overwriteDependentSchemas();
             mavenProject.addCompileSourceRoot(file(output + "/model/java").getAbsolutePath());
-            projectHelper.addResource(mavenProject, file(input).getAbsolutePath(), Arrays.asList("model/**/*"), null);
-            projectHelper.addResource(mavenProject, file(output).getAbsolutePath(), Arrays.asList("model/**/*"), null);
+            projectHelper.addResource(mavenProject, file(input).getAbsolutePath(), Arrays.asList("model/**/*.ts"), null);
+            projectHelper.addResource(mavenProject, file(output).getAbsolutePath(), Arrays.asList("model/**/*.json"), null);
 
             projectHelper.attachArtifact(mavenProject, createApiJar(apiJarFile()), "api");
         } catch (Exception e) {
             throw new MojoExecutionException("Problem running apikana", e);
         }
-    }
-
-    private void overwriteDependentSchemas() {
-
     }
 
     private void unpackModelDependencies() throws IOException {
@@ -98,13 +91,21 @@ public class GenerateMojo extends AbstractMojo {
             final Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
                 final JarEntry entry = entries.nextElement();
-                if (!entry.isDirectory() && entry.getName().startsWith(TS_DIR)) {
-                    final File modelFile = target(TS_DIR + a.getArtifactId() + entry.getName().substring(TS_DIR.length() - 1));
-                    modelFile.getParentFile().mkdirs();
-                    try (final FileOutputStream out = new FileOutputStream(modelFile)) {
-                        copy(jar.getInputStream(entry), out);
-                    }
-                }
+                copyModel(jar, entry, "ts", a.getArtifactId());
+                copyModel(jar, entry, "json-schema-v3", a.getArtifactId());
+                copyModel(jar, entry, "json-schema-v4", a.getArtifactId());
+            }
+        }
+    }
+
+    private void copyModel(JarFile jar, JarEntry entry, String type, String targetDir) throws IOException {
+        final String sourceName = "model/" + type;
+        if (!entry.isDirectory() && entry.getName().startsWith(sourceName)) {
+            final File modelFile = apiDependencies(type + "/" + targetDir + entry.getName().substring((sourceName).length()));
+            System.out.println(modelFile);
+            modelFile.getParentFile().mkdirs();
+            try (final FileOutputStream out = new FileOutputStream(modelFile)) {
+                copy(jar.getInputStream(entry), out);
             }
         }
     }
@@ -126,6 +127,10 @@ public class GenerateMojo extends AbstractMojo {
 
     private File working(String name) {
         return target("npm/" + name);
+    }
+
+    private File apiDependencies(String name) {
+        return target("api-dependencies/" + name);
     }
 
     private String relative(File base, File f) {
@@ -210,7 +215,7 @@ public class GenerateMojo extends AbstractMojo {
                         " -- --javaPackage=" + javaPackage +
                         " --deploy=" + deploy +
                         " --config=properties.json" +
-                        " --dependencyPath=" + relative(working(""), target(TS_DIR)))
+                        " --dependencyPath=" + relative(working(""), apiDependencies("")))
         ));
     }
 

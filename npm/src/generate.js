@@ -18,7 +18,7 @@ module.exports = {
         var modulesPath = path.resolve(base, 'node_modules');
         var apikanaPath = gutil.env.env === 'dev' ? base : path.resolve(modulesPath, 'apikana');
         var flatModules = gutil.env.env === 'dev' || !fs.existsSync(path.resolve(apikanaPath, 'node_modules'));
-        var dependencyPath = path.resolve(base, gutil.env.dependencyPath || 'node_modules/$api');
+        var dependencyPath = path.resolve(base, gutil.env.dependencyPath || 'node_modules/$api-dependencies');
 
         log('flat: ' + flatModules);
         log('modules: ' + modulesPath);
@@ -141,7 +141,7 @@ module.exports = {
                 ? yaml.parse(raw) : JSON.parse(raw);
         }
 
-        task('generate-schema', ['referenced-models', 'unpack-apis'], function () {
+        task('generate-schema', ['referenced-models', 'unpack-models'], function () {
             referencedModels.push('model/ts/**/*.ts');
             return require('./generate-schema').generate(
                 path.resolve(source, 'model/ts/tsconfig.json'),
@@ -161,16 +161,31 @@ module.exports = {
             return gulp.src([]);
         });
 
-        task('unpack-apis', function () {
-            return gulp.src('**/node_modules/*/src/model/ts/**/*.ts', {cwd: base})
+        task('unpack-models', function () {
+            unpack('dist/model', 'json-schema-v3', '**/*.json');
+            unpack('dist/model', 'json-schema-v4', '**/*.json');
+            return unpack('src/model', 'ts', '**/*.ts');
+        });
+
+        function unpack(baseDir, subDir, pattern) {
+            return gulp.src('**/node_modules/*/' + baseDir + '/' + subDir + '/' + pattern, {cwd: base})
                 .pipe(rename(function (path) {
                     var dir = path.dirname.replace(/\\/g, '/');
                     dir = dir.substring(dir.lastIndexOf('node_modules/') + 13);
-                    var ms = dir.indexOf('src/model/ts');
-                    dir = dir.substring(0, ms - 1) + dir.substring(ms + 12);
+                    var ms = dir.indexOf('/');
+                    dir = subDir + '/' + dir.substring(0, ms);
                     path.dirname = dir;
                 }))
                 .pipe(gulp.dest(dependencyPath));
+        }
+
+        task('overwrite-schemas', ['generate-schema'], function () {
+            return gulp.src('json-schema-v3/**/*.json', {cwd: dependencyPath})
+                .pipe(rename(function (path) {
+                    path.dirname = '';
+                    return path;
+                }))
+                .pipe(gulp.dest('model/json-schema-v3', {cwd: dest}));
         });
 
         task('generate-tsconfig', function () {
@@ -186,7 +201,7 @@ module.exports = {
                         co = config.compilerOptions = {};
                     }
                     var configDir = path.dirname(file.path);
-                    co.baseUrl = path.relative(configDir, dependencyPath).replace(/\\/g, '/');
+                    co.baseUrl = path.relative(configDir, dependencyPath + '/ts').replace(/\\/g, '/');
                     this.push(new gutil.File({
                         path: file.path,
                         contents: new Buffer(JSON.stringify(config, null, 2))
