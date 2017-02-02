@@ -9,8 +9,8 @@ enum Gender{
     MALE, FEMALE
 }
 
-type Int=number // @TJS-type integer
-type UUID=string // @format uuid
+export type Int=number // @TJS-type integer
+export type UUID=string // @format uuid
 
 interface User {
     /**

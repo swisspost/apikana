@@ -43,6 +43,7 @@ exports = {
 
         function generatorOpts() {
             var generateOpt = tjs.getDefaultArgs();
+            generateOpt.useTypeAliasRef=true;
             generateOpt.disableExtraProperties = true;
             generateOpt.generateRequired = true;
             return generateOpt;

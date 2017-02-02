@@ -1,5 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": "../../../node_modules/$api"
+    "baseUrl": "../../../node_modules/$api-dependencies/ts"
   }
 }
