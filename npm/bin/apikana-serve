@@ -13,12 +13,12 @@ if (argc>3){
     target=process.argv[3];
 }
 
-var port=parseInt(gutil.env.port) || 8080;
+var port=parseInt(gutil.env.port) || 8333;
 
-console.log('Base:   ' + base);
-console.log('Source: ' + source);
-console.log('Target: ' + target);
-console.log('URL:    http://localhost:' + port);
-console.log('Env:    ' + JSON.stringify(gutil.env, null, 2));
+gutil.log('Base:   ', base);
+gutil.log('Source: ', source);
+gutil.log('Target: ', target);
+gutil.log('URL:    ', gutil.colors.blue.underline('http://localhost:' + port));
+//gutil.log('Env:    ', JSON.stringify(gutil.env, null, 2));
 
 require('../src/server/server').start(base,source,target,port);

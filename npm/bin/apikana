@@ -23,9 +23,12 @@ if (gutil.env.config){
     }
 }
 
-console.log('Base:   '+base);
-console.log('Source: '+source);
-console.log('Target: '+target);
-console.log('Env:    '+JSON.stringify(gutil.env,null,2));
+var port=parseInt(gutil.env.port) || 8333;
+
+gutil.log('Base:   ', base);
+gutil.log('Source: ', source);
+gutil.log('Target: ', target);
+gutil.log('URL:    ', gutil.colors.blue.underline('http://localhost:' + port));
+//gutil.log('Env:    ', JSON.stringify(gutil.env,null,2));
 
 require('../src/generate').generate(base,path.resolve(base,source),path.resolve(base,target));

@@ -55,7 +55,7 @@ module.exports = {
             gulp.task(name, deps, function () {
                 var start = Date.now();
                 var first;
-                // log('start', colors.blue(name));
+                // log('start', colors.green(name));
                 return func()
                     .on('readable', function () {
                         if (!first) {
@@ -63,10 +63,10 @@ module.exports = {
                         }
                     })
                     .on('finish', function () {
-                        log('Done', colors.blue(name), 'in', first ? (Date.now() - first) / 1000 : '?', 's');
+                        log('Done', colors.green(name), 'in', first ? (Date.now() - first) / 1000 : '?', 's');
                     })
                     .on('error', function (err) {
-                        log('Error in', colors.blue(name), colors.red(err));
+                        log('Error in', colors.green(name), colors.red(err));
                     });
             })
         }
