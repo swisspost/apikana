@@ -15,72 +15,10 @@ if (argc>3){
 
 var port=parseInt(gutil.env.port) || 8080;
 
-var req=require('http').request({port:port,path:'/close'});
-req.on('socket',function(sock){
-    sock.setTimeout(50);
-    sock.on('timeout',function(s){
-        req.abort();
-        start();
-    });
-})
-.on('error',function(err){
-    start();
-})
-.end();
+console.log('Base:   ' + base);
+console.log('Source: ' + source);
+console.log('Target: ' + target);
+console.log('URL:    http://localhost:' + port);
+console.log('Env:    ' + JSON.stringify(gutil.env, null, 2));
 
-var started=false;
-function start(){
-    if (started) return;
-    started=true;
-    console.log('Base:   '+base);
-    console.log('Source: '+source);
-    console.log('Target: '+target);
-    console.log('URL:     http://localhost:'+port);
-    console.log('Env:    '+JSON.stringify(gutil.env,null,2));
-
-    var server=require('node-http-server');
-    server.onRequest=function(req,res,serve){
-       // console.log(req.url);
-
-        if (req.url==='/close'){
-            process.exit();
-        }else{
-            if (route(req,'src/',source)) {}
-            else if (route(req,'',target+'/ui'));
-        }
-        //console.log(req.url);
-    };
-
-    function route(req,from,to){
-        if (startsWith(req.url,'/'+from)){
-            req.url='/'+to+'/'+req.url.substring(from.length+1);
-            return true;
-        }
-        return false;
-    }
-
-    server.deploy({
-        //verbose:true,
-        port: 8080,
-        root: base,
-        server:{
-            index:'index.html',
-            noCache: true
-        },
-        contentType:{
-            html    : 'text/html',
-            ico     : 'image/x-icon',
-            css     : 'text/css',
-            js      : 'text/javascript',
-            png     : 'image/png',
-            json    : 'application/json',
-            yaml    : 'application/yaml',
-            gif     : 'image/gif',
-            ts      : 'text/plain'
-        }
-    });
-
-    function startsWith(s,sub){
-        return s.substring(0,sub.length)===sub;
-    }
-}
+require('../src/server/server').start(base,source,target,port);

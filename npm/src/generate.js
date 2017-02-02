@@ -211,6 +211,14 @@ module.exports = {
                 .pipe(gulp.dest(''));
         });
 
+        task('serve', ['inject-css'], function () {
+            var args = process.argv.slice(1);
+            args[0] += '-serve';
+            var proc = require('child_process').spawn(process.argv[0], args, {detached: true, stdio: 'ignore'});
+            proc.unref();
+            return gulp.src([]);
+        });
+
         gulp.start();
     }
 };
