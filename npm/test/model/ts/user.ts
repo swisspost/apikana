@@ -1,4 +1,5 @@
 import {CompanyInfo} from "./company";
+// import {Gender} from "acorn/gender";
 
 interface Users {
     count: number

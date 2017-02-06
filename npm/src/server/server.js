@@ -1,8 +1,16 @@
 var gutil = require('gulp-util');
 var http = require('http');
+var path = require('path');
 
 module.exports = {
     start: function (base, source, dest, port) {
+        var dependencyPath = gutil.env.dependencyPath || 'node_modules/$api-dependencies';
+        var sourceRelDependencyPath = path.relative(
+            path.resolve(base, source), path.resolve(base, dependencyPath)).replace(/\\/g,'/');
+        while (sourceRelDependencyPath.substring(0, 3) === '../') {
+            sourceRelDependencyPath = sourceRelDependencyPath.substring(3);
+        }
+
         closeOld(startOnce);
 
         function closeOld(then) {
@@ -33,8 +41,8 @@ module.exports = {
                 if (req.url === '/close') {
                     process.exit();
                 } else {
-                    if (route(req, 'src/', source)) {
-                    }
+                    if (route(req, 'src/', source));
+                    else if (route(req, sourceRelDependencyPath, dependencyPath));
                     else if (route(req, '', dest + '/ui'));
                 }
             };
