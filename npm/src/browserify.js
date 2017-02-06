@@ -8,7 +8,11 @@ window.typescript.sys = (function () {
     function readFile(f) {
         if (f === 'lib.d.ts') {
             f = 'patch/lib.d.ts';
+        } else if ((!endsWith(f, '.ts') && !endsWith(f, '.json')) || f.indexOf('@types') >= 0 ||
+            endsWith(f, 'package.json') || endsWith(f, '.d.ts') || endsWith(f, 'index.ts')) {
+            return null;
         }
+
         if (files[f]) {
             var res = files[f];
             delete files[f];
@@ -21,6 +25,10 @@ window.typescript.sys = (function () {
             return files[f] = request.responseText;
         }
         return null;
+    }
+
+    function endsWith(s, end) {
+        return s.substring(s.length - end.length) === end;
     }
 
     return {
@@ -36,7 +44,10 @@ window.typescript.sys = (function () {
             console.log('getCurrentDirectory', arguments);
             return '.';
         },
-        directoryExists: function () {
+        directoryExists: function (f) {
+            if (f.indexOf('@types') >= 0) {
+                return false;
+            }
             console.log('directoryExists', arguments);
             return true;
         },
@@ -53,7 +64,7 @@ window.typescript.sys = (function () {
             return '.';
         },
         fileExists: function (f) {
-            console.log('fileExists', arguments);
+            // console.log('fileExists', arguments);
             return !!readFile(f);
         }
     };
