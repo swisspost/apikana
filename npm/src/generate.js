@@ -144,6 +144,7 @@ module.exports = {
         task('generate-schema', ['referenced-models', 'unpack-models'], function () {
             referencedModels.push('model/ts/**/*.ts');
             return require('./generate-schema').generate(
+                dependencyTypes,
                 path.resolve(source, 'model/ts/tsconfig.json'),
                 gulp.src(referencedModels, {cwd: source}), dest);
         });
@@ -162,12 +163,14 @@ module.exports = {
         });
 
         task('unpack-models', function () {
-            unpack('dist/model', 'json-schema-v3', '**/*.json');
+            unpack('dist/model', 'json-schema-v3', '**/*.json', true);
             unpack('dist/model', 'json-schema-v4', '**/*.json');
             return unpack('src/model', 'ts', '**/*.ts');
         });
 
-        function unpack(baseDir, subDir, pattern) {
+        var dependencyTypes = {};
+
+        function unpack(baseDir, subDir, pattern, storeName) {
             return gulp.src('**/node_modules/*/' + baseDir + '/' + subDir + '/' + pattern, {cwd: base})
                 .pipe(rename(function (path) {
                     var dir = path.dirname.replace(/\\/g, '/');
@@ -175,6 +178,15 @@ module.exports = {
                     var ms = dir.indexOf('/');
                     dir = subDir + '/' + dir.substring(0, ms);
                     path.dirname = dir;
+                    if (storeName) {
+                        var base = path.basename + path.extname;
+                        if (dependencyTypes[base]) {
+                            gutil.log(colors.red('Multiple definitions of type'), colors.magenta(base),
+                                colors.red('in'), colors.magenta([dependencyTypes[base], dir]));
+                            throw new gutil.PluginError('apikana', 'multi definition');
+                        }
+                        dependencyTypes[base] = dir;
+                    }
                 }))
                 .pipe(gulp.dest(dependencyPath));
         }
@@ -211,7 +223,7 @@ module.exports = {
                 .pipe(gulp.dest(''));
         });
 
-        task('serve', ['inject-css'], function () {
+        task('serve'/*, ['inject-css']*/, function () {
             var args = process.argv.slice(1);
             args[0] += '-serve';
             var proc = require('child_process').spawn(process.argv[0], args, {detached: true, stdio: 'ignore'});
