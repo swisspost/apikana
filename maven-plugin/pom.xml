@@ -10,6 +10,10 @@
 
     <name>${project.artifactId}</name>
     <url>https://github.com/lbovet/apikana</url>
+    <inceptionYear>2017</inceptionYear>
+    <prerequisites>
+        <maven>3.1</maven>
+    </prerequisites>
 
     <build>
         <plugins>
@@ -23,33 +27,68 @@
             </plugin>
             <plugin>
                 <artifactId>maven-plugin-plugin</artifactId>
-                <version>3.4</version>
+                <version>3.5</version>
                 <executions>
                     <execution>
-                        <id>default-descriptor</id>
                         <goals>
                             <goal>descriptor</goal>
-                        </goals>
-                        <phase>process-classes</phase>
-                    </execution>
-                    <execution>
-                        <id>help-descriptor</id>
-                        <goals>
                             <goal>helpmojo</goal>
                         </goals>
-                        <phase>process-classes</phase>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.6</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.9</version>
             </plugin>
         </plugins>
     </build>
 
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <version>3.5</version>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <profiles>
+        <profile>
+            <id>site-deploy</id>
+            <build>
+                <defaultGoal>site</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.github</groupId>
+                        <artifactId>site-maven-plugin</artifactId>
+                        <version>0.12</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>site</goal>
+                                </goals>
+                                <phase>site</phase>
+                                <configuration>
+                                    <server>github</server>
+                                    <message>Building site</message>
+                                    <path>site</path>
+                                    <merge>true</merge>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <dependencies>
-        <dependency>
-            <groupId>org.twdata.maven</groupId>
-            <artifactId>mojo-executor</artifactId>
-            <version>2.2.0</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
@@ -62,14 +101,14 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.twdata.maven</groupId>
+            <artifactId>mojo-executor</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.1.8</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.eirslett</groupId>
-            <artifactId>frontend-maven-plugin</artifactId>
-            <version>0.0.22</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
@@ -88,6 +127,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-
 </project>

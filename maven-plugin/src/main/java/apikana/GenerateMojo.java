@@ -13,9 +13,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -46,10 +44,10 @@ public class GenerateMojo extends AbstractMojo {
     @Component
     private MavenProjectHelper projectHelper;
 
-    @Parameter(defaultValue = "7.4.0")
+    @Parameter(defaultValue = "v7.5.0")
     private String nodeVersion;
 
-    @Parameter(defaultValue = "4.1.1")
+    @Parameter(defaultValue = "4.2.0")
     private String npmVersion;
 
     @Parameter
