@@ -100,7 +100,6 @@ public class GenerateMojo extends AbstractMojo {
         final String sourceName = "model/" + type;
         if (!entry.isDirectory() && entry.getName().startsWith(sourceName)) {
             final File modelFile = apiDependencies(type + "/" + targetDir + entry.getName().substring((sourceName).length()));
-            System.out.println(modelFile);
             modelFile.getParentFile().mkdirs();
             try (final FileOutputStream out = new FileOutputStream(modelFile)) {
                 copy(jar.getInputStream(entry), out);
