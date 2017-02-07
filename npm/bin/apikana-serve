@@ -4,7 +4,6 @@ var gutil = require('gulp-util');
 
 var source='src/api';
 var target='dist';
-var base=gutil.env.env==='dev' ? path.resolve(__dirname,'..') : path.resolve(__dirname,'../../..');
 var argc=process.argv.length;
 if (argc>2){
     source=process.argv[2];
@@ -15,10 +14,9 @@ if (argc>3){
 
 var port=parseInt(gutil.env.port) || 8333;
 
-gutil.log('Base:   ', base);
 gutil.log('Source: ', source);
 gutil.log('Target: ', target);
 gutil.log('URL:    ', gutil.colors.blue.underline('http://localhost:' + port));
 //gutil.log('Env:    ', JSON.stringify(gutil.env, null, 2));
 
-require('../src/server/server').start(base,source,target,port);
+require('../src/server/server').start(source,target,port);

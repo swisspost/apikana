@@ -3,10 +3,10 @@ var http = require('http');
 var path = require('path');
 
 module.exports = {
-    start: function (base, source, dest, port) {
+    start: function (source, dest, port) {
         var dependencyPath = gutil.env.dependencyPath || 'node_modules/$api-dependencies';
         var sourceRelDependencyPath = path.relative(
-            path.resolve(base, source), path.resolve(base, dependencyPath)).replace(/\\/g,'/');
+            path.resolve(source), path.resolve(dependencyPath)).replace(/\\/g,'/');
         while (sourceRelDependencyPath.substring(0, 3) === '../') {
             sourceRelDependencyPath = sourceRelDependencyPath.substring(3);
         }
@@ -50,7 +50,7 @@ module.exports = {
             server.deploy({
                 //verbose:true,
                 port: port,
-                root: base,
+                root: '.',
                 server: {
                     index: 'index.html',
                     noCache: true

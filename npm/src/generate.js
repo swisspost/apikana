@@ -13,14 +13,13 @@ var yaml = require('yamljs');
 
 
 module.exports = {
-    generate: function (base, source, dest) {
+    generate: function (source, dest) {
         var uiPath = path.resolve(dest, 'ui');
-        var modulesPath = path.resolve(base, 'node_modules');
-        var apikanaPath = gutil.env.env === 'dev' ? base : path.resolve(modulesPath, 'apikana');
-        var flatModules = gutil.env.env === 'dev' || !fs.existsSync(path.resolve(apikanaPath, 'node_modules'));
-        var dependencyPath = path.resolve(base, gutil.env.dependencyPath || 'node_modules/$api-dependencies');
+        var apikanaPath = path.resolve(__dirname, '..');
+        var privateModules = path.resolve(apikanaPath, 'node_modules');
+        var modulesPath = fs.existsSync(privateModules) ? privateModules : resolve('node_modules');
+        var dependencyPath = path.resolve(gutil.env.dependencyPath || 'node_modules/$api-dependencies');
 
-        log('flat: ' + flatModules);
         log('modules: ' + modulesPath);
 
         if (!nonEmptyDir(path.resolve(source, 'model/ts'))) {
@@ -41,9 +40,7 @@ module.exports = {
         function resolve(pattern) {
             return Array.isArray(pattern) ? pattern.map(doResolve) : doResolve(pattern);
             function doResolve(p) {
-                return path.resolve(modulesPath, flatModules
-                    ? p.replace(/.*?\/\//, '')
-                    : 'apikana/node_modules/' + p.replace(/(.*?)\/\//, '$1/node_modules/'));
+                return path.resolve(modulesPath, p);
             }
         }
 
@@ -82,7 +79,7 @@ module.exports = {
 
         task('copy-package', function () {
             return require('./generate-env').generate(
-                gulp.src('package.json', {cwd: base}),
+                gulp.src('package.json'),
                 gulp.dest('patch', {cwd: uiPath}));
         });
 
@@ -122,7 +119,6 @@ module.exports = {
             return module(['typescript/lib/lib.d.ts']).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
-        //
         //needed?
         var referencedModels = [];
         task('referenced-models', function () {
@@ -172,7 +168,7 @@ module.exports = {
         var dependencyTypes = {};
 
         function unpack(baseDir, subDir, pattern, storeName) {
-            return gulp.src('**/node_modules/*/' + baseDir + '/' + subDir + '/' + pattern, {cwd: base})
+            return gulp.src('**/node_modules/*/' + baseDir + '/' + subDir + '/' + pattern)
                 .pipe(rename(function (path) {
                     var dir = path.dirname.replace(/\\/g, '/');
                     dir = dir.substring(dir.lastIndexOf('node_modules/') + 13);
