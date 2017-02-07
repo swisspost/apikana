@@ -1,0 +1,14 @@
+var chalk=require("chalk"), black=chalk.black, gray=chalk.gray, white=chalk.white; yellow=chalk.yellow; red=chalk.red;
+console.log("                                       "+gray("A")+white("API")+gray("KA")+"     ");
+console.log("     "+white("PIKANAAPIKANA")+"    "+gray("A")+white("NA")+"            "+gray("N")+white("A")+gray("A")+"    "+white("NA")+"    ");
+console.log("               "+gray("N")+white("AA")+"    "+gray("N")+white("AA")+"            "+gray("A")+white("A")+gray("P")+"    "+white("AA")+"    ");
+console.log("         "+white("AP")+"    "+white("AA")+gray("P")+"    "+gray("A")+white("AP")+"    "+gray("A")+white("API")+"      "+gray("I")+white("KAN")+gray("AA")+"     ");
+console.log("         "+white("PI")+"   "+gray("A")+white("AP")+"     "+gray("A")+white("PI")+gray("K")+white("ANAA")+gray("P")+"                   ");
+console.log("         "+white("IK")+"  "+white("AAP")+"      "+gray("P")+white("IK")+gray("AN")+"                       ");
+console.log("         "+white("KA")+gray("N")+white("AA")+gray("P")+"       "+gray("I")+white("KA")+"                         ");
+console.log("        "+gray("K")+white("AN")+"           "+gray("K")+white("AN")+"                         ");
+console.log("        "+white("ANA")+"           "+gray("A")+white("NA")+"                         ");
+console.log("       "+gray("A")+white("NA")+"            "+gray("N")+white("AA")+"                         ");
+console.log("     "+gray("K")+white("AN")+gray("A")+"              "+white("API")+gray("KANAAPI")+"                 ");
+console.log("    "+gray("K")+white("A")+gray("N")+"                 "+gray("IKANAAPIKA")+"        "+red('apikana'));
+console.log();

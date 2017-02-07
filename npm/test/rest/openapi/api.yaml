@@ -33,7 +33,7 @@ paths:
           description: Internal error
       summary: Retrieve a user
       tags:
-        - user
+        - user1
   /sample/v1/users:
     get:
       description: bla
@@ -49,7 +49,7 @@ paths:
           description: internal error
       summary: Get all users.
       tags:
-        - user
+        - user2
     post:
       description: bla
       operationId: postUser
@@ -69,10 +69,10 @@ paths:
           description: internal error
       summary: Add a new user.
       tags:
-        - user
+        - user3
 swagger: 2.0
 tags:
-  - description: user
-    name: user
+  - description: user4
+    name: user5
 tsModels:
   - ../../model/ts/user.ts

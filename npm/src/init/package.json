@@ -1,0 +1,21 @@
+{
+  "name": "",
+  "version": "0.0.1",
+  "description": "An API project.",
+  "scripts": {
+    "start": "apikana src dist --javaPackage=org.pack"
+  },
+  "keywords": [
+    "REST",
+    "API",
+    "design",
+    "documentation",
+    "contract-first"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}

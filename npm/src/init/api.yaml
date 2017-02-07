@@ -1,0 +1,46 @@
+swagger: 2.0
+
+info:
+  title: Pet API
+  description: Pet API description
+  contact:
+    name: Joe Developer
+    email: joe@developers.kom
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: @version@
+
+tags:
+  - name: purpose
+    description: scaffolding
+
+host: server:8080
+basePath: /api-path
+
+paths:
+  /pets:
+    get:
+      summary: All pets
+      description: Returns all pets from the system.
+      tags:
+        - pet
+        - query
+      parameters:
+        - name: search
+          in: query
+          description: A search query for pets.
+          type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: A list of pets.
+          schema:
+            type: array
+            $ref: "#/definitions/Pet"
+        500:
+          description: Pets are dead.
+
+tsModels:
+  - ../../model/ts/pet.ts

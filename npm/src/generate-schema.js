@@ -4,13 +4,14 @@ var log = gutil.log;
 var through = require('through2');
 var traverse = require('traverse');
 var fs = require('fs');
+var fse = require('fs-extra');
 var path = require('path');
 var schemaGen = require('./schema-gen');
 
 module.exports = {
     generate: function (dependencyTypes, tsconfig, source, dest) {
-        mkdir(schemaDir('v3'));
-        mkdir(schemaDir('v4'));
+        fse.mkdirsSync(schemaDir('v3'));
+        fse.mkdirsSync(schemaDir('v4'));
 
         var files = [];
         return source
@@ -45,13 +46,6 @@ module.exports = {
                     convertToV3(schema);
                     fs.writeFileSync(schemaFile(type, 'v3'), JSON.stringify(schema, null, 2));
                 }
-            }
-        }
-
-        function mkdir(p) {
-            if (!fs.existsSync(p)) {
-                mkdir(path.dirname(p));
-                fs.mkdirSync(p);
             }
         }
 

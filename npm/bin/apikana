@@ -3,32 +3,42 @@ var path=require('path');
 var fs=require('fs');
 var gutil = require('gulp-util');
 
-var source='src/api';
-var target='dist';
-var base=gutil.env.env==='dev' ? path.resolve(__dirname,'..') : path.resolve(__dirname,'../../..');
-var argc=process.argv.length;
-if (argc>2){
-    source=process.argv[2];
+require('../src/logo');
+if (fs.existsSync('package.json')){
+    generate();
+}else{
+    console.log('No package.json found. Creating a new project.');
+    require('../src/init/init');
 }
-if (argc>3){
-    target=process.argv[3];
-}
-if (gutil.env.config){
-    var config=fs.readFileSync(path.resolve(base,gutil.env.config));
-    var configObj=JSON.parse(config);
-    for(var prop in configObj){
-        if (!gutil.env[prop]){
-            gutil.env[prop]=configObj[prop];
+
+function generate(){
+    var source='src/api';
+    var target='dist';
+    var base=gutil.env.env==='dev' ? path.resolve(__dirname,'..') : path.resolve(__dirname,'../../..');
+    var argc=process.argv.length;
+    if (argc>2){
+        source=process.argv[2];
+    }
+    if (argc>3){
+        target=process.argv[3];
+    }
+    if (gutil.env.config){
+        var config=fs.readFileSync(path.resolve(base,gutil.env.config));
+        var configObj=JSON.parse(config);
+        for(var prop in configObj){
+            if (!gutil.env[prop]){
+                gutil.env[prop]=configObj[prop];
+            }
         }
     }
+
+    var port=parseInt(gutil.env.port) || 8333;
+
+    gutil.log('Base:   ', base);
+    gutil.log('Source: ', source);
+    gutil.log('Target: ', target);
+    gutil.log('URL:    ', gutil.colors.blue.underline('http://localhost:' + port));
+    //gutil.log('Env:    ', JSON.stringify(gutil.env,null,2));
+
+    require('../src/generate').generate(base,path.resolve(base,source),path.resolve(base,target));
 }
-
-var port=parseInt(gutil.env.port) || 8333;
-
-gutil.log('Base:   ', base);
-gutil.log('Source: ', source);
-gutil.log('Target: ', target);
-gutil.log('URL:    ', gutil.colors.blue.underline('http://localhost:' + port));
-//gutil.log('Env:    ', JSON.stringify(gutil.env,null,2));
-
-require('../src/generate').generate(base,path.resolve(base,source),path.resolve(base,target));
