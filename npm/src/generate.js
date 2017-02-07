@@ -75,7 +75,8 @@ module.exports = {
             return module('swagger-ui/dist/**').pipe(gulp.dest(uiPath));
         });
 
-        task('copy-custom', function () {
+        task('copy-custom', ['copy-swagger'], function () {
+            gulp.src('images/*', {cwd: source}).pipe(gulp.dest('images', {cwd: uiPath}));
             return gulp.src('**/*.css', {cwd: source}).pipe(gulp.dest('custom', {cwd: uiPath}));
         });
 
