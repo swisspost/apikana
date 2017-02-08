@@ -25,6 +25,9 @@ import java.util.jar.*;
 import static apikana.IoUtils.*;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
+/**
+ * Generate JSON schemas and a user documentation in HTML from the given swagger and typescript models.
+ */
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_RESOURCES,
         requiresDependencyResolution = ResolutionScope.COMPILE)
 public class GenerateMojo extends AbstractMojo {
@@ -44,24 +47,45 @@ public class GenerateMojo extends AbstractMojo {
     @Component
     private MavenProjectHelper projectHelper;
 
+    /**
+     * The node version to be used.
+     */
     @Parameter(defaultValue = "v7.5.0")
     private String nodeVersion;
 
+    /**
+     * The npm version to be used.
+     */
     @Parameter(defaultValue = "4.2.0")
     private String npmVersion;
 
+    /**
+     * The url to download npm and node from.
+     */
     @Parameter
     private String downloadRoot;
 
+    /**
+     * The directory with the models and apis.
+     */
     @Parameter(defaultValue = "src")
     private String input;
 
+    /**
+     * The directory with the generated artifacts.
+     */
     @Parameter(defaultValue = "target/api")
     private String output;
 
+    /**
+     * The java package that should be used.
+     */
     @Parameter(defaultValue = "apikana.sample")
     private String javaPackage;
 
+    /**
+     * If the sources should be copied into the output directory.
+     */
     @Parameter()
     private boolean deploy;
 

@@ -13,7 +13,7 @@ enum Gender{
 export type Int=number // @TJS-type integer
 export type UUID=string // @format uuid
 
-interface User {
+export interface User {
     /**
      * the id
      */
