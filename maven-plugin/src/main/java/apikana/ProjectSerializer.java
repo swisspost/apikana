@@ -26,8 +26,7 @@ public class ProjectSerializer {
     private interface BuildMixIn {
     }
 
-
-    public  Map<String, Object> serialize(MavenProject project) throws IOException {
+    public Map<String, Object> serialize(MavenProject project) throws IOException {
         final Map<String, Object> props = new HashMap<>();
         for (final String name : project.getProperties().stringPropertyNames()) {
             props.put(name, project.getProperties().getProperty(name));

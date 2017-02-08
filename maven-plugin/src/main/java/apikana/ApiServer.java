@@ -15,7 +15,7 @@ import java.io.*;
 import java.net.URI;
 
 public class ApiServer {
-    private static final int PORT = 34945;
+    private static final int PORT = 8334;
 
     public static void main(String[] args) throws Exception {
         try (Writer out = new OutputStreamWriter(new FileOutputStream(new File("log.txt")))) {

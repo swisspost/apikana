@@ -14,13 +14,12 @@ import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.jar.Attributes;
 import java.util.jar.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static apikana.IoUtils.*;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
@@ -89,13 +88,23 @@ public class GenerateMojo extends AbstractMojo {
     @Parameter()
     private boolean deploy;
 
+    /**
+     * If the globally installed apikana node package should be used.
+     */
+    @Parameter()
+    private boolean global;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             unpackModelDependencies();
             writeProjectProps();
-            installNode();
-            generatePackageJson();
-            installApikana();
+            if (global) {
+                checkNodeInstalled();
+            } else {
+                installNode();
+                generatePackageJson();
+                installApikana();
+            }
             runApikana();
             mavenProject.addCompileSourceRoot(file(output + "/model/java").getAbsolutePath());
             projectHelper.addResource(mavenProject, file(input).getAbsolutePath(), Arrays.asList("model/**/*.ts"), null);
@@ -203,6 +212,19 @@ public class GenerateMojo extends AbstractMojo {
         });
     }
 
+    private void checkNodeInstalled() throws MojoExecutionException {
+        try {
+            Process node = new ProcessBuilder("node", "-v").start();
+            if (node.waitFor() != 0) {
+                throw new IOException();
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new MojoExecutionException("Node is not installed on this machine.\n" +
+                    "- Set <global>false</false> in this plugin's <configuration> or\n" +
+                    "- Install node (https://docs.npmjs.com/getting-started/installing-node)");
+        }
+    }
+
     private void installNode() throws MojoExecutionException {
         executeFrontend("install-node-and-npm", configuration(
                 element("downloadRoot", downloadRoot),
@@ -229,15 +251,35 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     private void runApikana() throws MojoExecutionException {
-        executeFrontend("npm", configuration(
-                element("arguments", "run apikana " +
-                        relative(working(""), file(input)) + " " +
-                        relative(working(""), file(output)) +
-                        " -- --javaPackage=" + javaPackage +
-                        " --deploy=" + deploy +
-                        " --config=properties.json" +
-                        " --dependencyPath=" + relative(working(""), apiDependencies("")))
-        ));
+        final List<String> cmd = Arrays.asList("apikana",
+                relative(working(""), file(input)),
+                relative(working(""), file(output)),
+                global ? "" : "--",
+                "--javaPackage=" + javaPackage,
+                "--deploy=" + deploy,
+                "--config=properties.json",
+                "--dependencyPath=" + relative(working(""), apiDependencies("")));
+        final String cmdLine = cmd.stream().collect(Collectors.joining(" "));
+        if (global) {
+            try {
+                final Process apikana = shellCommand(working(""), cmdLine).inheritIO().start();
+                if (apikana.waitFor() != 0) {
+                    throw new IOException();
+                }
+            } catch (IOException | InterruptedException e) {
+                throw new MojoExecutionException("Could not run apikana", e);
+            }
+        } else {
+            executeFrontend("npm", configuration(element("arguments", "run " + cmdLine)));
+        }
+    }
+
+    private ProcessBuilder shellCommand(File workDir, String cmd) {
+        getLog().info("Workdir: " + workDir);
+        getLog().info("Executing: " + cmd);
+        final ProcessBuilder pb = System.getProperty("os.name").toLowerCase().contains("windows")
+                ? new ProcessBuilder("cmd", "/c", cmd) : new ProcessBuilder("bash", "-c", cmd);
+        return pb.directory(workDir);
     }
 
     private void executeFrontend(String goal, Xpp3Dom config) throws MojoExecutionException {
