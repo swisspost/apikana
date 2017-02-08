@@ -20,12 +20,12 @@ module.exports = {
         var modulesPath = fs.existsSync(privateModules) ? privateModules : resolve('node_modules');
         var dependencyPath = path.resolve(gutil.env.dependencyPath || 'node_modules/$api-dependencies');
 
-        log('modules: ' + modulesPath);
-
-        if (!nonEmptyDir(path.resolve(source, 'model/ts'))) {
+        var modelsExist = nonEmptyDir(path.resolve(source, 'model/ts'));
+        var restExist = nonEmptyDir(path.resolve(source, 'rest/openapi'));
+        if (!modelsExist) {
             log(colors.red('Empty model directory ' + source + '/model/ts'));
         }
-        if (!nonEmptyDir(path.resolve(source, 'rest/openapi'))) {
+        if (!restExist) {
             log(colors.red('Empty rest directory ' + source + '/rest/openapi'));
         }
 
@@ -201,6 +201,9 @@ module.exports = {
         });
 
         task('generate-tsconfig', function () {
+            if (!modelsExist) {
+                return gulp.src([]);
+            }
             var tsconfig = path.resolve(source, 'model/ts/tsconfig.json');
             if (!fs.existsSync(tsconfig)) {
                 fs.writeFileSync(tsconfig, '{}');
