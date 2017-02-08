@@ -8,44 +8,69 @@ var read = require('readline')
 read.question(pad('Name of the project:'), function (name) {
     read.question(pad('Use global apikana [Y/n]:'), function (glob) {
         var isGlobal = glob !== 'n' && glob !== 'N';
-        init(name, isGlobal);
-        read.close();
+        read.question(pad('Create for Node.js or Maven [N/m]:'), function (node) {
+            var forNode = node !== 'm' && node !== 'M';
+            if (forNode) {
+                init(name, isGlobal, forNode);
+                read.close();
+            } else {
+                read.question(pad('Group ID:'), function (groupId) {
+                    read.question(pad('Artifact ID:'), function (artifactId) {
+                        read.question(pad('Package name:'), function (pack) {
+                            init(name, isGlobal, forNode, {groupId: groupId, artifactId: artifactId, package: pack});
+                            read.close();
+                        });
+                    });
+                });
+            }
+        });
     });
 });
 
-function init(name, isGlobal) {
+function init(name, isGlobal, forNode, opts) {
     if (fs.existsSync(name)) {
         console.log('directory already exists.');
         process.exit(1);
     }
-    var tsDir = name + '/src/model/ts';
-    var apiDir = name + '/src/rest/openapi';
-    fse.mkdirsSync(tsDir);
-    fse.mkdirsSync(apiDir);
-    copy('pet.ts', __dirname, tsDir);
-    copy('api.yaml', __dirname, apiDir);
-    copy('package.json', __dirname, name);
-    var pack = JSON.parse(fs.readFileSync(name + '/package.json').toString());
-    pack.name = name;
-    pack.author = require('os').userInfo().username;
-    if (!isGlobal) {
-        var myPack = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../package.json').toString()));
-        pack.devDependencies.apikana = myPack.version;
-    }
-    fs.writeFileSync(name + '/package.json', JSON.stringify(pack, null, 2));
-    console.log(pad('Go to your project:'), chalk.green('cd ' + name));
-    if (!isGlobal) {
-        console.log(pad('Install dependencies:'), chalk.green('npm install'));
-    }
-    console.log(pad('Create the documentation:'), chalk.green('npm start'));
-    console.log(pad('Open a browser at'), chalk.blue('localhost:8333'));
-}
 
-function copy(file, from, to) {
-    fse.copySync(path.resolve(from, file), path.resolve(to, file));
+    fse.copySync(__dirname + '/template/general', name);
+    var myPack = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../package.json').toString()));
+    if (forNode) {
+        fse.copySync(__dirname + '/template/node', name);
+        var pack = JSON.parse(fs.readFileSync(name + '/package.json').toString());
+        pack.name = name;
+        pack.author = require('os').userInfo().username;
+        if (!isGlobal) {
+            pack.devDependencies.apikana = myPack.version;
+        }
+        fs.writeFileSync(name + '/package.json', JSON.stringify(pack, null, 2));
+    } else {
+        fse.copySync(__dirname + '/template/maven', name);
+        var pom = fs.readFileSync(name + '/pom.xml').toString();
+        opts.version = myPack.version;
+        opts.global = isGlobal;
+        for (var opt in opts) {
+            pom = pom.replace('%' + opt + '%', opts[opt]);
+        }
+        fs.writeFileSync(name + '/pom.xml', pom);
+        finish();
+    }
+
+    function finish() {
+        console.log(pad('Go to your project:'), chalk.green('cd ' + name));
+        if (forNode && !isGlobal) {
+            console.log(pad('Install dependencies:'), chalk.green('npm install'));
+        }
+        if (forNode) {
+            console.log(pad('Create the documentation:'), chalk.green('npm start'));
+        } else {
+            console.log(pad('Create the documentation:'), chalk.green('mvn install'));
+        }
+        console.log(pad('Open a browser at'), chalk.blue('localhost:8333'));
+    }
 }
 
 function pad(s) {
-    while (s.length < 30) s = s + ' ';
+    while (s.length < 35) s = s + ' ';
     return s;
 }

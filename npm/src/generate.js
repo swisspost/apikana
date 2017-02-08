@@ -8,6 +8,7 @@ var replace = require('gulp-replace');
 var path = require('path');
 var fs = require('fs');
 var traverse = require('traverse');
+var stream = require('stream');
 var through = require('through2');
 var yaml = require('yamljs');
 
@@ -78,10 +79,23 @@ module.exports = {
         });
 
         task('copy-package', function () {
+            var source = fs.existsSync('package.json2')
+                ? gulp.src('package.json')
+                : streamFromString('{}');
+
             return require('./generate-env').generate(
-                gulp.src('package.json'),
+                source,
                 gulp.dest('patch', {cwd: uiPath}));
         });
+
+        function streamFromString(s) {
+            var src = new stream.Readable({objectMode: true});
+            src._read = function () {
+                this.push(new gutil.File({path: '.', contents: new Buffer(s)}));
+                this.push(null);
+            };
+            return src;
+        }
 
         task('copy-deps', function () {
             module(['yamljs/dist/yaml.js']).pipe(gulp.dest('patch', {cwd: uiPath}));
