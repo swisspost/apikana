@@ -39,8 +39,10 @@ module.exports = {
                             this.update(schemaName(value.substring(14)));
                         }
                     });
-                    schema.javaType = javaType(schema.id);
-                    schema.javaInterfaces = ['java.io.Serializable'];
+                    if (gutil.env.javaPackage) {
+                        schema.javaType = gutil.env.javaPackage + '.' + schema.id;
+                        schema.javaInterfaces = ['java.io.Serializable'];
+                    }
                     schema.definitions = [];
                     fs.writeFileSync(schemaFile(type, 'v4'), JSON.stringify(schema, null, 2));
                     convertToV3(schema);
@@ -74,10 +76,6 @@ module.exports = {
                     this.remove();
                 }
             });
-        }
-
-        function javaType(type) {
-            return (gutil.env.javaPackage || '${javaPackage}' ) + '.' + type;
         }
     }
 };

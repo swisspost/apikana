@@ -147,6 +147,9 @@ module.exports = {
         });
 
         task('generate-constants', function () {
+            if (!gutil.env.javaPackage) {
+                return gulp.src([]);
+            }
             return require('./generate-constants').generate(
                 gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source}),
                 gulp.dest('model/java', {cwd: dest}));
@@ -220,7 +223,7 @@ module.exports = {
                 .pipe(gulp.dest(''));
         });
 
-        task('serve'/*, ['inject-css']*/, function () {
+        task('serve', function () {
             var args = process.argv.slice(1);
             args[0] += '-serve';
             var proc = require('child_process').spawn(process.argv[0], args, {detached: true, stdio: 'ignore'});
