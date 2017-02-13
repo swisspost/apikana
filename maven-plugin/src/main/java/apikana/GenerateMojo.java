@@ -95,6 +95,10 @@ public class GenerateMojo extends AbstractMojo {
     private boolean global;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if ("pom".equals(mavenProject.getPackaging())) {
+            getLog().info("Packaging is pom. Skipping execution.");
+            return;
+        }
         try {
             unpackModelDependencies();
             writeProjectProps();
