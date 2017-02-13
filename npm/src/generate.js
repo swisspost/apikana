@@ -152,7 +152,7 @@ module.exports = {
                 ? yaml.parse(raw) : JSON.parse(raw);
         }
 
-        task('generate-schema', ['referenced-models', 'unpack-models'], function () {
+        task('generate-schema', ['referenced-models', 'unpack-models', 'generate-tsconfig'], function () {
             referencedModels.push('model/ts/**/*.ts');
             return require('./generate-schema').generate(
                 dependencyTypes,
@@ -224,7 +224,12 @@ module.exports = {
             }
             return gulp.src(tsconfig)
                 .pipe(through.obj(function (file, enc, cb) {
-                    var config = JSON.parse(file.contents);
+                    var config;
+                    try {
+                        config = JSON.parse(file.contents);
+                    } catch (e) {
+                        config = {};
+                    }
                     var co = config.compilerOptions;
                     if (!co) {
                         co = config.compilerOptions = {};
