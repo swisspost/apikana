@@ -49,49 +49,49 @@ public class GenerateMojo extends AbstractMojo {
     /**
      * The node version to be used.
      */
-    @Parameter(defaultValue = "v7.5.0")
+    @Parameter(defaultValue = "v7.5.0", property = "apikana.node-version")
     private String nodeVersion;
 
     /**
      * The npm version to be used.
      */
-    @Parameter(defaultValue = "4.2.0")
+    @Parameter(defaultValue = "4.2.0", property = "apikana.npm-version")
     private String npmVersion;
 
     /**
      * The url to download npm and node from.
      */
-    @Parameter
+    @Parameter(property = "apikana.download-root")
     private String downloadRoot;
 
     /**
      * The directory with the models and apis.
      */
-    @Parameter(defaultValue = "src")
+    @Parameter(defaultValue = "src", property = "apikana.input")
     private String input;
 
     /**
      * The directory with the generated artifacts.
      */
-    @Parameter(defaultValue = "target/api")
+    @Parameter(defaultValue = "target/api", property = "apikana.output")
     private String output;
 
     /**
      * The java package that should be used.
      */
-    @Parameter(defaultValue = "apikana.sample")
+    @Parameter(defaultValue = "apikana.sample", property = "apikana.java-package")
     private String javaPackage;
 
     /**
      * If the sources should be copied into the output directory.
      */
-    @Parameter()
+    @Parameter(property = "apikana.deploy")
     private boolean deploy;
 
     /**
      * If the globally installed apikana node package should be used.
      */
-    @Parameter()
+    @Parameter(property = "apikana.global")
     private boolean global;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
