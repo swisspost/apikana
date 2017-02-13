@@ -74,12 +74,12 @@ module.exports = {
         });
 
         task('copy-custom', ['copy-swagger'], function () {
-            gulp.src('images/*', {cwd: source}).pipe(gulp.dest('images', {cwd: uiPath}));
-            return gulp.src('**/*.css', {cwd: source}).pipe(gulp.dest('custom', {cwd: uiPath}));
+            gulp.src('style/@(*.ico|*.png|*.gif)', {cwd: source}).pipe(gulp.dest('images', {cwd: uiPath}));
+            return gulp.src('style/*.css', {cwd: source}).pipe(gulp.dest('custom-css', {cwd: uiPath}));
         });
 
         task('copy-package', function () {
-            var source = fs.existsSync('package.json2')
+            var source = fs.existsSync('package.json')
                 ? gulp.src('package.json')
                 : streamFromString('{}');
 
@@ -111,7 +111,7 @@ module.exports = {
 
         task('inject-css', ['copy-swagger', 'copy-custom', 'copy-deps', 'copy-package', 'copy-lib'], function () {
             return gulp.src('index.html', {cwd: uiPath})
-                .pipe(inject(gulp.src('custom/**/*.css', {cwd: uiPath, read: false}), {
+                .pipe(inject(gulp.src('custom-css/*.css', {cwd: uiPath, read: false}), {
                     relative: true,
                     starttag: "<link href='css/print.css' media='print' rel='stylesheet' type='text/css'/>",
                     endtag: '<script '
