@@ -6,7 +6,7 @@
 
     <groupId>org.swisspush.apikana</groupId>
     <artifactId>apikana-parent</artifactId>
-    <version>0.1.3-SNAPSHOT</version>
+    <version>0.1.5-SNAPSHOT</version>
 
     <packaging>pom</packaging>
     <properties>
@@ -41,7 +41,7 @@
                 <plugin>
                     <groupId>org.swisspush.maven.plugins</groupId>
                     <artifactId>apikana-maven-plugin</artifactId>
-                    <version>0.1.3-SNAPSHOT</version>
+                    <version>0.1.5-SNAPSHOT</version>
                     <executions>
                         <execution>
                             <goals>
