@@ -1,50 +1,32 @@
 package apikana;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.model.Plugin;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.*;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectHelper;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
-import java.io.*;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.jar.Attributes;
-import java.util.jar.*;
-import java.util.stream.Collector;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import static apikana.IoUtils.*;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.element;
 
 /**
  * Generate JSON schemas and a user documentation in HTML from the given swagger and typescript models.
  */
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_RESOURCES,
         requiresDependencyResolution = ResolutionScope.COMPILE)
-public class GenerateMojo extends AbstractMojo {
+public class GenerateMojo extends AbstractGenerateMojo {
     private static class Version {
         static final String APIKANA = "0.1.3";
     }
-
-    @Parameter(defaultValue = "${project}", readonly = true)
-    private MavenProject mavenProject;
-
-    @Parameter(defaultValue = "${session}", readonly = true)
-    private MavenSession mavenSession;
-
-    @Component
-    private BuildPluginManager pluginManager;
-
-    @Component
-    private MavenProjectHelper projectHelper;
 
     /**
      * The node version to be used.
@@ -95,137 +77,27 @@ public class GenerateMojo extends AbstractMojo {
     private boolean global;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if ("pom".equals(mavenProject.getPackaging())) {
-            getLog().info("Packaging is pom. Skipping execution.");
-            return;
-        }
         try {
-            unpackModelDependencies();
-            writeProjectProps();
-            if (global) {
-                checkNodeInstalled();
-            } else {
-                installNode();
-                generatePackageJson();
-                installApikana();
-            }
-            runApikana();
-            mavenProject.addCompileSourceRoot(file(output + "/model/java").getAbsolutePath());
-            projectHelper.addResource(mavenProject, file(input).getAbsolutePath(), Arrays.asList("model/**/*.ts"), null);
-            projectHelper.addResource(mavenProject, file(output).getAbsolutePath(), Arrays.asList("model/**/*.json"), null);
+            if (!handlePomPackaging()) {
+                unpackStyleDependencies(mavenProject.getParent());
+                unpackModelDependencies();
+                writeProjectProps();
+                if (global) {
+                    checkNodeInstalled();
+                } else {
+                    installNode();
+                    generatePackageJson(Version.APIKANA);
+                    installApikana();
+                }
+                runApikana();
+                mavenProject.addCompileSourceRoot(file(output + "/model/java").getAbsolutePath());
+                projectHelper.addResource(mavenProject, file(input).getAbsolutePath(), Arrays.asList("model/**/*.ts"), null);
+                projectHelper.addResource(mavenProject, file(output).getAbsolutePath(), Arrays.asList("model/**/*.json"), null);
 
-            projectHelper.attachArtifact(mavenProject, createApiJar(apiJarFile()), "api");
+                projectHelper.attachArtifact(mavenProject, createApiJar(input, output), "api");
+            }
         } catch (Exception e) {
             throw new MojoExecutionException("Problem running apikana", e);
-        }
-    }
-
-    private void unpackModelDependencies() throws IOException {
-        for (final Artifact a : mavenProject.getArtifacts()) {
-            final JarFile jar = new JarFile(a.getFile());
-            final Enumeration<JarEntry> entries = jar.entries();
-            while (entries.hasMoreElements()) {
-                final JarEntry entry = entries.nextElement();
-                copyModel(jar, entry, "ts", a.getArtifactId());
-                copyModel(jar, entry, "json-schema-v3", a.getArtifactId());
-                copyModel(jar, entry, "json-schema-v4", a.getArtifactId());
-            }
-        }
-    }
-
-    private void copyModel(JarFile jar, JarEntry entry, String type, String targetDir) throws IOException {
-        final String sourceName = "model/" + type;
-        if (!entry.isDirectory() && entry.getName().startsWith(sourceName)) {
-            final File modelFile = apiDependencies(type + "/" + targetDir + entry.getName().substring((sourceName).length()));
-            modelFile.getParentFile().mkdirs();
-            try (final FileOutputStream out = new FileOutputStream(modelFile)) {
-                copy(jar.getInputStream(entry), out);
-            }
-        }
-    }
-
-    private void updateJson(File file, Consumer<Map<String, Object>> updater) throws IOException {
-        final ObjectMapper mapper = new ObjectMapper();
-        final Map<String, Object> json = file.exists() ? mapper.readValue(file, Map.class) : new HashMap<>();
-        updater.accept(json);
-        mapper.writer().withDefaultPrettyPrinter().writeValue(file, json);
-    }
-
-    private File file(String name) {
-        return new File(mavenProject.getBasedir(), name);
-    }
-
-    private File target(String name) {
-        return new File(mavenProject.getBuild().getDirectory(), name);
-    }
-
-    private File working(String name) {
-        return target("npm/" + name);
-    }
-
-    private File apiDependencies(String name) {
-        return target("api-dependencies/" + name);
-    }
-
-    private String relative(File base, File f) {
-        return base.toPath().relativize(f.toPath()).toString().replace('\\', '/');
-    }
-
-    private void writeProjectProps() throws IOException {
-        final Map<String, Object> propectProps = new ProjectSerializer().serialize(mavenProject);
-        final File file = working("properties.json");
-        file.getParentFile().mkdirs();
-        new ObjectMapper().writeValue(file, propectProps);
-    }
-
-    private File apiJarFile() {
-        return target(mavenProject.getArtifactId() + "-" + mavenProject.getVersion() + "-api.jar");
-    }
-
-    private File createApiJar(File out) throws IOException {
-        final Manifest manifest = new Manifest();
-        final Attributes mainAttributes = manifest.getMainAttributes();
-        mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-        mainAttributes.put(Attributes.Name.MAIN_CLASS, ApiServer.class.getName());
-        try (JarOutputStream zs = new JarOutputStream(new FileOutputStream(out), manifest)) {
-            addDirToZip(zs, file(output + "/model/json-schema-v3"), "model/json-schema-v3");
-            addDirToZip(zs, file(output + "/model/json-schema-v4"), "model/json-schema-v4");
-            addDirToZip(zs, file(output + "/ui"), "ui");
-            addClassToZip(zs, ApiServer.class);
-            addClassToZip(zs, ApiServer.PathResourceHandler.class);
-            addJettyToZip(zs);
-            addDirToZip(zs, file(input), "src");
-            addDirToZip(zs, target("model/ts"), "target/model/ts");
-        }
-        return out;
-    }
-
-    private void addJettyToZip(JarOutputStream zs) throws IOException {
-        addZipsToZip(zs, "org/eclipse/jetty");
-        addZipsToZip(zs, "javax/servlet");
-    }
-
-    private void generatePackageJson() throws IOException {
-        updateJson(working("package.json"), pack -> {
-            pack.put("name", mavenProject.getArtifactId());
-            pack.put("version", mavenProject.getVersion());
-            final Map<String, String> scripts = (Map) pack.merge("scripts", new HashMap<>(), (oldVal, newVal) -> oldVal);
-            scripts.put("apikana", "apikana");
-            final Map<String, String> devDependencies = (Map) pack.merge("devDependencies", new HashMap<>(), (oldVal, newVal) -> oldVal);
-            devDependencies.put("apikana", Version.APIKANA);
-        });
-    }
-
-    private void checkNodeInstalled() throws MojoExecutionException {
-        try {
-            Process node = new ProcessBuilder("node", "-v").start();
-            if (node.waitFor() != 0) {
-                throw new IOException();
-            }
-        } catch (IOException | InterruptedException e) {
-            throw new MojoExecutionException("Node is not installed on this machine.\n" +
-                    "- Set <global>false</false> in this plugin's <configuration> or\n" +
-                    "- Install node (https://docs.npmjs.com/getting-started/installing-node)");
         }
     }
 
@@ -278,29 +150,4 @@ public class GenerateMojo extends AbstractMojo {
         }
     }
 
-    private ProcessBuilder shellCommand(File workDir, String cmd) {
-        getLog().info("Workdir: " + workDir);
-        getLog().info("Executing: " + cmd);
-        final ProcessBuilder pb = System.getProperty("os.name").toLowerCase().contains("windows")
-                ? new ProcessBuilder("cmd", "/c", cmd) : new ProcessBuilder("bash", "-c", cmd);
-        return pb.directory(workDir);
-    }
-
-    private void executeFrontend(String goal, Xpp3Dom config) throws MojoExecutionException {
-        final String rc = new File(".npmrc").exists() ? "--userconfig .npmrc " : "";
-        config.addChild(element("workingDirectory", working("").getAbsolutePath()).toDom());
-        final Xpp3Dom arguments = config.getChild("arguments");
-        if (arguments != null) {
-            arguments.setValue(rc + arguments.getValue());
-        }
-        execute(frontendPlugin(), goal, config);
-    }
-
-    private Plugin frontendPlugin() {
-        return plugin("com.github.eirslett", "frontend-maven-plugin", "1.3");
-    }
-
-    private void execute(Plugin plugin, String goal, Xpp3Dom config) throws MojoExecutionException {
-        executeMojo(plugin, goal, config, executionEnvironment(mavenProject, mavenSession, pluginManager));
-    }
 }
