@@ -6,6 +6,6 @@ node_modules/
 test-dist/
 test-deploy/
 target/
-logo/logo.js
+generated-logo.js
 
 

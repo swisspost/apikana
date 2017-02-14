@@ -51,5 +51,5 @@ out = out.replace(/black\("(.*?)"\)/g, function (m, d) {
     while (s.length < d.length)s += ' ';
     return '"' + s + '"';
 });
-fs.writeFileSync('logo.js', out + ');');
+fs.writeFileSync('generated-logo.js', out + ');');
     
