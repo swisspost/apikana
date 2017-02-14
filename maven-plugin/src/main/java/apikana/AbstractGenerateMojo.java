@@ -86,7 +86,7 @@ public abstract class AbstractGenerateMojo extends AbstractMojo {
                 final Enumeration<JarEntry> entries = jar.entries();
                 while (entries.hasMoreElements()) {
                     final JarEntry entry = entries.nextElement();
-                    copyModel(jar, entry, "style", "style");
+                    copyModel(jar, entry, "style", "");
                 }
             }
             unpackStyleDependencies(project.getParent());
@@ -165,7 +165,7 @@ public abstract class AbstractGenerateMojo extends AbstractMojo {
         final File file = styleJarFile();
         file.getParentFile().mkdirs();
         try (JarOutputStream zs = new JarOutputStream(new FileOutputStream(file))) {
-            addDirToZip(zs, file("src/style"), "model");
+            addDirToZip(zs, file("src/style"), "model/style");
         }
         return file;
     }

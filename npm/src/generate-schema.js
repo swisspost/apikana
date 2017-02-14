@@ -27,12 +27,12 @@ module.exports = {
                 for (var type in schemas.definitions) {
                     log('Found definition', colors.magenta(type));
                     var sn = schemaName(type);
-                    if (dependencyTypes[sn]) {
-                        gutil.log(colors.red('Type'), colors.magenta(type),
-                            colors.red('already defined as dependency in'),
-                            colors.magenta(dependencyTypes[sn] + '/' + sn));
-                        throw new gutil.PluginError('apikana', 'multi definition');
-                    }
+                    // if (dependencyTypes[sn]) {
+                    //     gutil.log(colors.red('Type'), colors.magenta(type),
+                    //         colors.red('already defined as dependency in'),
+                    //         colors.magenta(dependencyTypes[sn] + '/' + sn));
+                    //     throw new gutil.PluginError('apikana', 'multi definition');
+                    // }
                     var schema = schemaGen.generate(tsconfig, files, type);
                     traverse(schema).forEach(function (value) {
                         if (this.key === '$ref' && value.substring(0, 14) === '#/definitions/') {

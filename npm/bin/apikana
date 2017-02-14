@@ -36,7 +36,7 @@ function help(){
 }
 
 function generate(){
-    var source='src/api';
+    var source='src';
     var target='dist';
 
     if (argc>3 && process.argv[3].substring(0,2)!=='--'){

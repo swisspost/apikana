@@ -71,6 +71,9 @@ module.exports = {
         }
 
         task('copy-swagger', function () {
+            if (!restExist) {
+                return emptyStream();
+            }
             return module('swagger-ui/dist/**').pipe(gulp.dest(uiPath));
         });
 
@@ -85,6 +88,10 @@ module.exports = {
         });
 
         task('copy-package', function () {
+            if (!restExist) {
+                return emptyStream();
+            }
+
             var source = fs.existsSync('package.json')
                 ? gulp.src('package.json')
                 : streamFromString('{}');
@@ -104,6 +111,9 @@ module.exports = {
         }
 
         task('copy-deps', function () {
+            if (!restExist) {
+                return emptyStream();
+            }
             return merge(
                 module(['yamljs/dist/yaml.js']).pipe(gulp.dest('patch', {cwd: uiPath})),
                 module(['object-path/index.js'])
@@ -113,6 +123,9 @@ module.exports = {
         });
 
         task('copy-lib', function () {
+            if (!restExist) {
+                return emptyStream();
+            }
             return gulp.src('lib/*.js', {cwd: apikanaPath}).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
@@ -137,6 +150,9 @@ module.exports = {
         });
 
         task('copy-deps-unref', function () {
+            if (!restExist) {
+                return emptyStream();
+            }
             return module(['typescript/lib/lib.d.ts']).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
