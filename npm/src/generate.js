@@ -19,7 +19,7 @@ module.exports = {
         var uiPath = path.resolve(dest, 'ui');
         var apikanaPath = path.resolve(__dirname, '..');
         var privateModules = path.resolve(apikanaPath, 'node_modules');
-        var modulesPath = fs.existsSync(privateModules) ? privateModules : resolve('node_modules');
+        var modulesPath = fs.existsSync(privateModules) ? privateModules : path.resolve('node_modules');
         var dependencyPath = path.resolve(gutil.env.dependencyPath || 'node_modules/$api-dependencies');
 
         var modelsExist = nonEmptyDir(path.resolve(source, 'model/ts'));
@@ -169,7 +169,7 @@ module.exports = {
 
         task('generate-constants', function () {
             if (!gutil.env.javaPackage) {
-                return gulp.src([]);
+                return emptyStream();
             }
             return require('./generate-constants').generate(
                 gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source}),
@@ -177,10 +177,10 @@ module.exports = {
         });
 
         task('copy-src', function () {
-            if (gutil.env.deploy && gutil.env.deploy != 'false') {
-                return gulp.src('**/*', {cwd: source}).pipe(gulp.dest('src', {cwd: uiPath}));
+            if (!gutil.env.deploy || gutil.env.deploy === 'false') {
+                return emptyStream();
             }
-            return gulp.src([]);
+            return gulp.src('**/*', {cwd: source}).pipe(gulp.dest('src', {cwd: uiPath}));
         });
 
         task('unpack-models', function () {
@@ -226,7 +226,7 @@ module.exports = {
 
         task('generate-tsconfig', function () {
             if (!modelsExist) {
-                return gulp.src([]);
+                return emptyStream();
             }
             var tsconfig = path.resolve(source, 'model/ts/tsconfig.json');
             if (!fs.existsSync(tsconfig)) {
@@ -256,12 +256,17 @@ module.exports = {
         });
 
         task('serve', function () {
-            var args = process.argv.slice(1);
-            args[0] += '-serve';
+            //argv is node, apikana, start, options...
+            var args = process.argv.slice(3);
+            args.unshift(process.argv[1] + '-serve');
             var proc = require('child_process').spawn(process.argv[0], args, {detached: true, stdio: 'ignore'});
             proc.unref();
-            return gulp.src([]);
+            return emptyStream();
         });
+
+        function emptyStream() {
+            return gulp.src([]);
+        }
 
         gulp.start();
     }

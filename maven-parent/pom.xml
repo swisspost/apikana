@@ -47,10 +47,6 @@
                             <goals>
                                 <goal>generate</goal>
                             </goals>
-                            <configuration>
-                                <deploy>false</deploy>
-                                <global>true</global>
-                            </configuration>
                         </execution>
                     </executions>
                 </plugin>

@@ -67,13 +67,13 @@ public class GenerateMojo extends AbstractGenerateMojo {
     /**
      * If the sources should be copied into the output directory.
      */
-    @Parameter(property = "apikana.deploy")
+    @Parameter(defaultValue = "false", property = "apikana.deploy")
     private boolean deploy;
 
     /**
      * If the globally installed apikana node package should be used.
      */
-    @Parameter(property = "apikana.global")
+    @Parameter(defaultValue = "true", property = "apikana.global")
     private boolean global;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -127,7 +127,7 @@ public class GenerateMojo extends AbstractGenerateMojo {
     }
 
     private void runApikana() throws MojoExecutionException {
-        final List<String> cmd = Arrays.asList("apikana",
+        final List<String> cmd = Arrays.asList("apikana start",
                 relative(working(""), file(input)),
                 relative(working(""), file(output)),
                 global ? "" : "--",

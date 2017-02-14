@@ -53,10 +53,14 @@ function init(name, isGlobal, forNode, opts) {
             pom = pom.replace('%' + opt + '%', opts[opt]);
         }
         fs.writeFileSync(name + '/pom.xml', pom);
-        finish();
+        var apiYaml = fs.readFileSync(name + '/src/rest/openapi/api.yaml').toString();
+        apiYaml = apiYaml.replace('@version@', '@project.version@');
+        fs.writeFileSync(name + '/src/rest/openapi/api.yaml', apiYaml);
     }
+    finish();
 
     function finish() {
+        console.log('\nCreation finished. Have a look at it:');
         console.log(pad('Go to your project:'), chalk.green('cd ' + name));
         if (forNode && !isGlobal) {
             console.log(pad('Install dependencies:'), chalk.green('npm install'));

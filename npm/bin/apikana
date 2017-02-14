@@ -6,36 +6,44 @@ var chalk = require('chalk');
 var argc=process.argv.length;
 
 require('../src/logo');
-if ((argc===2 && !fs.existsSync('package.json')) || process.argv[2]==='help'){
+if (argc===2){
     help();
-} else if (process.argv[2]==='init'){
-    require('../src/init/init');
-}else{
-    generate();
+} else {
+    switch (process.argv[2]){
+        case 'init':
+            require('../src/init/init');
+            break;
+        case 'start':
+            generate();
+            break;
+        default:
+            help();
+            break;
+    }
 }
 
 function help(){
-    console.log(chalk.magenta('apikana help'),'                       Show this help.');
-    console.log(chalk.magenta('apikana init'),'                       Initialize a new API project.');
-    console.log(chalk.magenta('apikana'),chalk.blue('[source] [target]'),chalk.red('[options]'),'Generate JSON schemas and HTML documentation from the API.');
-    console.log(chalk.blue('        source'),'                     Directory containing the APIs and models. Default: src/api');
-    console.log(chalk.blue('        target'),'                     Directory to generate the output to. Default: dist');
-    console.log(chalk.red('        --config=<file>'),'            Read additional options from a file in JSON format.');
-    console.log(chalk.red('        --port=<number>'),'            Port to serve the HTML documentation. Default: 8333');
-    console.log(chalk.red('        --javaPackage=<name>'),'       Java package to use.');
-    console.log(chalk.red('        --deploy=<boolean>'),'         If the sources should be copied into the target directory. Default: false');
-    console.log(chalk.red('        --dependencyPath=<path>'),'    Directory containing API dependencies. Default: node_modules/$api-dependencies');
+    console.log(chalk.magenta('apikana help'),'                             Show this help.');
+    console.log(chalk.magenta('apikana init'),'                             Initialize a new API project.');
+    console.log(chalk.magenta('apikana start'),chalk.blue('[source] [target]'),chalk.red('[options]'),'Generate JSON schemas and HTML documentation from the API.');
+    console.log(chalk.blue('        source'),'                           Directory containing the APIs and models. Default: src/api');
+    console.log(chalk.blue('        target'),'                           Directory to generate the output to. Default: dist');
+    console.log(chalk.red('        --config=<file>'),'                  Read additional options from a file in JSON format.');
+    console.log(chalk.red('        --port=<number>'),'                  Port to serve the HTML documentation. Default: 8333');
+    console.log(chalk.red('        --javaPackage=<name>'),'             Java package to use.');
+    console.log(chalk.red('        --deploy=<boolean>'),'               If the sources should be copied into the target directory. Default: false');
+    console.log(chalk.red('        --dependencyPath=<path>'),'          Directory containing API dependencies. Default: node_modules/$api-dependencies');
 }
 
 function generate(){
     var source='src/api';
     var target='dist';
 
-    if (argc>2 && process.argv[2].substring(0,2)!=='--'){
-        source=process.argv[2];
-    }
     if (argc>3 && process.argv[3].substring(0,2)!=='--'){
-        target=process.argv[3];
+        source=process.argv[3];
+    }
+    if (argc>4 && process.argv[4].substring(0,2)!=='--'){
+        target=process.argv[4];
     }
     if (gutil.env.config){
         var config=fs.readFileSync(gutil.env.config);

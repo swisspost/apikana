@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "An API project.",
   "scripts": {
-    "start": "apikana src dist"
+    "start": "apikana start src dist"
   },
   "keywords": [
     "REST",
