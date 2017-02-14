@@ -9,6 +9,7 @@ var path = require('path');
 var fs = require('fs');
 var traverse = require('traverse');
 var stream = require('stream');
+var merge = require('merge-stream');
 var through = require('through2');
 var yaml = require('yamljs');
 
@@ -66,7 +67,7 @@ module.exports = {
                     .on('error', function (err) {
                         log('Error in', colors.green(name), colors.red(err));
                     });
-            })
+            });
         }
 
         task('copy-swagger', function () {
@@ -74,8 +75,13 @@ module.exports = {
         });
 
         task('copy-custom', ['copy-swagger'], function () {
-            gulp.src('style/@(*.ico|*.png|*.gif)', {cwd: source}).pipe(gulp.dest('images', {cwd: uiPath}));
-            return gulp.src('style/*.css', {cwd: source}).pipe(gulp.dest('custom-css', {cwd: uiPath}));
+            return merge(copy(dependencyPath), copy(source));
+
+            function copy(dir) {
+                return merge(
+                    gulp.src('style/@(*.ico|*.png|*.gif)', {cwd: dir}).pipe(gulp.dest('images', {cwd: uiPath})),
+                    gulp.src('style/*.css', {cwd: dir}).pipe(gulp.dest('custom-css', {cwd: uiPath})));
+            }
         });
 
         task('copy-package', function () {
@@ -98,11 +104,12 @@ module.exports = {
         }
 
         task('copy-deps', function () {
-            module(['yamljs/dist/yaml.js']).pipe(gulp.dest('patch', {cwd: uiPath}));
-            module(['object-path/index.js'])
-                .pipe(rename('object-path.js'))
-                .pipe(gulp.dest('patch', {cwd: uiPath}));
-            return gulp.src('src/deps/*.js', {cwd: apikanaPath}).pipe(gulp.dest('patch', {cwd: uiPath}));
+            return merge(
+                module(['yamljs/dist/yaml.js']).pipe(gulp.dest('patch', {cwd: uiPath})),
+                module(['object-path/index.js'])
+                    .pipe(rename('object-path.js'))
+                    .pipe(gulp.dest('patch', {cwd: uiPath})),
+                gulp.src('src/deps/*.js', {cwd: apikanaPath}).pipe(gulp.dest('patch', {cwd: uiPath})));
         });
 
         task('copy-lib', function () {
@@ -133,7 +140,7 @@ module.exports = {
             return module(['typescript/lib/lib.d.ts']).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
-        //needed?
+//needed?
         var referencedModels = [];
         task('referenced-models', function () {
             return gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source})
@@ -177,22 +184,25 @@ module.exports = {
         });
 
         task('unpack-models', function () {
-            unpack('dist/model', 'json-schema-v3', '**/*.json', true);
-            unpack('dist/model', 'json-schema-v4', '**/*.json');
-            return unpack('src/model', 'ts', '**/*.ts');
+            return merge(
+                unpack('dist/model', 'json-schema-v3', '**/*.json', {storeName: true}),
+                unpack('dist/model', 'json-schema-v4', '**/*.json'),
+                unpack('src', 'style', '**/*', {absolute: true}),
+                unpack('src/model', 'ts', '**/*.ts'));
         });
 
         var dependencyTypes = {};
 
-        function unpack(baseDir, subDir, pattern, storeName) {
+        function unpack(baseDir, subDir, pattern, opts) {
             return gulp.src('**/node_modules/*/' + baseDir + '/' + subDir + '/' + pattern)
                 .pipe(rename(function (path) {
                     var dir = path.dirname.replace(/\\/g, '/');
                     dir = dir.substring(dir.lastIndexOf('node_modules/') + 13);
-                    var ms = dir.indexOf('/');
-                    dir = subDir + '/' + dir.substring(0, ms);
+                    var moduleEnd = dir.indexOf('/');
+                    var pathStart = dir.indexOf(subDir);
+                    dir = (opts && opts.absolute) ? dir.substring(pathStart) : (subDir + '/' + dir.substring(0, moduleEnd));
                     path.dirname = dir;
-                    if (storeName) {
+                    if (opts && opts.storeName) {
                         var base = path.basename + path.extname;
                         if (dependencyTypes[base]) {
                             gutil.log(colors.red('Multiple definitions of type'), colors.magenta(base),
