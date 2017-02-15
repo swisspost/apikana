@@ -1,12 +1,13 @@
 var gutil = require('gulp-util');
 var http = require('http');
 var path = require('path');
+var opn = require('opn');
 
 module.exports = {
     start: function (source, dest, port) {
         var dependencyPath = gutil.env.dependencyPath || 'node_modules/$api-dependencies';
         var sourceRelDependencyPath = path.relative(
-            path.resolve(source), path.resolve(dependencyPath)).replace(/\\/g,'/');
+            path.resolve(source), path.resolve(dependencyPath)).replace(/\\/g, '/');
         while (sourceRelDependencyPath.substring(0, 3) === '../') {
             sourceRelDependencyPath = sourceRelDependencyPath.substring(3);
         }
@@ -19,17 +20,22 @@ module.exports = {
                 sock.setTimeout(50);
                 sock.on('timeout', function () {
                     req.abort();
-                    then();
+                    then(false);
                 });
             }).on('error', function () {
-                then();
+                then(false);
+            }).on('response', function () {
+                then(true);
             }).end();
         }
 
         var started = false;
 
-        function startOnce() {
+        function startOnce(wasRunning) {
             if (!started) {
+                if (!wasRunning) {
+                    opn('http://localhost:' + port);
+                }
                 started = true;
                 start();
             }
@@ -39,7 +45,7 @@ module.exports = {
             var server = require('node-http-server');
             server.onRequest = function (req, res, serve) {
                 if (req.url === '/close') {
-                    process.exit();
+                    res.on('finish', process.exit).end('ok');
                 } else {
                     if (route(req, 'src/', source));
                     else if (route(req, sourceRelDependencyPath, dependencyPath));

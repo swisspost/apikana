@@ -221,7 +221,7 @@ module.exports = {
                     if (opts && opts.storeName) {
                         var base = path.basename + path.extname;
                         if (dependencyTypes[base]) {
-                            gutil.log(colors.red('Multiple definitions of type'), colors.magenta(base),
+                            log(colors.red('Multiple definitions of type'), colors.magenta(base),
                                 colors.red('in'), colors.magenta([dependencyTypes[base], dir]));
                             throw new gutil.PluginError('apikana', 'multi definition');
                         }
@@ -271,12 +271,22 @@ module.exports = {
                 .pipe(gulp.dest(''));
         });
 
+        var serving = false;
         task('serve', function () {
             //argv is node, apikana, start, options...
             var args = process.argv.slice(3);
             args.unshift(process.argv[1] + '-serve');
             var proc = require('child_process').spawn(process.argv[0], args, {detached: true, stdio: 'ignore'});
             proc.unref();
+            serving = true;
+            return emptyStream();
+        });
+
+        task('info', ['inject-css'], function () {
+            if (serving) {
+                var port = parseInt(gutil.env.port) || 8333;
+                log('***** Serving API at', colors.blue.underline('http://localhost:' + port),'*****');
+            }
             return emptyStream();
         });
 

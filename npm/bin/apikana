@@ -55,12 +55,8 @@ function generate(){
         }
     }
 
-    var port=parseInt(gutil.env.port) || 8333;
-
     console.log('Source: ', source);
     console.log('Target: ', target);
-    console.log('URL:    ', chalk.blue.underline('http://localhost:' + port));
-    //console.log('Env:    ', JSON.stringify(gutil.env,null,2));
 
     require('../src/generate').generate(path.resolve(source),path.resolve(target));
 }
