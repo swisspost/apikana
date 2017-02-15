@@ -70,7 +70,7 @@ function init(name, isGlobal, forNode, opts) {
         } else {
             console.log(pad('Create the documentation:'), chalk.green('mvn install'));
         }
-        console.log(pad('Open a browser at'), chalk.blue('localhost:8333'));
+        console.log(pad('Open a browser at'), chalk.blue('http://localhost:8333'));
     }
 }
 
