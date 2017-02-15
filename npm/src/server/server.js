@@ -33,7 +33,7 @@ module.exports = {
 
         function startOnce(wasRunning) {
             if (!started) {
-                if (!wasRunning) {
+                if (!wasRunning && (!gutil.env.openBrowser || gutil.env.openBrowser === 'true')) {
                     opn('http://localhost:' + port);
                 }
                 started = true;
