@@ -5,5 +5,4 @@ node_modules/
 *.tgz
 test-dist/
 test-deploy/
-target/
 generated-logo.js

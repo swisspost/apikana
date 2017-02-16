@@ -33,7 +33,7 @@ function help(){
     console.log(chalk.red('        --javaPackage=<name>'),'             Java package to use.');
     console.log(chalk.red('        --deploy=<boolean>'),'               If the sources should be copied into the target directory. Default: false');
     console.log(chalk.red('        --dependencyPath=<path>'),'          Directory containing API dependencies. Default: node_modules/$api-dependencies');
-    console.log(chalk.red('        --openBrowser=<boolean>'),'          If the browser should be opened at first start. Default: true);
+    console.log(chalk.red('        --openBrowser=<boolean>'),'          If the browser should be opened at first start. Default: true');
 }
 
 function generate(){
