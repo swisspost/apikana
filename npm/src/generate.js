@@ -272,6 +272,9 @@ module.exports = {
         });
 
         task('serve', ['inject-css'], function () {
+            if (!restExist) {
+                return emptyStream();
+            }
             //argv is node, apikana, start, options...
             var args = process.argv.slice(3);
             args.unshift(process.argv[1] + '-serve');
