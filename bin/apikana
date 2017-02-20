@@ -26,7 +26,7 @@ function help(){
     console.log(chalk.magenta('apikana help'),'                             Show this help.');
     console.log(chalk.magenta('apikana init'),'                             Initialize a new API project.');
     console.log(chalk.magenta('apikana start'),chalk.blue('[source] [target]'),chalk.red('[options]'),'Generate JSON schemas and HTML documentation from the API.');
-    console.log(chalk.blue('        source'),'                           Directory containing the APIs and models. Default: src/api');
+    console.log(chalk.blue('        source'),'                           Directory containing the APIs and models. Default: src');
     console.log(chalk.blue('        target'),'                           Directory to generate the output to. Default: dist');
     console.log(chalk.red('        --config=<file>'),'                  Read additional options from a file in JSON format.');
     console.log(chalk.red('        --port=<number>'),'                  Port to serve the HTML documentation. Default: 8333');
