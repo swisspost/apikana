@@ -5,13 +5,6 @@
   "scripts": {
     "start": "apikana start src dist"
   },
-  "keywords": [
-    "REST",
-    "API",
-    "design",
-    "documentation",
-    "contract-first"
-  ],
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
