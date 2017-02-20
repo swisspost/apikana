@@ -15,8 +15,7 @@ It basically generates formal schemas and documentation from a mixed swagger/typ
 
 It supports also java:
 
-* Use the provided [parent-pom](https://github.com/nidi3/apikana-java/tree/master/apikana-parent) and
- [maven-plugin](https://github.com/nidi3/apikana-java/tree/master/apikana-maven-plugin).
+* Use the provided parent-pom and maven-plugin (see [apikana-java](https://github.com/nidi3/apikana-java)).
 * Generate java types (thanks to [jsonschema2pojo](http://www.jsonschema2pojo.org/)).
 
 See it in action in [apikana-sample](https://github.com/lbovet/apikana-sample).
@@ -32,13 +31,13 @@ This starts an interactive wizard that lets you define the main aspects of the A
 
 ### Use as a global tool
 
-When `apikana start src dist` is run, it looks in `src/rest/openapi` for a file named `api.yaml` or `api.json`.
+When `apikana start src dist` is executed, it looks in `src/rest/openapi` for a file named `api.yaml` or `api.json`.
 This is an [OpenAPI 2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) file defining the REST API.
 Additionally, a `tsModels` element can be given which is an array of typescript files defining the data models.
 The typescript files are expected to be in `src/model/ts`. The models should be defined as typescript `interface`s.
 
 At the end, the `dist` directory contains the json schemas and a complete HTML documentation of the API.
-Just open a browser at `http://localhost:8333` to browse it.
+Just open a browser at `http://localhost:8333`.
 
 `src/rest/openapi/api.yaml`
 ````yaml
@@ -58,7 +57,7 @@ tsModels:
 `src/model/ts/user.ts`
 ````ts
 export interface User {
-    id: UUID
+    id: number
     firstName: string // The given name
     lastName: string // the family name @pattern [A-Z][a-z]*
     age?: number
@@ -78,7 +77,7 @@ A sample configuration would look like:
   "name": "My API project",
   "scripts": {
     "start": "apikana start src dist"
-  }
+  },
   "devDependencies": {
     "apikana": "0.1.5"
   }
