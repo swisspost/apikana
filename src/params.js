@@ -1,4 +1,6 @@
 var gutil = require('gulp-util');
+var fs = require('fs');
+var objectPath = require('object-path');
 
 module.exports = {
     readConfigFile: function () {
@@ -11,6 +13,12 @@ module.exports = {
                 }
             }
         }
+    },
+    enrichWithParams: function (target) {
+        for (var prop in gutil.env) {
+            objectPath.set(target, prop, gutil.env[prop]);
+        }
+        return target;
     },
     port: function () {
         return gutil.env.port || 8333;

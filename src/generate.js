@@ -13,6 +13,7 @@ var merge = require('merge-stream');
 var through = require('through2');
 var yaml = require('yamljs');
 var params = require('./params');
+var generateEnv = require('./generate-env');
 
 module.exports = {
     generate: function (source, dest) {
@@ -23,7 +24,7 @@ module.exports = {
         var dependencyPath = path.resolve(params.dependencyPath());
 
         var modelsExist = nonEmptyDir(path.resolve(source, 'model/ts'));
-        var restExist = nonEmptyDir(path.resolve(source, 'rest/openapi'));
+        var restExist = fs.existsSync(path.resolve(source, 'rest/openapi/api.yaml')) || fs.existsSync(path.resolve(source, 'rest/openapi/api.json'));
         if (!modelsExist) {
             log(colors.red('Empty model directory ' + source + '/model/ts'));
         }
@@ -96,9 +97,7 @@ module.exports = {
                 ? gulp.src('package.json')
                 : streamFromString('{}');
 
-            return require('./generate-env').generate(
-                source,
-                gulp.dest('patch', {cwd: uiPath}));
+            return generateEnv.generate(source, gulp.dest('patch', {cwd: uiPath}));
         });
 
         function streamFromString(s) {
@@ -129,7 +128,7 @@ module.exports = {
             return gulp.src('lib/*.js', {cwd: apikanaPath}).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
-        task('inject-css', ['copy-swagger', 'copy-custom', 'copy-deps', 'copy-package', 'copy-lib'], function () {
+        task('inject-css', ['copy-swagger', 'copy-custom', 'copy-deps', 'copy-lib'], function () {
             return gulp.src('index.html', {cwd: uiPath})
                 .pipe(inject(gulp.src('custom-css/*.css', {cwd: uiPath, read: false}), {
                     relative: true,
@@ -162,19 +161,30 @@ module.exports = {
                 ? yaml.parse(raw) : JSON.parse(raw);
         }
 
-        task('generate-schema', ['unpack-models', 'generate-tsconfig'], function () {
+        task('generate-schema', ['unpack-models', 'generate-tsconfig', 'copy-package'], function () {
             var files = [];
-            return gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source})
-                .pipe(through.obj(function (file, enc, cb) {
-                    var api = fileContents(file);
-                    for (var i = 0; i < api.tsModels.length; i++) {
-                        files.push(path.resolve(source, 'rest/openapi', api.tsModels[i]));
-                    }
-                    cb();
-                })).on('finish', function () {
-                    require('./generate-schema').generate(
-                        dependencyTypes, path.resolve(source, 'model/ts/tsconfig.json'), files, dest);
-                });
+            var collector;
+            if (restExist) {
+                collector = gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source})
+                    .pipe(through.obj(function (file, enc, cb) {
+                        var api = fileContents(file);
+                        for (var i = 0; i < api.tsModels.length; i++) {
+                            files.push(path.resolve(source, 'rest/openapi', api.tsModels[i]));
+                        }
+                        cb();
+                    }));
+            } else if (modelsExist) {
+                collector = gulp.src('model/ts/**/*.ts', {cwd: source})
+                    .pipe(through.obj(function (file, enc, cb) {
+                        files.push(file.path);
+                        cb();
+                    }));
+            } else {
+                collector = emptyStream();
+            }
+            return collector.on('finish', function () {
+                require('./generate-schema').generate(path.resolve(source, 'model/ts/tsconfig.json'), files, dest);
+            });
         });
 
         task('generate-constants', function () {
@@ -195,44 +205,80 @@ module.exports = {
 
         task('unpack-models', function () {
             return merge(
-                unpack('dist/model', 'json-schema-v3', '**/*.json', {storeName: true}),
+                unpack('dist/model', 'json-schema-v3', '**/*.json'),
                 unpack('dist/model', 'json-schema-v4', '**/*.json'),
-                unpack('src', 'style', '**/*', {absolute: true}),
+                unpack('src', 'style', '**/*', true),
                 unpack('src/model', 'ts', '**/*.ts'));
         });
 
-        var dependencyTypes = {};
-
-        function unpack(baseDir, subDir, pattern, opts) {
+        function unpack(baseDir, subDir, pattern, absolute) {
             return gulp.src('**/node_modules/*/' + baseDir + '/' + subDir + '/' + pattern)
                 .pipe(rename(function (path) {
                     var dir = path.dirname.replace(/\\/g, '/');
                     dir = dir.substring(dir.lastIndexOf('node_modules/') + 13);
                     var moduleEnd = dir.indexOf('/');
                     var pathStart = dir.indexOf(subDir);
-                    dir = (opts && opts.absolute) ? dir.substring(pathStart) : (subDir + '/' + dir.substring(0, moduleEnd));
+                    dir = absolute ? dir.substring(pathStart) : (subDir + '/' + dir.substring(0, moduleEnd));
                     path.dirname = dir;
-                    if (opts && opts.storeName) {
-                        var base = path.basename + path.extname;
-                        if (dependencyTypes[base]) {
-                            log(colors.red('Multiple definitions of type'), colors.magenta(base),
-                                colors.red('in'), colors.magenta([dependencyTypes[base], dir]));
-                            throw new gutil.PluginError('apikana', 'multi definition');
-                        }
-                        dependencyTypes[base] = dir;
-                    }
                 }))
                 .pipe(gulp.dest(dependencyPath));
         }
 
         task('overwrite-schemas', ['generate-schema'], function () {
-            return gulp.src('json-schema-v3/**/*.json', {cwd: dependencyPath})
-                .pipe(rename(function (path) {
-                    path.dirname = '';
-                    return path;
-                }))
-                .pipe(gulp.dest('model/json-schema-v3', {cwd: dest}));
+            //overwrite local schemas with dependency schemas
+            //- javaType could be different
+            //- verify that schemas with same names are structurally equal (no redefinition allowed)
+            return merge(
+                gulp.src('json-schema-v3/**/*.json', {cwd: dependencyPath})
+                    .pipe(through.obj(function (file, enc, cb) {
+                        var filename = path.parse(file.path);
+                        var existing = path.resolve(dest, 'model/json-schema-v3', filename.base);
+                        if (fs.existsSync(existing)) {
+                            var schema1 = JSON.parse(fs.readFileSync(existing));
+                            var schema2 = JSON.parse(file.contents.toString());
+                            if (!schemaEquals(schema1, schema2)) {
+                                log(colors.red('Type'), colors.magenta(filename.name),
+                                    colors.red('is defined differently in'),
+                                    colors.magenta(schema1.definedIn), colors.red('and in'), colors.magenta(schema2.definedIn));
+                                throw new gutil.PluginError('apikana', 'multi definition');
+                            }
+                        }
+                        this.push(file);
+                        cb();
+                    }))
+                    .pipe(rename(function (path) {
+                        path.dirname = '';
+                        return path;
+                    }))
+                    .pipe(gulp.dest('model/json-schema-v3', {cwd: dest})),
+                gulp.src('json-schema-v4/**/*.json', {cwd: dependencyPath})
+                    .pipe(rename(function (path) {
+                        path.dirname = '';
+                        return path;
+                    }))
+                    .pipe(gulp.dest('model/json-schema-v4', {cwd: dest})));
         });
+
+        function schemaEquals(s1, s2) {
+            if (Object.keys(s1).length !== Object.keys(s2).length) {
+                return false;
+            }
+            for (var p in s1) {
+                if (p === 'definedIn' || p === 'javaType') {
+                    continue;
+                }
+                var val1 = s1[p];
+                var val2 = s2[p];
+                if (typeof val1 === 'object' && val1 != null && val2 != null) {
+                    if (!schemaEquals(val1, val2)) {
+                        return false;
+                    }
+                } else if (val1 !== val2) {
+                    return false;
+                }
+            }
+            return true;
+        }
 
         task('generate-tsconfig', function () {
             if (!modelsExist) {

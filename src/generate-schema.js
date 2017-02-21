@@ -8,9 +8,10 @@ var fse = require('fs-extra');
 var path = require('path');
 var schemaGen = require('./schema-gen');
 var params = require('./params');
+var generateEnv = require('./generate-env');
 
 module.exports = {
-    generate: function (dependencyTypes, tsconfig, files, dest) {
+    generate: function (tsconfig, files, dest) {
         fse.mkdirsSync(schemaDir('v3'));
         fse.mkdirsSync(schemaDir('v4'));
 
@@ -18,13 +19,6 @@ module.exports = {
         if (schemas) {
             for (var type in schemas.definitions) {
                 log('Found definition', colors.magenta(type));
-                var sn = schemaName(type);
-                // if (dependencyTypes[sn]) {
-                //     gutil.log(colors.red('Type'), colors.magenta(type),
-                //         colors.red('already defined as dependency in'),
-                //         colors.magenta(dependencyTypes[sn] + '/' + sn));
-                //     throw new gutil.PluginError('apikana', 'multi definition');
-                // }
                 var schema = schemaGen.generate(tsconfig, files, type);
                 traverse(schema).forEach(function (value) {
                     if (this.key === '$ref' && value.substring(0, 14) === '#/definitions/') {
@@ -36,10 +30,16 @@ module.exports = {
                     schema.javaInterfaces = ['java.io.Serializable'];
                 }
                 schema.definitions = [];
+                schema.definedIn = myProject();
                 fs.writeFileSync(schemaFile(type, 'v4'), JSON.stringify(schema, null, 2));
                 convertToV3(schema);
                 fs.writeFileSync(schemaFile(type, 'v3'), JSON.stringify(schema, null, 2));
             }
+        }
+
+        function myProject() {
+            var vars = generateEnv.variables();
+            return vars.name || (vars.project && vars.project.artifactId) || path.parse(path.resolve('.')).name;
         }
 
         function schemaFile(type, version) {
