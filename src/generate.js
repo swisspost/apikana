@@ -14,6 +14,7 @@ var through = require('through2');
 var yaml = require('yamljs');
 var params = require('./params');
 var generateEnv = require('./generate-env');
+var fse = require('fs-extra');
 
 module.exports = {
     generate: function (source, dest) {
@@ -155,32 +156,33 @@ module.exports = {
             return module(['typescript/lib/lib.d.ts']).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
-        function fileContents(file) {
-            var raw = file.contents.toString();
-            return file.path.substring(file.path.lastIndexOf('.') + 1) === 'yaml'
-                ? yaml.parse(raw) : JSON.parse(raw);
-        }
+        var restApi;
+        task('read-rest-api', function () {
+            if (restApi) {
+                return emptyStream();
+            }
+            return gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source})
+                .pipe(through.obj(function (file, enc, cb) {
+                    var raw = file.contents.toString();
+                    restApi = file.path.substring(file.path.lastIndexOf('.') + 1) === 'yaml'
+                        ? yaml.parse(raw) : JSON.parse(raw);
+                    cb();
+                }));
+        });
 
-        task('generate-schema', ['unpack-models', 'generate-tsconfig', 'copy-package'], function () {
+        task('generate-schema', ['unpack-models', 'generate-tsconfig', 'copy-package', 'read-rest-api'], function () {
             var files = [];
-            var collector;
+            var collector = emptyStream();
             if (restExist) {
-                collector = gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source})
-                    .pipe(through.obj(function (file, enc, cb) {
-                        var api = fileContents(file);
-                        for (var i = 0; i < api.tsModels.length; i++) {
-                            files.push(path.resolve(source, 'rest/openapi', api.tsModels[i]));
-                        }
-                        cb();
-                    }));
+                for (var i = 0; i < restApi.tsModels.length; i++) {
+                    files.push(path.resolve(source, 'rest/openapi', restApi.tsModels[i]));
+                }
             } else if (modelsExist) {
                 collector = gulp.src('model/ts/**/*.ts', {cwd: source})
                     .pipe(through.obj(function (file, enc, cb) {
                         files.push(file.path);
                         cb();
                     }));
-            } else {
-                collector = emptyStream();
             }
             return collector.on('finish', function () {
                 require('./generate-schema').generate(path.resolve(source, 'model/ts/tsconfig.json'), files, dest);
@@ -311,6 +313,33 @@ module.exports = {
                     cb();
                 }))
                 .pipe(gulp.dest(''));
+        });
+
+        task('generate-full-rest', ['read-rest-api', 'overwrite-schemas'], function () {
+            var completeApi = Object.assign({}, restApi);
+            completeApi.definitions = {};
+            delete completeApi.tsModels;
+            var fileToType = {};
+            return gulp.src('model/json-schema-v3/**/*.json', {cwd: dest})
+                .pipe(through.obj(function (file, enc, cb) {
+                    var schema = JSON.parse(file.contents.toString());
+                    fileToType[path.parse(file.path).base] = schema.id;
+                    delete schema.definitions;
+                    delete schema.$schema;
+                    completeApi.definitions[schema.id] = schema;
+                    cb();
+                }))
+                .on('finish', function () {
+                    traverse.forEach(completeApi, function (value) {
+                        if (this.key === '$ref' && fileToType[value]) {
+                            this.update('#/definitions/' + fileToType[value]);
+                        }
+                    });
+                    var out = path.resolve(dest, 'model/rest/openapi');
+                    fse.mkdirsSync(out);
+                    fs.writeFileSync(path.resolve(out, 'complete-api.json'), JSON.stringify(completeApi, null, 2));
+                    fs.writeFileSync(path.resolve(out, 'complete-api.yaml'), yaml.stringify(completeApi, 6, 2));
+                });
         });
 
         task('serve', ['inject-css'], function () {
