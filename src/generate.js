@@ -156,31 +156,25 @@ module.exports = {
             return module(['typescript/lib/lib.d.ts']).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
-//needed?
-        var referencedModels = [];
-        task('referenced-models', function () {
-            return gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source})
-                .pipe(through.obj(function (file, enc, cb) {
-                    var api = fileContents(file);
-                    for (var i = 0; i < api.tsModels.length; i++) {
-                        referencedModels.push(path.resolve(source, 'rest/openapi', api.tsModels[i]));
-                    }
-                    cb();
-                }));
-        });
-
         function fileContents(file) {
             var raw = file.contents.toString();
             return file.path.substring(file.path.lastIndexOf('.') + 1) === 'yaml'
                 ? yaml.parse(raw) : JSON.parse(raw);
         }
 
-        task('generate-schema', ['referenced-models', 'unpack-models', 'generate-tsconfig'], function () {
-            referencedModels.push('model/ts/**/*.ts');
-            return require('./generate-schema').generate(
-                dependencyTypes,
-                path.resolve(source, 'model/ts/tsconfig.json'),
-                gulp.src(referencedModels, {cwd: source}), dest);
+        task('generate-schema', ['unpack-models', 'generate-tsconfig'], function () {
+            var files = [];
+            return gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source})
+                .pipe(through.obj(function (file, enc, cb) {
+                    var api = fileContents(file);
+                    for (var i = 0; i < api.tsModels.length; i++) {
+                        files.push(path.resolve(source, 'rest/openapi', api.tsModels[i]));
+                    }
+                    cb();
+                })).on('finish', function () {
+                    require('./generate-schema').generate(
+                        dependencyTypes, path.resolve(source, 'model/ts/tsconfig.json'), files, dest);
+                });
         });
 
         task('generate-constants', function () {

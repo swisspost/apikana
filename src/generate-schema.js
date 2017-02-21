@@ -10,45 +10,35 @@ var schemaGen = require('./schema-gen');
 var params = require('./params');
 
 module.exports = {
-    generate: function (dependencyTypes, tsconfig, source, dest) {
+    generate: function (dependencyTypes, tsconfig, files, dest) {
         fse.mkdirsSync(schemaDir('v3'));
         fse.mkdirsSync(schemaDir('v4'));
 
-        var files = [];
-        return source
-            .pipe(through.obj(function (file, enc, cb) {
-                files.push(file.path);
-                cb();
-            }))
-            .on('finish', generateSchemas);
-
-        function generateSchemas() {
-            var schemas = schemaGen.generate(tsconfig, files);
-            if (schemas) {
-                for (var type in schemas.definitions) {
-                    log('Found definition', colors.magenta(type));
-                    var sn = schemaName(type);
-                    // if (dependencyTypes[sn]) {
-                    //     gutil.log(colors.red('Type'), colors.magenta(type),
-                    //         colors.red('already defined as dependency in'),
-                    //         colors.magenta(dependencyTypes[sn] + '/' + sn));
-                    //     throw new gutil.PluginError('apikana', 'multi definition');
-                    // }
-                    var schema = schemaGen.generate(tsconfig, files, type);
-                    traverse(schema).forEach(function (value) {
-                        if (this.key === '$ref' && value.substring(0, 14) === '#/definitions/') {
-                            this.update(schemaName(value.substring(14)));
-                        }
-                    });
-                    if (params.javaPackage()) {
-                        schema.javaType = params.javaPackage() + '.' + schema.id;
-                        schema.javaInterfaces = ['java.io.Serializable'];
+        var schemas = schemaGen.generate(tsconfig, files);
+        if (schemas) {
+            for (var type in schemas.definitions) {
+                log('Found definition', colors.magenta(type));
+                var sn = schemaName(type);
+                // if (dependencyTypes[sn]) {
+                //     gutil.log(colors.red('Type'), colors.magenta(type),
+                //         colors.red('already defined as dependency in'),
+                //         colors.magenta(dependencyTypes[sn] + '/' + sn));
+                //     throw new gutil.PluginError('apikana', 'multi definition');
+                // }
+                var schema = schemaGen.generate(tsconfig, files, type);
+                traverse(schema).forEach(function (value) {
+                    if (this.key === '$ref' && value.substring(0, 14) === '#/definitions/') {
+                        this.update(schemaName(value.substring(14)));
                     }
-                    schema.definitions = [];
-                    fs.writeFileSync(schemaFile(type, 'v4'), JSON.stringify(schema, null, 2));
-                    convertToV3(schema);
-                    fs.writeFileSync(schemaFile(type, 'v3'), JSON.stringify(schema, null, 2));
+                });
+                if (params.javaPackage()) {
+                    schema.javaType = params.javaPackage() + '.' + schema.id;
+                    schema.javaInterfaces = ['java.io.Serializable'];
                 }
+                schema.definitions = [];
+                fs.writeFileSync(schemaFile(type, 'v4'), JSON.stringify(schema, null, 2));
+                convertToV3(schema);
+                fs.writeFileSync(schemaFile(type, 'v3'), JSON.stringify(schema, null, 2));
             }
         }
 
