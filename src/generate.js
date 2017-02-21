@@ -239,7 +239,9 @@ module.exports = {
                             if (!schemaEquals(schema1, schema2)) {
                                 log(colors.red('Type'), colors.magenta(filename.name),
                                     colors.red('is defined differently in'),
-                                    colors.magenta(schema1.definedIn), colors.red('and in'), colors.magenta(schema2.definedIn));
+                                    colors.magenta(schema1.definedIn, '(', path.relative(source, existing), ')'),
+                                    colors.red('and in'),
+                                    colors.magenta(schema2.definedIn, '(', path.relative(source, file.path), ')'));
                                 throw new gutil.PluginError('apikana', 'multi definition');
                             }
                         }
