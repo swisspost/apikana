@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 var path=require('path');
 var fs=require('fs');
-var gutil = require('gulp-util');
 var chalk = require('chalk');
+var params = require('../src/params');
 var argc=process.argv.length;
 
 require('../src/logo');
@@ -16,6 +16,11 @@ if (argc===2){
         case 'start':
             generate();
             break;
+        case 'stop':
+            require('../src/server/stop').stop(params.port(), function(){
+                console.log('Stopped');
+            });
+            break;
         default:
             help();
             break;
@@ -26,14 +31,17 @@ function help(){
     console.log(chalk.magenta('apikana help'),'                             Show this help.');
     console.log(chalk.magenta('apikana init'),'                             Initialize a new API project.');
     console.log(chalk.magenta('apikana start'),chalk.blue('[source] [target]'),chalk.red('[options]'),'Generate JSON schemas and HTML documentation from the API.');
-    console.log(chalk.blue('        source'),'                           Directory containing the APIs and models. Default: src');
-    console.log(chalk.blue('        target'),'                           Directory to generate the output to. Default: dist');
-    console.log(chalk.red('        --config=<file>'),'                  Read additional options from a file in JSON format.');
-    console.log(chalk.red('        --port=<number>'),'                  Port to serve the HTML documentation. Default: 8333');
-    console.log(chalk.red('        --javaPackage=<name>'),'             Java package to use.');
-    console.log(chalk.red('        --deploy=<boolean>'),'               If the sources should be copied into the target directory. Default: false');
-    console.log(chalk.red('        --dependencyPath=<path>'),'          Directory containing API dependencies. Default: node_modules/$api-dependencies');
-    console.log(chalk.red('        --openBrowser=<boolean>'),'          If the browser should be opened at first start. Default: true');
+    console.log(chalk.blue('               source'),'                    Directory containing the APIs and models. Default: src');
+    console.log(chalk.blue('               target'),'                    Directory to generate the output to. Default: dist');
+    console.log(chalk.red('             --config=<file>'),'             Read additional options from a file in JSON format.');
+    console.log(chalk.red('             --javaPackage=<name>'),'        Java package to use.');
+    console.log(chalk.red('             --deploy=<boolean>'),'          If the sources should be copied into the target directory. Default: false');
+    console.log(chalk.red('             --dependencyPath=<path>'),'     Directory containing API dependencies. Default: node_modules/$api-dependencies');
+    console.log(chalk.red('             --port=<number>'),'             Port to serve the HTML documentation. Default: 8333');
+    console.log(chalk.red('             --serve=<boolean>'),'           If the HTML documentation should be served over HTTP. Default: true');
+    console.log(chalk.red('             --openBrowser=<boolean>'),'     If the browser should be opened at first start. Default: true');
+    console.log(chalk.magenta('apikana stop '),chalk.red('[options]'),'                  Stop a running server.');
+    console.log(chalk.red('             --port=<number>'),'             Port of the server to be stopped. Default: 8333');
 }
 
 function generate(){
@@ -46,15 +54,7 @@ function generate(){
     if (argc>4 && process.argv[4].substring(0,2)!=='--'){
         target=process.argv[4];
     }
-    if (gutil.env.config){
-        var config=fs.readFileSync(gutil.env.config);
-        var configObj=JSON.parse(config);
-        for(var prop in configObj){
-            if (!gutil.env[prop]){
-                gutil.env[prop]=configObj[prop];
-            }
-        }
-    }
+    params.readConfigFile();
 
     console.log('Source: ', source);
     console.log('Target: ', target);

@@ -5,11 +5,12 @@ var through = require('through2');
 var path = require('path');
 var fs = require('fs');
 var yaml = require('yamljs');
+var params=require('./params');
 
 module.exports = {
     generate: function (source, dest) {
         return source
-            .pipe(createConstantsFile(gutil.env.javaPackage))
+            .pipe(createConstantsFile(params.javaPackage()))
             .pipe(dest);
 
         function createConstantsFile(javaPackage) {
@@ -70,7 +71,7 @@ module.exports = {
                     path: javaPackage.replace(/\./g, '/') + '/' + pathsName + '.java',
                     contents: new Buffer(contents)
                 }));
-                gutil.log('Generated', colors.magenta(pathsName + '.java'));
+                log('Generated', colors.magenta(pathsName + '.java'));
                 cb();
             });
 

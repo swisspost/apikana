@@ -12,7 +12,7 @@ var stream = require('stream');
 var merge = require('merge-stream');
 var through = require('through2');
 var yaml = require('yamljs');
-
+var params = require('./params');
 
 module.exports = {
     generate: function (source, dest) {
@@ -20,7 +20,7 @@ module.exports = {
         var apikanaPath = path.resolve(__dirname, '..');
         var privateModules = path.resolve(apikanaPath, 'node_modules');
         var modulesPath = fs.existsSync(privateModules) ? privateModules : path.resolve('node_modules');
-        var dependencyPath = path.resolve(gutil.env.dependencyPath || 'node_modules/$api-dependencies');
+        var dependencyPath = path.resolve(params.dependencyPath());
 
         var modelsExist = nonEmptyDir(path.resolve(source, 'model/ts'));
         var restExist = nonEmptyDir(path.resolve(source, 'rest/openapi'));
@@ -184,7 +184,7 @@ module.exports = {
         });
 
         task('generate-constants', function () {
-            if (!gutil.env.javaPackage) {
+            if (!params.javaPackage()) {
                 return emptyStream();
             }
             return require('./generate-constants').generate(
@@ -193,7 +193,7 @@ module.exports = {
         });
 
         task('copy-src', function () {
-            if (!gutil.env.deploy || gutil.env.deploy === 'false') {
+            if (!params.deploy()) {
                 return emptyStream();
             }
             return gulp.src('**/*', {cwd: source}).pipe(gulp.dest('src', {cwd: uiPath}));
@@ -272,7 +272,7 @@ module.exports = {
         });
 
         task('serve', ['inject-css'], function () {
-            if (!restExist) {
+            if (!restExist || !params.serve()) {
                 return emptyStream();
             }
             //argv is node, apikana, start, options...
@@ -280,7 +280,7 @@ module.exports = {
             args.unshift(process.argv[1] + '-serve');
             var proc = require('child_process').spawn(process.argv[0], args, {detached: true, stdio: 'ignore'});
             proc.unref();
-            var port = parseInt(gutil.env.port) || 8333;
+            var port = params.port();
             log('***** Serving API at', colors.blue.underline('http://localhost:' + port), '*****');
             return emptyStream();
         });

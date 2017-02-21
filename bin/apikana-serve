@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 var path=require('path');
-var gutil = require('gulp-util');
 var chalk = require('chalk');
+var params = require('../src/params');
 
 var source='src';
 var target='dist';
@@ -13,11 +13,10 @@ if (argc>3){
     target=process.argv[3];
 }
 
-var port=parseInt(gutil.env.port) || 8333;
+var port=params.port();
 
 console.log('Source: ', source);
 console.log('Target: ', target);
 console.log('URL:    ', chalk.blue.underline('http://localhost:' + port));
-//console.log('Env:    ', JSON.stringify(gutil.env, null, 2));
 
 require('../src/server/server').start(source,target,port);

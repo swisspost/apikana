@@ -7,6 +7,7 @@ var fs = require('fs');
 var fse = require('fs-extra');
 var path = require('path');
 var schemaGen = require('./schema-gen');
+var params = require('./params');
 
 module.exports = {
     generate: function (dependencyTypes, tsconfig, source, dest) {
@@ -39,8 +40,8 @@ module.exports = {
                             this.update(schemaName(value.substring(14)));
                         }
                     });
-                    if (gutil.env.javaPackage) {
-                        schema.javaType = gutil.env.javaPackage + '.' + schema.id;
+                    if (params.javaPackage()) {
+                        schema.javaType = params.javaPackage() + '.' + schema.id;
                         schema.javaInterfaces = ['java.io.Serializable'];
                     }
                     schema.definitions = [];
