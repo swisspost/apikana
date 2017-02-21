@@ -79,7 +79,7 @@ A sample configuration would look like:
     "start": "apikana start src dist"
   },
   "devDependencies": {
-    "apikana": "0.1.5"
+    "apikana": "0.1.7"
   }
 }
 ````
