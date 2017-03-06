@@ -1,17 +1,17 @@
-import {CompanyInfo} from "./company";
+import {CompanyInfo, UUID} from "./company";
 // import {Gender} from "acorn/gender";
 
-interface Users {
+export interface Users {
     count: number
     data: User[]
 }
 
-enum Gender{
+export enum Gender{
     MALE, FEMALE
 }
 
 export type Int=number // @TJS-type integer
-export type UUID=string // @format uuid
+
 
 export interface User {
     /**
@@ -23,7 +23,7 @@ export interface User {
      * @pattern [a-z]
      *
      */
-    firstName: string
+    firstName: string // @TJS-type integer
     lastName: string // the family name @pattern [A-Z]
     age?: Int
     gender: Gender
