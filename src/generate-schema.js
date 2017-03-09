@@ -16,25 +16,33 @@ module.exports = {
         fse.mkdirsSync(schemaDir('v4'));
 
         var schemas = schemaGen.generate(tsconfig, files);
-        if (schemas) {
-            for (var type in schemas.definitions) {
-                log('Found definition', colors.magenta(type));
-                var schema = schemaGen.generate(tsconfig, files, type);
-                traverse(schema).forEach(function (value) {
-                    if (this.key === '$ref' && value.substring(0, 14) === '#/definitions/') {
+        for (var name in schemas) {
+            log('Found definition', colors.magenta(name));
+            var schema = schemas[name];
+            var ref = {};
+            ref[name] = true;
+            for (var type in schema.definitions) {
+                var def = schema.definitions[type];
+                if (def.type === 'object' || def.enum) {
+                    delete schema.definitions[type];
+                    ref[type] = true;
+                }
+            }
+            traverse(schema).forEach(function (value) {
+                if (this.key === '$ref') {
+                    if (value.substring(0, 14) === '#/definitions/' && ref[value.substring(14)]) {
                         this.update(schemaName(value.substring(14)));
                     }
-                });
-                if (params.javaPackage()) {
-                    schema.javaType = params.javaPackage() + '.' + schema.id;
-                    schema.javaInterfaces = ['java.io.Serializable'];
                 }
-                schema.definitions = [];
-                schema.definedIn = myProject();
-                fs.writeFileSync(schemaFile(type, 'v4'), JSON.stringify(schema, null, 2));
-                convertToV3(schema);
-                fs.writeFileSync(schemaFile(type, 'v3'), JSON.stringify(schema, null, 2));
+            });
+            if (params.javaPackage()) {
+                schema.javaType = params.javaPackage() + '.' + schema.id;
+                schema.javaInterfaces = ['java.io.Serializable'];
             }
+            schema.definedIn = myProject();
+            fs.writeFileSync(schemaFile(name, 'v4'), JSON.stringify(schema, null, 2));
+            convertToV3(schema);
+            fs.writeFileSync(schemaFile(name, 'v3'), JSON.stringify(schema, null, 2));
         }
 
         function myProject() {

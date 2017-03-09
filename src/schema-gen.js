@@ -1,9 +1,9 @@
 var tjs = require('typescript-json-schema');
 var typescript = require('typescript');
-var ttjs=require('typescript-to-json-schema');
-var program=require('typescript-to-json-schema/dist/factory/program');
-var parser=require('typescript-to-json-schema/dist/factory/parser');
-var formatter=require('typescript-to-json-schema/dist/factory/formatter');
+var ttjs = require('typescript-to-json-schema');
+var program = require('typescript-to-json-schema/dist/factory/program');
+var parser = require('typescript-to-json-schema/dist/factory/parser');
+var formatter = require('typescript-to-json-schema/dist/factory/formatter');
 
 var readFile = typescript.sys.readFile;
 if (!readFile.patched) {
@@ -29,29 +29,33 @@ if (!readFile.patched) {
 }
 
 exports = {
-    generate: function (tsconfig, files, type) {
-        type = type || '*';
-        if (type!=='*') {
-            var cfg = {path: tsconfig,expose:'all',jsDoc:true};
-            var prg2 = program.createProgram(cfg);
-            var gen = new ttjs.SchemaGenerator(prg2, parser.createParser(prg2, cfg), formatter.createFormatter(cfg));
-            var s = gen.createSchema(type);
-            addIds(s);
-            cleanRefs(s);
-            for(var p in s){
-                console.log('%%%',p,JSON.stringify(s[p]));
+    generate: function (tsconfig, files) {
+        var cfg = {path: tsconfig, expose: 'all', jsDoc: true};
+        var prg2 = program.createProgram(cfg);
+        var gen = new ttjs.SchemaGenerator(prg2, parser.createParser(prg2, cfg), formatter.createFormatter(cfg));
+        var s = gen.createSchemas(function (fileName) {
+            return fileName.match('\.ts$') && !fileName.match('\.d\.ts$');
+        });
+        for (var p in s) {
+            console.log('@@@@@@@@@@@@', p);
+            // addIds(s[p],true);
+            // cleanRefs(s[p],true);
+            s[p].id = p;
+            for (var p2 in s[p]) {
+                console.log('%%%', p2, JSON.stringify(s[p][p2]));
+            }
+
+            var prg = tjs.getProgramFromFiles(files, compilerOpts());
+            var schema = tjs.generateSchema(prg, p, generatorOpts());
+            if (schema) {
+                addIds(schema, true);
+                cleanRefs(schema, true);
+            }
+            for (var p2 in schema) {
+                console.log('***', p2, JSON.stringify(schema[p2]));
             }
         }
-        var prg = tjs.getProgramFromFiles(files, compilerOpts());
-        var schema = tjs.generateSchema(prg, type, generatorOpts());
-        if (schema) {
-            addIds(schema, type === '*');
-            cleanRefs(schema, type === '*');
-        }
-        for(var p in schema) {
-            console.log('***',p, JSON.stringify(schema[p]));
-        }
-        return schema;
+        return s;
 
         function compilerOpts() {
             var opts = {};

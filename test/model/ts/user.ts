@@ -10,7 +10,7 @@ export enum Gender{
     MALE, FEMALE
 }
 
-export type Int=number // @TJS-type integer
+export type Int=number // @typedef integer
 
 
 export interface User {
@@ -21,7 +21,8 @@ export interface User {
     /**
      * the given name
      * @pattern [a-z]
-     *
+     * @asType dfl
+     * @description afasdfsd
      */
     firstName: string // @TJS-type integer
     lastName: string // the family name @pattern [A-Z]
