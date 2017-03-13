@@ -1,5 +1,5 @@
 window.docson = require('docson');
-window.tjs = require('typescript-json-schema');
+window.tjs = require('typescript-to-json-schema');
 window.typescript = require('typescript');
 
 window.typescript.sys = (function () {

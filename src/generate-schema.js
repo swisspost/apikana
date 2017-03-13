@@ -1,7 +1,6 @@
 var gutil = require('gulp-util');
 var colors = gutil.colors;
 var log = gutil.log;
-var through = require('through2');
 var traverse = require('traverse');
 var fs = require('fs');
 var fse = require('fs-extra');
@@ -19,21 +18,20 @@ module.exports = {
         for (var name in schemas) {
             log('Found definition', colors.magenta(name));
             var schema = schemas[name];
-            var ref = {};
-            ref[name] = true;
+            var extRef = {};
+            extRef[name] = true;
             for (var type in schema.definitions) {
                 var def = schema.definitions[type];
                 if (def.type === 'object' || def.enum) {
                     delete schema.definitions[type];
-                    ref[type] = true;
+                    extRef[type] = true;
                 }
             }
-            traverse(schema).forEach(function (value) {
-                if (this.key === '$ref') {
-                    if (value.substring(0, 14) === '#/definitions/' && ref[value.substring(14)]) {
-                        this.update(schemaName(value.substring(14)));
-                    }
+            schemaGen.processRefs(schema, function (ref) {
+                if (ref.substring(0, 14) === '#/definitions/' && extRef[ref.substring(14)]) {
+                    return schemaName(ref.substring(14));
                 }
+                return ref;
             });
             if (params.javaPackage()) {
                 schema.javaType = params.javaPackage() + '.' + schema.id;

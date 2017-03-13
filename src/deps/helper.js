@@ -37,8 +37,11 @@ $ = function (f) {
         }
         var schema = schemaGen.generate('src/model/ts/tsconfig.json', files);
         if (schema) {
-            for (var def in schema.definitions) {
-                spec.definitions[def] = schema.definitions[def];
+            for (var def in schema) {
+                schemaGen.processRefs(schema[def],function(ref){
+                    return ref.replace('/definitions', '');
+                });
+                spec.definitions[def] = schema[def];
             }
         }
         _ = lodash;  //restore lodash
