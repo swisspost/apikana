@@ -1,4 +1,5 @@
 import {CompanyInfo, UUID} from "./company";
+import {Int} from "apikana/default-types";
 // import {Gender} from "acorn/gender";
 
 export interface Users {
@@ -7,11 +8,8 @@ export interface Users {
 }
 
 export enum Gender{
-    MALE, FEMALE
+    MALE = "MALE" as any, FEMALE = "FEMALE" as any
 }
-
-export type Int=number // @typedef integer
-
 
 export interface User {
     /**
@@ -24,7 +22,7 @@ export interface User {
      * @asType dfl
      * @description afasdfsd
      */
-    firstName: string // @TJS-type integer
+    firstName: string // @asType integer
     lastName: string // the family name @pattern [A-Z]
     age?: Int
     gender: Gender

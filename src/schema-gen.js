@@ -25,15 +25,32 @@ if (!readFile.patched) {
 exports = {
     generate: function (tsconfig, files) {
         var cfg = {paths: files, expose: 'all', jsDoc: 'extended', lineComment: true};
-        var prg = program.createProgram(cfg, compilerOpts());
-        var gen = new tjs.SchemaGenerator(prg, parser.createParser(prg, cfg), formatter.createFormatter(cfg));
-        var s = gen.createSchemas(function (fileName) {
-            return fileName.match('\.ts$') && !fileName.match('\.d\.ts$');
-        });
+        try {
+            var prg = program.createProgram(cfg, compilerOpts());
+            var gen = new tjs.SchemaGenerator(prg, parser.createParser(prg, cfg), formatter.createFormatter(cfg));
+            var s = gen.createSchemas(function (fileName) {
+                return fileName.match('\.ts$') && !fileName.match('\.d\.ts$');
+            });
+        } catch (e) {
+            throw new Error('\n' + e.diagnostics.map(function (d) {
+                    var pos = calcPos(d.file.text, d.start);
+                    return d.file.fileName + ':' + pos.line + ':' + pos.col + ' ' + d.messageText;
+                }).join('\n'));
+        }
         for (var p in s) {
             s[p].id = p;
         }
         return s;
+
+        function calcPos(data, start) {
+            var newLine = /\r?\n/g;
+            var line = 1, lastIndex = 0, res;
+            while ((res = newLine.exec(data)) !== null && res.index < start) {
+                line++;
+                lastIndex = res.index;
+            }
+            return {line: line, col: start - lastIndex};
+        }
 
         function compilerOpts() {
             var opts = {};

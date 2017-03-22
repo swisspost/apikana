@@ -1,4 +1,4 @@
-export type Int=number // @type integer
+export type Int=number // @asType integer
 export type DateTime=string // @format date-time
 export type DateOnly=string // @format date
 export type TimeOnly=string // @format time
