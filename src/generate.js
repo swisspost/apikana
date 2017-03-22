@@ -210,7 +210,9 @@ module.exports = {
                 unpack('dist/model', 'json-schema-v3', '**/*.json'),
                 unpack('dist/model', 'json-schema-v4', '**/*.json'),
                 unpack('src', 'style', '**/*', true),
-                unpack('src/model', 'ts', '**/*.ts'));
+                unpack('src/model', 'ts', '**/*.ts'),
+                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath}).pipe(gulp.dest('ts/apikana', {cwd: dependencyPath}))
+            );
         });
 
         function unpack(baseDir, subDir, pattern, absolute) {
