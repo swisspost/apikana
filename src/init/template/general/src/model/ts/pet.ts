@@ -1,3 +1,5 @@
+import {Int} from "apikana/default-types";
+
 export interface Pet {
     id: string // the id
 
@@ -18,10 +20,7 @@ export interface Pet {
      */
     birthday: string
 
-    /**
-     * @type integer
-     */
-    legs: number
+    legs: Int
 
     parent?: Pet
 }
