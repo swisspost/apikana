@@ -1,6 +1,6 @@
 {
   "name": "apikana",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Integrated tools for REST API design - ｱﾋﾟ",
   "main": "index.js",
   "bin": {
@@ -50,8 +50,8 @@
     "through2": "2.0.3",
     "traverse": "0.6.6",
     "typescript": "2.1.5",
-    "typescript-to-json-schema":"0.2.1",
-    "typescript-to-json-schema-extra":"0.0.2",
+    "typescript-to-json-schema": "0.2.1",
+    "typescript-to-json-schema-extra": "0.0.2",
     "vinyl-buffer": "1.0.0",
     "vinyl-source-stream": "1.1.0",
     "yamljs": "0.2.8"
