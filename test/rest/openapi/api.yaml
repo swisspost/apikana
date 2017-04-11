@@ -1,4 +1,6 @@
-basePath: https://base
+host: https://base
+basePath: /api
+
 info:
   contact:
     email: user@all.users

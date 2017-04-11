@@ -53,7 +53,7 @@ module.exports = {
                 }
                 var pathsName = classOf(prefix) + 'Api';
                 contents += 'public class ' + pathsName + ' {\n' +
-                    '    public static final String BASE_URL = "' + (api.basePath || '') + '";\n' +
+                    '    public static final String BASE_URL = "' + (api.host || '') + '";\n' +
                     '    private static abstract class Path {\n' +
                     '        public abstract String path();\n' +
                     '        public String url() {\n' +
@@ -64,7 +64,8 @@ module.exports = {
                     '        }\n' +
                     '    }\n';
 
-                write(model, prefix, prefix, 1);
+                var basePath = (api.basePath ? api.basePath + '/' : '') + prefix;
+                write(model, basePath, prefix, 1);
                 contents += '}';
 
                 this.push(new gutil.File({
@@ -142,7 +143,7 @@ module.exports = {
                         var pathElem = param ? 'value' : ('"' + name + '"');
                         var pathMethod = (endpoint ? 'public' : 'private') + ' String path() { return ' +
                             (level === 1
-                                ? '"' + parent + '" + ' + pathElem + '; }'
+                                ? '"' + path + '" + ' + pathElem + '; }'
                                 : classOf(parent) + '.this.path() + "/" + ' + pathElem + '; }');
 
                         line(child);
