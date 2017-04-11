@@ -195,7 +195,7 @@ module.exports = {
             }
             return require('./generate-constants').generate(
                 gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source}),
-                gulp.dest('model/java', {cwd: dest}));
+                gulp.dest('model', {cwd: dest}));
         });
 
         task('copy-src', function () {
@@ -205,12 +205,16 @@ module.exports = {
             return gulp.src('**/*', {cwd: source}).pipe(gulp.dest('src', {cwd: uiPath}));
         });
 
+        task('copy-ts-model', function () {
+            return gulp.src('model/ts/**/*.ts', {cwd: source}).pipe(gulp.dest('model/ts', {cwd: dest}));
+        });
+
         task('unpack-models', function () {
             return merge(
                 unpack('dist/model', 'json-schema-v3', '**/*.json'),
                 unpack('dist/model', 'json-schema-v4', '**/*.json'),
                 unpack('src', 'style', '**/*', true),
-                unpack('src/model', 'ts', '**/*.ts'),
+                unpack('dist/model', 'ts', '**/*.ts'),
                 gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath}).pipe(gulp.dest('ts/apikana', {cwd: dependencyPath}))
             );
         });
