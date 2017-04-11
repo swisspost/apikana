@@ -18,7 +18,9 @@ module.exports = {
                 var apiName = ((api.info || {}).title || '') + 'Paths';
                 var model = createModel(api.paths);
 
-                this.push(generate(model, new JavaGen(javaPackage, apiName, api.host)));
+                if (javaPackage) {
+                    this.push(generate(model, new JavaGen(javaPackage, apiName, api.host)));
+                }
                 this.push(generate(model, new TsGen(apiName, api.host)));
                 cb();
 

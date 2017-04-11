@@ -190,9 +190,6 @@ module.exports = {
         });
 
         task('generate-constants', function () {
-            if (!params.javaPackage()) {
-                return emptyStream();
-            }
             return require('./generate-constants').generate(
                 gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source}),
                 gulp.dest('model', {cwd: dest}));
