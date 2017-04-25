@@ -12,7 +12,8 @@
     "build": "browserify src/browserify.js -t brfs -i source-map-support > lib/browserify.js",
     "test-build": "node bin/apikana start test test-dist --javaPackage=apikana.test",
     "test-deploy": "node bin/apikana start test test-deploy --javaPackage=apikana.test --deploy",
-    "test-serve": "node bin/apikana-serve test test-dist --port=8222"
+    "test-serve": "node bin/apikana-serve test test-dist --port=8222",
+    "prepublish": "crlf --set=LF bin/*"
   },
   "repository": {
     "type": "git",
@@ -59,6 +60,7 @@
   "devDependencies": {
     "brfs": "1.4.3",
     "browserify": "13.0.0",
+    "crlf": "1.1.0",
     "docson": "1.0.2"
   }
 }
