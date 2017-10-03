@@ -21,8 +21,11 @@ module.exports = function (apiName, host) {
                 '    private path() { return "' + path + '"; }\n';
             write(obj, path, 1);
             for (var cn in classes) {
-                contents += classes[cn];
+                if (cn !== path) {
+                    contents += classes[cn];
+                }
             }
+            contents += classes[path];
         },
         finish: function () {
         },
@@ -39,6 +42,7 @@ module.exports = function (apiName, host) {
         var keys = Object.keys(obj);
         keys.sort();
         var stat = level === 1 ? 'static ' : '';
+        var thisExpr = level === 1 ? 'new ' + classOf(apiName) + '()' : 'this';
         for (var i = 0; i < keys.length; i++) {
             var name = keys[i];
             if (name.charAt(0) !== '/') {
@@ -51,8 +55,8 @@ module.exports = function (apiName, host) {
                 var param = obj[name]['/param'];
 
                 var child = stat + (param
-                        ? fieldOf(name) + '(' + fieldOf(name) + '?: ' + tsType(param) + '){ return new ' + classOf(newPath) + '(this, ' + fieldOf(name) + '); }'
-                        : 'readonly ' + fieldOf(name) + ' = new ' + classOf(newPath) + '(this);');
+                    ? fieldOf(name) + '(' + fieldOf(name) + '?: ' + tsType(param) + '){ return new ' + classOf(newPath) + '(' + thisExpr + ', ' + fieldOf(name) + '); }'
+                    : 'readonly ' + fieldOf(name) + ' = new ' + classOf(newPath) + '(' + thisExpr + ');');
 
                 var constructor = 'constructor(private parent' +
                     (param ? ', private value?: ' + tsType(param) : '') + '){' +
