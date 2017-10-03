@@ -174,8 +174,15 @@ module.exports = {
             var files = [];
             var collector = emptyStream();
             if (restExist) {
-                for (var i = 0; i < restApi.tsModels.length; i++) {
-                    files.push(path.resolve(source, 'rest/openapi', restApi.tsModels[i]));
+                var ref = restApi.definitions && restApi.definitions.$ref;
+                if (ref) {
+                    if (Array.isArray(ref)) {
+                        for (var i = 0; i < ref.length; i++) {
+                            files.push(path.resolve(source, 'rest/openapi', ref[i]));
+                        }
+                    } else {
+                        files.push(path.resolve(source, 'rest/openapi', ref));
+                    }
                 }
             } else if (modelsExist) {
                 collector = gulp.src('model/ts/**/*.ts', {cwd: source})
@@ -321,7 +328,7 @@ module.exports = {
         task('generate-full-rest', ['read-rest-api', 'overwrite-schemas'], function () {
             var completeApi = Object.assign({}, restApi);
             completeApi.definitions = {};
-            delete completeApi.tsModels;
+            delete completeApi.definitions.$ref;
             var fileToType = {};
             return gulp.src('model/json-schema-v3/**/*.json', {cwd: dest})
                 .pipe(through.obj(function (file, enc, cb) {

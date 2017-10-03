@@ -23,7 +23,6 @@ $ = function (f) {
 
     fetchApi().then(function (json) {
         spec = json;
-        spec.tsModels = spec.tsModels || [];
         spec.definitions = spec.definitions || {};
         //keep swagger ui happy
         for (var p in spec.paths) {
@@ -31,11 +30,8 @@ $ = function (f) {
                 spec.paths[p] = {};
             }
         }
-        var files = [];
-        for (var i = 0; i < spec.tsModels.length; i++) {
-            files.push('src' + path + spec.tsModels[i]);
-        }
-        var schema = schemaGen.generate('src/model/ts/tsconfig.json', files);
+
+        var schema = schemaGen.generate('src/model/ts/tsconfig.json', modelFiles(spec, path));
         if (schema) {
             for (var def in schema) {
                 schemaGen.processRefs(schema[def],function(ref){
@@ -49,6 +45,19 @@ $ = function (f) {
     }).catch(function (err) {
         alert('Problem loading api: ' + err);
     });
+
+    function modelFiles(spec, path) {
+        var models = spec.definitions.$ref || [];
+        if (!Array.isArray(models)) {
+            models = [models];
+        }
+        var files = [];
+        for (var i = 0; i < models.length; i++) {
+            files.push('src' + path + models[i]);
+        }
+        delete spec.definitions.$ref;
+        return files;
+    }
 
     function fetchApi() {
         return fetch('src' + path + 'api.json').then(function (res) {
@@ -144,8 +153,8 @@ function absolutizeURI(base, href) {// RFC 3986
     base = parseURI(base || '');
 
     return !href || !base ? null : (href.protocol || base.protocol) +
-    (href.protocol || href.authority ? href.authority : base.authority) +
-    removeDotSegments(href.protocol || href.authority || href.pathname.charAt(0) === '/' ? href.pathname : (href.pathname ? ((base.authority && !base.pathname ? '/' : '') + base.pathname.slice(0, base.pathname.lastIndexOf('/') + 1) + href.pathname) : base.pathname)) +
-    (href.protocol || href.authority || href.pathname ? href.search : (href.search || base.search)) +
-    href.hash;
+        (href.protocol || href.authority ? href.authority : base.authority) +
+        removeDotSegments(href.protocol || href.authority || href.pathname.charAt(0) === '/' ? href.pathname : (href.pathname ? ((base.authority && !base.pathname ? '/' : '') + base.pathname.slice(0, base.pathname.lastIndexOf('/') + 1) + href.pathname) : base.pathname)) +
+        (href.protocol || href.authority || href.pathname ? href.search : (href.search || base.search)) +
+        href.hash;
 }

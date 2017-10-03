@@ -42,5 +42,6 @@ paths:
         500:
           description: Pets are dead.
 
-tsModels:
-  - ../../model/ts/pet.ts
+definitions:
+  $ref:
+    - ../../model/ts/pet.ts

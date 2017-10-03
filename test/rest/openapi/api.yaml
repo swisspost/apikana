@@ -76,5 +76,6 @@ swagger: 2.0
 tags:
   - description: user4
     name: user5
-tsModels:
-  - ../../model/ts/user.ts
+definitions:
+  $ref:
+    - ../../model/ts/user.ts
