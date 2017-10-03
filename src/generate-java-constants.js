@@ -17,8 +17,11 @@ module.exports = function (javaPackage, apiName, host) {
                 '        public final String url(String base) {\n' +
                 '            return base + path();\n' +
                 '        }\n' +
+                '        public final String relativeTo(String other) {\n' +
+                '            if (!path().startsWith(other)) { throw new IllegalArgumentException(other + " is not a prefix of " + path()); }\n' +
+                '            return path().substring(other.length());\n' +
+                '        }\n' +
                 '    }\n';
-
         },
         write: function (obj, path) {
             write(obj, path, null, 1);
@@ -60,7 +63,7 @@ module.exports = function (javaPackage, apiName, host) {
                         : '(){}');
 
                 var pathElem = param ? 'value' : ('"' + name + '"');
-                var pathMethod = (endpoint ? 'public' : 'private') + ' final String path() { return ' +
+                var pathMethod = (endpoint ? 'public final' : 'private') + ' String path() { return ' +
                     (level === 1
                         ? '"' + path + '/" + ' + pathElem + '; }'
                         : classOf(parent) + '.this.path() + "/" + ' + pathElem + '; }');

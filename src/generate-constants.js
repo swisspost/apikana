@@ -4,6 +4,7 @@ var fs = require('fs');
 var yaml = require('yamljs');
 var params = require('./params');
 var JavaGen = require('./generate-java-constants');
+var OldJavaGen = require('./generate-old-java-constants');
 var TsGen = require('./generate-ts-constants');
 
 module.exports = {
@@ -20,13 +21,14 @@ module.exports = {
 
                 if (javaPackage) {
                     this.push(generate(model, new JavaGen(javaPackage, apiName, api.host)));
+                    this.push(generate(model, new OldJavaGen(javaPackage, apiName)));
                 }
                 this.push(generate(model, new TsGen(apiName, api.host)));
                 cb();
 
                 function generate(model, generator) {
                     generator.start();
-                    generator.write(model, (api.basePath || ''));
+                    generator.write(model, (api.basePath || ''), api.paths);
                     generator.finish();
                     return generator.toFile();
                 }
