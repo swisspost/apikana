@@ -21,6 +21,9 @@ $ = function (f) {
 
     var path = '/rest/openapi/';
     var baseUrl = getAbsoluteUrl(getUrlParameter('url')) || 'src';
+    if (baseUrl.substring(baseUrl.length - 1) === '/') {
+        baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+    }
 
     fetchApi().then(function (json) {
         spec = json;
@@ -54,7 +57,13 @@ $ = function (f) {
         }
         var files = [];
         for (var i = 0; i < models.length; i++) {
-            files.push(baseUrl + path + models[i]);
+            var parts = models[i].split(/[,\n]/);
+            for (var j = 0; j < parts.length; j++) {
+                var model = parts[j].trim();
+                if (model) {
+                    files.push(baseUrl + path + model);
+                }
+            }
         }
         delete spec.definitions.$ref;
         return files;

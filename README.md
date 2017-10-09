@@ -33,7 +33,8 @@ This starts an interactive wizard that lets you define the main aspects of the A
 
 When `apikana start src dist` is executed, it looks in `src/rest/openapi` for a file named `api.yaml` or `api.json`.
 This is an [OpenAPI 2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) file defining the REST API.
-In the `definitions` section a `$ref` string or array can be given which reference typescript file(s) defining the data models.
+In the `definitions` section a `$ref` can be given which references typescript file(s) defining the data models.
+`$ref` can be a comma or newline separated string or an array thereof. 
 The typescript files are expected to be in `src/model/ts`. The models should be defined as typescript `interface`s.
 
 At the end, the `dist` directory contains the json schemas and a complete HTML documentation of the API.

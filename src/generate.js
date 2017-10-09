@@ -43,6 +43,7 @@ module.exports = {
 
         function resolve(pattern) {
             return Array.isArray(pattern) ? pattern.map(doResolve) : doResolve(pattern);
+
             function doResolve(p) {
                 return path.resolve(modulesPath, p);
             }
@@ -176,12 +177,15 @@ module.exports = {
             if (restExist) {
                 var ref = restApi.definitions && restApi.definitions.$ref;
                 if (ref) {
-                    if (Array.isArray(ref)) {
-                        for (var i = 0; i < ref.length; i++) {
-                            files.push(path.resolve(source, 'rest/openapi', ref[i]));
+                    var refs = Array.isArray(ref) ? ref : [ref];
+                    for (var i = 0; i < refs.length; i++) {
+                        var parts = refs[i].split(/[,\n]/);
+                        for (var j = 0; j < parts.length; j++) {
+                            var model = parts[j].trim();
+                            if (model) {
+                                files.push(path.resolve(source, 'rest/openapi', model));
+                            }
                         }
-                    } else {
-                        files.push(path.resolve(source, 'rest/openapi', ref));
                     }
                 }
             } else if (modelsExist) {
