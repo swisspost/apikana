@@ -24,13 +24,9 @@ module.exports = {
         var modulesPath = fs.existsSync(privateModules) ? privateModules : path.resolve('node_modules');
         var dependencyPath = path.resolve(params.dependencyPath());
 
-        var modelsExist = nonEmptyDir(path.resolve(source, 'model/ts'));
-        var restExist = fs.existsSync(path.resolve(source, 'rest/openapi/api.yaml')) || fs.existsSync(path.resolve(source, 'rest/openapi/api.json'));
-        if (!modelsExist) {
-            log(colors.red('Empty model directory ' + source + '/model/ts'));
-        }
-        if (!restExist) {
-            log(colors.red('Empty rest directory ' + source + '/rest/openapi'));
+        var apiExist = fs.existsSync(path.resolve(source, params.api()));
+        if (!apiExist) {
+            log(colors.red('API file ' + source + '/' + params.api() + ' not found.'));
         }
 
         function nonEmptyDir(path) {
@@ -74,7 +70,7 @@ module.exports = {
         }
 
         task('copy-swagger', function () {
-            if (!restExist) {
+            if (!apiExist) {
                 return emptyStream();
             }
             return module('swagger-ui/dist/**').pipe(gulp.dest(uiPath));
@@ -91,7 +87,7 @@ module.exports = {
         });
 
         task('copy-package', function () {
-            if (!restExist) {
+            if (!apiExist) {
                 return emptyStream();
             }
 
@@ -112,7 +108,7 @@ module.exports = {
         }
 
         task('copy-deps', function () {
-            if (!restExist) {
+            if (!apiExist) {
                 return emptyStream();
             }
             return merge(
@@ -124,7 +120,7 @@ module.exports = {
         });
 
         task('copy-lib', function () {
-            if (!restExist) {
+            if (!apiExist) {
                 return emptyStream();
             }
             return gulp.src('lib/*.js', {cwd: apikanaPath}).pipe(gulp.dest('patch', {cwd: uiPath}));
@@ -151,58 +147,74 @@ module.exports = {
         });
 
         task('copy-deps-unref', function () {
-            if (!restExist) {
+            if (!apiExist) {
                 return emptyStream();
             }
             return module(['typescript/lib/lib.d.ts']).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
-        var restApi;
+        var restApi, modelFiles = [];
         task('read-rest-api', function () {
             if (restApi) {
                 return emptyStream();
             }
-            return gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source})
+            return gulp.src(params.api(), {cwd: source})
                 .pipe(through.obj(function (file, enc, cb) {
                     var raw = file.contents.toString();
                     restApi = file.path.substring(file.path.lastIndexOf('.') + 1) === 'yaml'
                         ? yaml.parse(raw) : JSON.parse(raw);
+                    var ref = restApi.definitions && restApi.definitions.$ref;
+                    if (ref) {
+                        var refBase = path.dirname(path.resolve(source, params.api()));
+                        var refs = Array.isArray(ref) ? ref : [ref];
+                        for (var i = 0; i < refs.length; i++) {
+                            var parts = refs[i].split(/[,\n]/);
+                            for (var j = 0; j < parts.length; j++) {
+                                var model = parts[j].trim();
+                                if (model) {
+                                    var modelFile = path.resolve(refBase, model);
+                                    if (!fs.existsSync(modelFile)) {
+                                        log(colors.red('Referenced model file ' + modelFile + ' does not exist.'));
+                                    } else {
+                                        modelFiles.push(modelFile);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (modelFiles.length > 0) {
+                        params.models(path.dirname(modelFiles[0]));
+                    }
                     cb();
                 }));
         });
 
         task('generate-schema', ['unpack-models', 'generate-tsconfig', 'copy-package', 'read-rest-api'], function () {
-            var files = [];
             var collector = emptyStream();
-            if (restExist) {
-                var ref = restApi.definitions && restApi.definitions.$ref;
-                if (ref) {
-                    var refs = Array.isArray(ref) ? ref : [ref];
-                    for (var i = 0; i < refs.length; i++) {
-                        var parts = refs[i].split(/[,\n]/);
-                        for (var j = 0; j < parts.length; j++) {
-                            var model = parts[j].trim();
-                            if (model) {
-                                files.push(path.resolve(source, 'rest/openapi', model));
-                            }
-                        }
+            if (modelFiles.length === 0) {
+                if (params.models() && fs.existsSync(path.resolve(source, params.models()))) {
+                    collector = gulp.src(params.models() + '/**/*.ts', {cwd: source})
+                        .pipe(through.obj(function (file, enc, cb) {
+                            modelFiles.push(file.path);
+                            cb();
+                        }));
+                } else {
+                    if (params.models()) {
+                        log(colors.red('Model directory ' + source + '/' + params.models() + ' does not exist.'));
+                    } else {
+                        log(colors.red('Don\'t know where to look for models. Either reference them in an api file or specify --models parameter.'));
                     }
+                    return emptyStream();
                 }
-            } else if (modelsExist) {
-                collector = gulp.src('model/ts/**/*.ts', {cwd: source})
-                    .pipe(through.obj(function (file, enc, cb) {
-                        files.push(file.path);
-                        cb();
-                    }));
             }
             return collector.on('finish', function () {
-                require('./generate-schema').generate(path.resolve(source, 'model/ts/tsconfig.json'), files, dest);
+                require('./generate-schema').generate(path.resolve(source, params.models(), 'tsconfig.json'), modelFiles, dest);
             });
         });
 
         task('generate-constants', function () {
             return require('./generate-constants').generate(
-                gulp.src('rest/openapi/api.@(json|yaml)', {cwd: source}),
+                gulp.src(params.api(), {cwd: source}),
                 gulp.dest('model', {cwd: dest}));
         });
 
@@ -213,8 +225,8 @@ module.exports = {
             return gulp.src('**/*', {cwd: source}).pipe(gulp.dest('src', {cwd: uiPath}));
         });
 
-        task('copy-ts-model', function () {
-            return gulp.src('model/ts/**/*.ts', {cwd: source}).pipe(gulp.dest('model/ts', {cwd: dest}));
+        task('copy-ts-model', ['read-rest-api'], function () {
+            return gulp.src(params.models() + '/**/*.ts', {cwd: source}).pipe(gulp.dest('model/ts', {cwd: dest}));
         });
 
         task('unpack-models', function () {
@@ -298,11 +310,11 @@ module.exports = {
             return true;
         }
 
-        task('generate-tsconfig', function () {
-            if (!modelsExist) {
+        task('generate-tsconfig', ['read-rest-api'], function () {
+            if (!params.models() || !fs.existsSync(path.resolve(source, params.models()))) {
                 return emptyStream();
             }
-            var tsconfig = path.resolve(source, 'model/ts/tsconfig.json');
+            var tsconfig = path.resolve(source, params.models(), 'tsconfig.json');
             if (!fs.existsSync(tsconfig)) {
                 fs.writeFileSync(tsconfig, '{}');
             }
@@ -357,7 +369,7 @@ module.exports = {
         });
 
         task('serve', ['inject-css'], function () {
-            if (!restExist || !params.serve()) {
+            if (!apiExist || !params.serve()) {
                 return emptyStream();
             }
             //argv is node, apikana, start, options...

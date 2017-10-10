@@ -19,13 +19,10 @@ $ = function (f) {
 
     Handlebars.templates.signature = Handlebars.compile('{{sanitize signature}}');
 
-    var path = '/rest/openapi/';
-    var baseUrl = getAbsoluteUrl(getUrlParameter('url')) || 'src';
-    if (baseUrl.substring(baseUrl.length - 1) === '/') {
-        baseUrl = baseUrl.substring(0, baseUrl.length - 1);
-    }
+    var srcBase = 'sources/a/b/c/d'; //this must match with server.js
+    var apiUrl = getAbsoluteUrl(getUrlParameter('url')) || (srcBase + '/api.yaml');
 
-    fetchApi().then(function (json) {
+    fetchApi(apiUrl).then(function (json) {
         spec = json;
         spec.definitions = spec.definitions || {};
         //keep swagger ui happy
@@ -35,13 +32,17 @@ $ = function (f) {
             }
         }
 
-        var schema = schemaGen.generate(baseUrl + '/model/ts/tsconfig.json', modelFiles(spec, path));
-        if (schema) {
-            for (var def in schema) {
-                schemaGen.processRefs(schema[def], function (ref) {
-                    return ref.replace('/definitions', '');
-                });
-                spec.definitions[def] = schema[def];
+        var apiBase = apiUrl.substring(0, apiUrl.lastIndexOf('/') + 1);
+        var models = modelFiles(spec, apiBase);
+        if (models.length > 0) {
+            var schema = schemaGen.generate(models[0].substring(0, models[0].lastIndexOf('/')) + '/tsconfig.json', models);
+            if (schema) {
+                for (var def in schema) {
+                    schemaGen.processRefs(schema[def], function (ref) {
+                        return ref.replace('/definitions', '');
+                    });
+                    spec.definitions[def] = schema[def];
+                }
             }
         }
         _ = lodash;  //restore lodash
@@ -61,7 +62,7 @@ $ = function (f) {
             for (var j = 0; j < parts.length; j++) {
                 var model = parts[j].trim();
                 if (model) {
-                    files.push(baseUrl + path + model);
+                    files.push(path + model);
                 }
             }
         }
@@ -69,30 +70,18 @@ $ = function (f) {
         return files;
     }
 
-    function fetchApi() {
-        return fetch(baseUrl + path + 'api.json').then(function (res) {
+    function fetchApi(url) {
+        return fetch(url).then(function (res) {
             if (res.ok) {
-                return res.text().then(function (json) {
-                    return JSON.parse(replaceVariables(json));
+                return res.text().then(function (contents) {
+                    return url.substring(url.lastIndexOf('.')) === '.json'
+                        ? JSON.parse(replaceVariables(contents))
+                        : YAML.parse(replaceVariables(contents));
                 });
             }
-            return fetchYaml();
+            throw Error(res.status + ' ' + res.statusText);
         }).catch(function (err) {
-            if (err instanceof TypeError) { //when a network error occurred
-                return fetchYaml();
-            }
-            throw err;
-        });
-    }
-
-    function fetchYaml() {
-        return fetch(baseUrl + path + 'api.yaml').then(function (res) {
-            if (res.ok) {
-                return res.text();
-            }
-            throw Error('Neither ' + path + 'api.json nor ' + path + 'api.yaml found.');
-        }).then(function (yaml) {
-            return YAML.parse(replaceVariables(yaml));
+            throw Error('Could not load API file ' + url + ': ' + err.message);
         });
     }
 

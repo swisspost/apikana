@@ -1,6 +1,9 @@
 var path = require('path');
 var opn = require('opn');
-var params=require('../params');
+var params = require('../params');
+
+var srcBase = 'sources/a/b/c/d'; //this must match with helper.js
+var srcStart = srcBase.substring(0, srcBase.indexOf('/') + 1);
 
 module.exports = {
     start: function (source, dest, port) {
@@ -21,9 +24,13 @@ module.exports = {
                 if (req.url === '/close') {
                     res.on('finish', process.exit).end('ok');
                 } else {
-                    if (route(req, 'src/', source));
-                    else if (route(req, sourceRelDependencyPath, dependencyPath));
-                    else if (route(req, '', dest + '/ui'));
+                    if (route(req, srcStart, function () {
+                            var rel = path.relative('/' + srcBase, req.url);
+                            return path.resolve(source, path.dirname(params.api()), rel);
+                        })) ;
+                    else if (route(req, 'src/', source)) ;
+                    else if (route(req, sourceRelDependencyPath, dependencyPath)) ;
+                    else if (route(req, '', dest + '/ui')) ;
                 }
             };
 
@@ -50,7 +57,7 @@ module.exports = {
 
             function route(req, from, to) {
                 if (startsWith(req.url, '/' + from)) {
-                    req.url = '/' + to + '/' + req.url.substring(from.length + 1);
+                    req.url = typeof to === 'function' ? to() : ('/' + to + '/' + req.url.substring(from.length + 1));
                     return true;
                 }
                 return false;
