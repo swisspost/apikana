@@ -361,7 +361,7 @@ module.exports = {
                             this.update('#/definitions/' + fileToType[value]);
                         }
                     });
-                    var out = path.resolve(dest, 'model/rest/openapi');
+                    var out = path.resolve(dest, 'model/openapi');
                     fse.mkdirsSync(out);
                     fs.writeFileSync(path.resolve(out, 'complete-api.json'), JSON.stringify(completeApi, null, 2));
                     fs.writeFileSync(path.resolve(out, 'complete-api.yaml'), yaml.stringify(completeApi, 6, 2));

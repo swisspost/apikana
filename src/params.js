@@ -23,7 +23,7 @@ module.exports = {
         return target;
     },
     api: function () {
-        return noSlash(gutil.env.api || 'rest/openapi/api.yaml');
+        return noSlash(gutil.env.api || 'openapi/api.yaml');
     },
     models: function (dir) {
         if (dir) {

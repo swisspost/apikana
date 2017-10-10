@@ -54,9 +54,9 @@ function init(name, isGlobal, forNode, opts) {
             pom = pom.replace('%' + opt + '%', opts[opt]);
         }
         fs.writeFileSync(name + '/pom.xml', pom);
-        var apiYaml = fs.readFileSync(name + '/src/rest/openapi/api.yaml').toString();
+        var apiYaml = fs.readFileSync(name + '/src/openapi/api.yaml').toString();
         apiYaml = apiYaml.replace('@version@', '@project.version@');
-        fs.writeFileSync(name + '/src/rest/openapi/api.yaml', apiYaml);
+        fs.writeFileSync(name + '/src/openapi/api.yaml', apiYaml);
     }
     finish();
 

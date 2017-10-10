@@ -31,16 +31,16 @@ This starts an interactive wizard that lets you define the main aspects of the A
 
 ### Use as a global tool
 
-When `apikana start src dist` is executed, it looks in `src/rest/openapi` for a file named `api.yaml` or `api.json`.
+When `apikana start src dist` is executed, it looks in `src/openapi` for a file named `api.yaml`.
 This is an [OpenAPI 2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) file defining the REST API.
 In the `definitions` section a `$ref` can be given which references typescript file(s) defining the data models.
 `$ref` can be a comma or newline separated string or an array thereof. 
-The typescript files are expected to be in `src/model/ts`. The models should be defined as typescript `interface`s.
+The models should be defined as typescript `export interface`s.
 
 At the end, the `dist` directory contains the json schemas and a complete HTML documentation of the API.
 Just open a browser at `http://localhost:8333`.
 
-`src/rest/openapi/api.yaml`
+`src/openapi/api.yaml`
 ````yaml
 paths:
   /sample/users:
@@ -52,10 +52,10 @@ paths:
           schema:
             $ref: "#/definitions/User"
 definitions:
-  $ref: ../../model/ts/user.ts
+  $ref: ../ts/user.ts
 ````
 
-`src/model/ts/user.ts`
+`src/ts/user.ts`
 ````ts
 export interface User {
     id: number
@@ -80,7 +80,7 @@ A sample configuration would look like:
     "start": "apikana start src dist"
   },
   "devDependencies": {
-    "apikana": "0.1.8"
+    "apikana": "0.2.0"
   }
 }
 ````

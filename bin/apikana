@@ -33,7 +33,7 @@ function help() {
     console.log(chalk.magenta('apikana start'), chalk.blue('[source] [target]'), chalk.red('[options]'), 'Generate JSON schemas and HTML documentation from the API.');
     console.log(chalk.blue('               source'), '                    Directory containing the APIs and models. Default: src');
     console.log(chalk.blue('               target'), '                    Directory to generate the output to. Default: dist');
-    console.log(chalk.red('             --api=<file>'), '                The main api file (yaml or json). Default: rest/openapi/api.yaml');
+    console.log(chalk.red('             --api=<file>'), '                The main api file (yaml or json). Default: openapi/api.yaml');
     console.log(chalk.red('             --models=<path>'), '             The directory containing the models. Default: Directory of the first referenced model in the api');
     console.log(chalk.red('             --config=<file>'), '             Read additional options from a file in JSON format.');
     console.log(chalk.red('             --javaPackage=<name>'), '        Java package to use.');
