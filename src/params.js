@@ -2,7 +2,7 @@ var gutil = require('gulp-util');
 var fs = require('fs');
 var objectPath = require('object-path');
 
-var models = noSlash(gutil.env.models);
+var models = noSlash(gutil.env.models || 'ts');
 
 module.exports = {
     readConfigFile: function () {

@@ -192,18 +192,14 @@ module.exports = {
         task('generate-schema', ['unpack-models', 'generate-tsconfig', 'copy-package', 'read-rest-api'], function () {
             var collector = emptyStream();
             if (modelFiles.length === 0) {
-                if (params.models() && fs.existsSync(path.resolve(source, params.models()))) {
+                if (fs.existsSync(path.resolve(source, params.models()))) {
                     collector = gulp.src(params.models() + '/**/*.ts', {cwd: source})
                         .pipe(through.obj(function (file, enc, cb) {
                             modelFiles.push(file.path);
                             cb();
                         }));
                 } else {
-                    if (params.models()) {
-                        log(colors.red('Model directory ' + source + '/' + params.models() + ' does not exist.'));
-                    } else {
-                        log(colors.red('Don\'t know where to look for models. Either reference them in an api file or specify --models parameter.'));
-                    }
+                    log(colors.red('Model directory ' + source + '/' + params.models() + ' does not exist.'));
                     return emptyStream();
                 }
             }
@@ -311,7 +307,7 @@ module.exports = {
         }
 
         task('generate-tsconfig', ['read-rest-api'], function () {
-            if (!params.models() || !fs.existsSync(path.resolve(source, params.models()))) {
+            if (!fs.existsSync(path.resolve(source, params.models()))) {
                 return emptyStream();
             }
             var tsconfig = path.resolve(source, params.models(), 'tsconfig.json');
