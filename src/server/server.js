@@ -26,7 +26,7 @@ module.exports = {
                 } else {
                     if (route(req, srcStart, function () {
                             var rel = path.relative('/' + srcBase, req.url);
-                            return path.resolve(source, path.dirname(params.api()), rel);
+                            return '/' + source + '/' + path.dirname(params.api()) + '/' + rel;
                         })) ;
                     else if (route(req, 'src/', source)) ;
                     else if (route(req, sourceRelDependencyPath, dependencyPath)) ;
