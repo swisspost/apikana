@@ -33,38 +33,30 @@ window.typescript.sys = (function () {
 
     return {
         readFile: function (f) {
-            // console.log('readFile', arguments);
             return readFile(f);
         },
         readDirectory: function () {
-            // console.log('readDirectory', arguments);
             return [];
         },
         getCurrentDirectory: function () {
-            // console.log('getCurrentDirectory', arguments);
             return '.';
         },
         directoryExists: function (f) {
             if (f.indexOf('@types') >= 0) {
                 return false;
             }
-            // console.log('directoryExists', arguments);
             return true;
         },
         getDirectories: function () {
-            // console.log('getDirectories', arguments);
             return [];
         },
         getExecutingFilePath: function () {
-            // console.log('getExecutingFilePath', arguments);
             return '.';
         },
         realpath: function (f) {
-            // console.log('realpath', arguments);
             return f;
         },
         fileExists: function (f) {
-            // console.log('fileExists', arguments);
             return !!readFile(f);
         }
     };
