@@ -18,7 +18,11 @@ module.exports = {
     },
     enrichWithParams: function (target) {
         for (var prop in gutil.env) {
-            objectPath.set(target, prop, gutil.env[prop]);
+            try {
+                objectPath.set(target, prop, gutil.env[prop]);
+            } catch (e) {
+                gutil.log(gutil.colors.red('Conflicting environment variable, could not write "' + prop + '". Rename the variable if you need it, otherwise just ignore.'));
+            }
         }
         return target;
     },
@@ -52,7 +56,7 @@ module.exports = {
 };
 
 function noSlash(s) {
-    if (!s){
+    if (!s) {
         return s;
     }
     var first = s.substring(0, 1);
