@@ -359,6 +359,8 @@ module.exports = {
                     });
                     var out = path.resolve(dest, 'model/openapi');
                     fse.mkdirsSync(out);
+                    fs.writeFileSync(path.resolve(out, 'api.json'), JSON.stringify(restApi, null, 2));
+                    fs.writeFileSync(path.resolve(out, 'api.yaml'), yaml.stringify(restApi, 6, 2));
                     fs.writeFileSync(path.resolve(out, 'complete-api.json'), JSON.stringify(completeApi, null, 2));
                     fs.writeFileSync(path.resolve(out, 'complete-api.yaml'), yaml.stringify(completeApi, 6, 2));
                 });
