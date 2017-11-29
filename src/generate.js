@@ -77,12 +77,14 @@ module.exports = {
         });
 
         task('copy-custom', ['copy-swagger'], function () {
-            return merge(copy(dependencyPath), copy(source));
+            return merge(
+                copy(path.resolve(dependencyPath, 'style')),
+                copy(path.resolve(source, params.style())));
 
             function copy(dir) {
                 return merge(
-                    gulp.src('style/@(*.ico|*.png|*.gif)', {cwd: dir}).pipe(gulp.dest('images', {cwd: uiPath})),
-                    gulp.src('style/*.css', {cwd: dir}).pipe(gulp.dest('custom-css', {cwd: uiPath})));
+                    gulp.src('*', {cwd: dir}).pipe(gulp.dest('style', {cwd: uiPath})),
+                    gulp.src('favicon*', {cwd: dir}).pipe(gulp.dest('images', {cwd: uiPath})));
             }
         });
 
@@ -128,7 +130,7 @@ module.exports = {
 
         task('inject-css', ['copy-swagger', 'copy-custom', 'copy-deps', 'copy-lib'], function () {
             return gulp.src('index.html', {cwd: uiPath})
-                .pipe(inject(gulp.src('custom-css/*.css', {cwd: uiPath, read: false}), {
+                .pipe(inject(gulp.src('style/*.css', {cwd: uiPath, read: false}), {
                     relative: true,
                     starttag: "<link href='css/print.css' media='print' rel='stylesheet' type='text/css'/>",
                     endtag: '<script '
@@ -229,7 +231,7 @@ module.exports = {
             return merge(
                 unpack('dist/model', 'json-schema-v3', '**/*.json'),
                 unpack('dist/model', 'json-schema-v4', '**/*.json'),
-                unpack('src', 'style', '**/*', true),
+                unpack('dist/ui', 'style', '**/*', true),
                 unpack('dist/model', 'ts', '**/*.ts'),
                 gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath}).pipe(gulp.dest('ts/apikana', {cwd: dependencyPath}))
             );

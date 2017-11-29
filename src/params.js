@@ -35,6 +35,9 @@ module.exports = {
         }
         return models;
     },
+    style: function () {
+        return noSlash(gutil.env.style || 'style');
+    },
     port: function () {
         return gutil.env.port || 8333;
     },

@@ -35,6 +35,7 @@ function help() {
     console.log(chalk.blue('               target'), '                    Directory to generate the output to. Default: dist');
     console.log(chalk.red('             --api=<file>'), '                The main api file (yaml or json). Default: openapi/api.yaml');
     console.log(chalk.red('             --models=<path>'), '             The directory containing the models, if no api file is given. Default: ts');
+    console.log(chalk.red('             --style=<path>'), '              The directory containing css files for the swagger GUI. Default: style');
     console.log(chalk.red('             --config=<file>'), '             Read additional options from a file in JSON format.');
     console.log(chalk.red('             --javaPackage=<name>'), '        Java package to use.');
     console.log(chalk.red('             --deploy=<boolean>'), '          If the sources should be copied into the target directory. Default: false');
