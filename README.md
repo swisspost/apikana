@@ -31,7 +31,7 @@ This starts an interactive wizard that lets you define the main aspects of the A
 
 ### Use as a global tool
 
-When `apikana start src dist` is executed, it looks in `src/openapi` for a file named `api.yaml`.
+When `apikana start src` is executed, it looks in `src/openapi` for a file named `api.yaml`.
 This is an [OpenAPI 2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) file defining the REST API.
 In the `definitions` section a `$ref` can be given which references typescript file(s) defining the data models.
 `$ref` can be a comma or newline separated string or an array thereof. 
@@ -77,10 +77,10 @@ A sample configuration would look like:
 {
   "name": "My API project",
   "scripts": {
-    "start": "apikana start src dist"
+    "start": "apikana start src"
   },
   "devDependencies": {
-    "apikana": "0.2.0"
+    "apikana": "0.2.3"
   }
 }
 ````

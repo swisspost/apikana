@@ -17,8 +17,8 @@ var generateEnv = require('./generate-env');
 var fse = require('fs-extra');
 
 module.exports = {
-    generate: function (source, dest) {
-        var uiPath = path.resolve(dest, 'ui');
+    generate: function (source) {
+        var uiPath = 'dist/ui';
         var apikanaPath = path.resolve(__dirname, '..');
         var privateModules = path.resolve(apikanaPath, 'node_modules');
         var modulesPath = fs.existsSync(privateModules) ? privateModules : path.resolve('node_modules');
@@ -206,14 +206,14 @@ module.exports = {
                 }
             }
             return collector.on('finish', function () {
-                require('./generate-schema').generate(path.resolve(source, params.models(), 'tsconfig.json'), modelFiles, dest);
+                require('./generate-schema').generate(path.resolve(source, params.models(), 'tsconfig.json'), modelFiles);
             });
         });
 
         task('generate-constants', function () {
             return require('./generate-constants').generate(
                 gulp.src(params.api(), {cwd: source}),
-                gulp.dest('model', {cwd: dest}));
+                gulp.dest('dist/model'));
         });
 
         task('copy-src', function () {
@@ -224,7 +224,7 @@ module.exports = {
         });
 
         task('copy-ts-model', ['read-rest-api'], function () {
-            return gulp.src(params.models() + '/**/*.ts', {cwd: source}).pipe(gulp.dest('model/ts', {cwd: dest}));
+            return gulp.src(params.models() + '/**/*.ts', {cwd: source}).pipe(gulp.dest('dist/model/ts'));
         });
 
         task('unpack-models', function () {
@@ -258,7 +258,7 @@ module.exports = {
                 gulp.src('json-schema-v3/**/*.json', {cwd: dependencyPath})
                     .pipe(through.obj(function (file, enc, cb) {
                         var filename = path.parse(file.path);
-                        var existing = path.resolve(dest, 'model/json-schema-v3', filename.base);
+                        var existing = path.resolve('dist/model/json-schema-v3', filename.base);
                         if (fs.existsSync(existing)) {
                             var schema1 = JSON.parse(fs.readFileSync(existing));
                             var schema2 = JSON.parse(file.contents.toString());
@@ -278,13 +278,13 @@ module.exports = {
                         path.dirname = '';
                         return path;
                     }))
-                    .pipe(gulp.dest('model/json-schema-v3', {cwd: dest})),
+                    .pipe(gulp.dest('dist/model/json-schema-v3')),
                 gulp.src('json-schema-v4/**/*.json', {cwd: dependencyPath})
                     .pipe(rename(function (path) {
                         path.dirname = '';
                         return path;
                     }))
-                    .pipe(gulp.dest('model/json-schema-v4', {cwd: dest})));
+                    .pipe(gulp.dest('dist/model/json-schema-v4')));
         });
 
         function schemaEquals(s1, s2) {
@@ -344,7 +344,7 @@ module.exports = {
             completeApi.definitions = {};
             delete completeApi.definitions.$ref;
             var fileToType = {};
-            return gulp.src('model/json-schema-v3/**/*.json', {cwd: dest})
+            return gulp.src('dist/model/json-schema-v3/**/*.json')
                 .pipe(through.obj(function (file, enc, cb) {
                     var schema = JSON.parse(file.contents.toString());
                     fileToType[path.parse(file.path).base] = schema.id;
@@ -359,7 +359,7 @@ module.exports = {
                             this.update('#/definitions/' + fileToType[value]);
                         }
                     });
-                    var out = path.resolve(dest, 'model/openapi');
+                    var out = 'dist/model/openapi';
                     fse.mkdirsSync(out);
                     fs.writeFileSync(path.resolve(out, 'api.json'), JSON.stringify(restApi, null, 2));
                     fs.writeFileSync(path.resolve(out, 'api.yaml'), yaml.stringify(restApi, 6, 2));

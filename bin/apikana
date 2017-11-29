@@ -30,9 +30,8 @@ if (argc === 2) {
 function help() {
     console.log(chalk.magenta('apikana help'), '                             Show this help.');
     console.log(chalk.magenta('apikana init'), '                             Initialize a new API project.');
-    console.log(chalk.magenta('apikana start'), chalk.blue('[source] [target]'), chalk.red('[options]'), 'Generate JSON schemas and HTML documentation from the API.');
+    console.log(chalk.magenta('apikana start'), chalk.blue('[source]'), chalk.red('[options]'), 'Generate JSON schemas and HTML documentation from the API.');
     console.log(chalk.blue('               source'), '                    Directory containing the APIs and models. Default: src');
-    console.log(chalk.blue('               target'), '                    Directory to generate the output to. Default: dist');
     console.log(chalk.red('             --api=<file>'), '                The main api file (yaml or json). Default: openapi/api.yaml');
     console.log(chalk.red('             --models=<path>'), '             The directory containing the models, if no api file is given. Default: ts');
     console.log(chalk.red('             --style=<path>'), '              The directory containing css files for the swagger GUI. Default: style');
@@ -49,18 +48,13 @@ function help() {
 
 function generate() {
     var source = 'src';
-    var target = 'dist';
 
     if (argc > 3 && process.argv[3].substring(0, 2) !== '--') {
         source = process.argv[3];
     }
-    if (argc > 4 && process.argv[4].substring(0, 2) !== '--') {
-        target = process.argv[4];
-    }
     params.readConfigFile();
 
     console.log('Source: ', source);
-    console.log('Target: ', target);
 
-    require('../src/generate').generate(path.resolve(source), path.resolve(target));
+    require('../src/generate').generate(path.resolve(source));
 }

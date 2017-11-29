@@ -3,6 +3,5 @@ node_modules/
 .idea/
 *.iml
 *.tgz
-test-dist/
-test-deploy/
+test/dist/
 generated-logo.js

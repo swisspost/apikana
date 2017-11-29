@@ -4,19 +4,14 @@ var chalk = require('chalk');
 var params = require('../src/params');
 
 var source = 'src';
-var target = 'dist';
 var argc = process.argv.length;
 if (argc > 2 && process.argv[2].substring(0, 2) !== '--') {
     source = process.argv[2];
-}
-if (argc > 3 && process.argv[3].substring(0, 2) !== '--') {
-    target = process.argv[3];
 }
 
 var port = params.port();
 
 console.log('Source: ', source);
-console.log('Target: ', target);
 console.log('URL:    ', chalk.blue.underline('http://localhost:' + port));
 
-require('../src/server/server').start(source, target, port);
+require('../src/server/server').start(source, port);
