@@ -8,7 +8,7 @@ export interface Users {
 }
 
 export enum Gender{
-    MALE = "MALE" as any, FEMALE = "FEMALE" as any
+    MALE, FEMALE
 }
 
 export interface User {

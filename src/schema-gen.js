@@ -1,9 +1,6 @@
 var typescript = require('typescript');
-var tjs = require('typescript-to-json-schema-extra/dist');
-var program = require('typescript-to-json-schema-extra/dist/factory/program');
-var parser = require('typescript-to-json-schema/dist/factory/parser');
-var formatter = require('typescript-to-json-schema/dist/factory/formatter');
 
+//important: patch readFile before require typescript-to-json-schema-extra
 var readFile = typescript.sys.readFile;
 if (!readFile.patched) {
     typescript.sys.readFile = function (name) {
@@ -21,6 +18,11 @@ if (!readFile.patched) {
     };
     typescript.sys.readFile.patched = true;
 }
+
+var tjs = require('typescript-to-json-schema-extra/dist');
+var program = require('typescript-to-json-schema-extra/dist/factory/program');
+var parser = require('typescript-to-json-schema/dist/factory/parser');
+var formatter = require('typescript-to-json-schema/dist/factory/formatter');
 
 exports = {
     generate: function (tsconfig, files) {
