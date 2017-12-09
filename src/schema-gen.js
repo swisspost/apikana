@@ -34,10 +34,13 @@ exports = {
                 return fileName.match('\.ts$') && !fileName.match('\.d\.ts$');
             });
         } catch (e) {
-            throw new Error('\n' + e.diagnostics.map(function (d) {
+            if (e.diagnostics) {
+                throw new Error('\n' + e.diagnostics.map(function (d) {
                     var pos = calcPos(d.file.text, d.start);
                     return d.file.fileName + ':' + pos.line + ':' + pos.col + ' ' + d.messageText;
                 }).join('\n'));
+            }
+            throw e;
         }
         for (var p in s) {
             s[p].id = p;
@@ -80,4 +83,4 @@ exports = {
     }
 };
 
-if (module)module.exports = exports;
+if (module) module.exports = exports;
