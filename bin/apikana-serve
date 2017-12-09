@@ -14,4 +14,4 @@ var port = params.port();
 console.log('Source: ', source);
 console.log('URL:    ', chalk.blue.underline('http://localhost:' + port));
 
-require('../src/server/server').start(source, port);
+require('../src/server/server').start(source, params.target(), port);

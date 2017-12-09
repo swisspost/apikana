@@ -6,7 +6,7 @@ var srcBase = 'sources/a/b/c/d'; //this must match with helper.js
 var srcStart = srcBase.substring(0, srcBase.indexOf('/') + 1);
 
 module.exports = {
-    start: function (source, port) {
+    start: function (source, dest, port) {
         var dependencyPath = params.dependencyPath();
         var sourceRelDependencyPath = path.relative(
             path.resolve(source), path.resolve(dependencyPath)).replace(/\\/g, '/');
@@ -30,7 +30,7 @@ module.exports = {
                         })) ;
                     else if (route(req, 'src/', source)) ;
                     else if (route(req, sourceRelDependencyPath, dependencyPath)) ;
-                    else if (route(req, '', 'dist/ui')) ;
+                    else if (route(req, '', dest + '/ui')) ;
                 }
             };
 
