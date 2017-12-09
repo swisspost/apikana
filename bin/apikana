@@ -56,5 +56,5 @@ function generate() {
 
     console.log('Source: ', source);
 
-    require('../src/generate').generate(path.resolve(source));
+    require('../src/generate').generate(path.resolve(source), params.target());
 }

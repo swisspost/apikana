@@ -10,7 +10,7 @@ var params = require('./params');
 var generateEnv = require('./generate-env');
 
 module.exports = {
-    generate: function (tsconfig, files) {
+    generate: function (tsconfig, files, dest) {
         fse.mkdirsSync(schemaDir('v3'));
         fse.mkdirsSync(schemaDir('v4'));
 
@@ -57,7 +57,7 @@ module.exports = {
         }
 
         function schemaDir(version) {
-            return 'dist/model/json-schema-' + version;
+            return path.resolve(dest, 'model/json-schema-' + version);
         }
 
         function convertToV3(schema) {

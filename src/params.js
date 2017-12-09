@@ -26,6 +26,9 @@ module.exports = {
         }
         return target;
     },
+    target: function () { //this is undocumented as it breaks dependency resolution when a dependent module has artifacts not in dist/
+        return gutil.env.target || 'dist';
+    },
     api: function () {
         return noSlash(gutil.env.api || 'openapi/api.yaml');
     },
