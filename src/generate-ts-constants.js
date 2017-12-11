@@ -2,7 +2,7 @@ var gutil = require('gulp-util');
 var colors = gutil.colors;
 var log = gutil.log;
 
-module.exports = function (apiName, host) {
+module.exports = function (apiName, host, basePath) {
     var contents = '';
     var classes = {};
     return {
@@ -14,18 +14,18 @@ module.exports = function (apiName, host) {
                 '    }\n' +
                 '}\n\n';
         },
-        write: function (obj, path) {
-            classes[path] = 'export default class ' + classOf(apiName) + ' {\n' +
+        write: function (obj) {
+            classes[''] = 'export default class ' + classOf(apiName) + ' {\n' +
                 '    private constructor(){}\n' +
-                '    static readonly baseUrl = "' + host + '";\n' +
-                '    private path() { return "' + path + '"; }\n';
-            write(obj, path, 1);
+                '    static readonly baseUrl = "' + (host || '') + (basePath || '') + '";\n' +
+                '    private path() { return ""; }\n';
+            write(obj, '', 1);
             for (var cn in classes) {
-                if (cn !== path) {
+                if (cn !== '') {
                     contents += classes[cn];
                 }
             }
-            contents += classes[path];
+            contents += classes[''];
         },
         finish: function () {
         },

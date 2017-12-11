@@ -2,14 +2,17 @@ var gutil = require('gulp-util');
 var colors = gutil.colors;
 var log = gutil.log;
 
-module.exports = function (javaPackage, apiName, host) {
+module.exports = function (javaPackage, apiName, host, basePath) {
     var contents = '';
     return {
         start: function () {
             contents += 'package ' + javaPackage + ';\n\n';
             contents += 'public final class ' + classOf(apiName) + ' {\n' +
-                '    public static final String BASE_URL = "' + (host || '') + '";\n' +
-                '    private static abstract class Path {\n' +
+                '    public static final String BASE_URL = "' + (host || '') + (basePath || '') + '";\n' +
+                '    public static abstract class Path {\n' +
+                '        protected abstract String path();\n' +
+                '    }\n' +
+                '    private static abstract class Endpoint extends Path {\n' +
                 '        public abstract String path();\n' +
                 '        public final String url() {\n' +
                 '            return BASE_URL + path();\n' +
@@ -21,10 +24,13 @@ module.exports = function (javaPackage, apiName, host) {
                 '            if (!path().startsWith(other)) { throw new IllegalArgumentException(other + " is not a prefix of " + path()); }\n' +
                 '            return path().substring(other.length());\n' +
                 '        }\n' +
+                '        public final String relativeTo(Path other) {\n' +
+                '            return relativeTo(other.path());\n' +
+                '        }\n' +
                 '    }\n';
         },
-        write: function (obj, path) {
-            write(obj, path, null, 1);
+        write: function (obj) {
+            write(obj, '', null, 1);
         },
         finish: function () {
             contents += '}';
@@ -63,13 +69,13 @@ module.exports = function (javaPackage, apiName, host) {
                         : '(){}');
 
                 var pathElem = param ? 'value' : ('"' + name + '"');
-                var pathMethod = (endpoint ? 'public final' : 'private') + ' String path() { return ' +
+                var pathMethod = (endpoint ? 'public final' : 'protected') + ' String path() { return ' +
                     (level === 1
                         ? '"' + path + '/" + ' + pathElem + '; }'
                         : classOf(parent) + '.this.path() + "/" + ' + pathElem + '; }');
 
                 line(child);
-                line('public ' + stat + 'final class ' + classOf(name) + (endpoint ? ' extends Path' : '') + ' {');
+                line('public ' + stat + 'final class ' + classOf(name) + ' extends ' + (endpoint ? 'Endpoint' : 'Path') + ' {');
 
                 level++;
                 var newPath = path;
