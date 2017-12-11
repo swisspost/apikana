@@ -14,8 +14,8 @@ module.exports = function (javaPackage, apiName) {
                 + '@Deprecated\n'
                 + 'public final class Paths {\n';
         },
-        write: function (obj, path, raw) {
-            write(obj, path, raw);
+        write: function (obj, raw) {
+            write(obj, raw);
         },
         finish: function () {
             var ls = Object.keys(lines);
@@ -36,7 +36,7 @@ module.exports = function (javaPackage, apiName) {
         }
     };
 
-    function write(obj, path, raw) {
+    function write(obj, raw) {
         for (var path in raw) {
             var p, p1, s;
             p = p1 = path.replace(/^\/[^\/]*\/?[^\/]*\/v[^\/]*/, '');
