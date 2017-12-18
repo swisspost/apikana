@@ -30,7 +30,7 @@ module.exports = function (javaPackage, apiName, host, basePath) {
                 '    }\n';
         },
         write: function (obj) {
-            write(obj, '', null, 1);
+            write(obj);
         },
         finish: function () {
             contents += '}';
@@ -44,54 +44,69 @@ module.exports = function (javaPackage, apiName, host, basePath) {
         }
     };
 
-    function write(obj, path, parent, level) {
-        function line(s) {
-            contents += pad(level) + s + '\n';
+    function write(obj) {
+        var classes = {};
+        doWrite(obj, '', null, 1);
+
+        function newClass(name) {
+            var n = classOf(name);
+            while (classes[n]) {
+                n += '_';
+            }
+            classes[n] = true;
+            return n;
         }
 
-        var keys = Object.keys(obj);
-        keys.sort();
-        var stat = level === 1 ? 'static ' : '';
-        for (var i = 0; i < keys.length; i++) {
-            var name = keys[i];
-            if (name.charAt(0) !== '/') {
-                var endpoint = obj[name]['/end'];
-                var param = obj[name]['/param'];
+        function doWrite(obj, path, parentClass, level) {
+            function line(s) {
+                contents += pad(level) + s + '\n';
+            }
 
-                var child = 'public ' + stat + 'final ' + classOf(name) + ' ' + fieldOf(name) +
-                    (param
-                        ? '(' + javaType(param) + ' ' + fieldOf(name) + '){ return new ' + classOf(name) + '(' + fieldOf(name) + '); }'
-                        : ' = new ' + classOf(name) + '();');
+            var keys = Object.keys(obj);
+            keys.sort();
+            var stat = level === 1 ? 'static ' : '';
+            for (var i = 0; i < keys.length; i++) {
+                var name = keys[i];
+                if (name.charAt(0) !== '/') {
+                    var endpoint = obj[name]['/end'];
+                    var param = obj[name]['/param'];
 
-                var constructor = 'private ' + classOf(name) +
-                    (param
-                        ? '(' + javaType(param) + ' ' + fieldOf(name) + '){ this.value = ' + fieldOf(name) + '; }'
-                        : '(){}');
+                    var className = newClass(name);
+                    var child = 'public ' + stat + 'final ' + className + ' ' + fieldOf(name) +
+                        (param
+                            ? '(' + javaType(param) + ' ' + fieldOf(name) + '){ return new ' + className + '(' + fieldOf(name) + '); }'
+                            : ' = new ' + className + '();');
 
-                var pathElem = param ? 'value' : ('"' + name + '"');
-                var pathMethod = (endpoint ? 'public final' : 'protected') + ' String path() { return ' +
-                    (level === 1
-                        ? '"' + path + '/" + ' + pathElem + '; }'
-                        : classOf(parent) + '.this.path() + "/" + ' + pathElem + '; }');
+                    var constructor = 'private ' + className +
+                        (param
+                            ? '(' + javaType(param) + ' ' + fieldOf(name) + '){ this.value = ' + fieldOf(name) + '; }'
+                            : '(){}');
 
-                line(child);
-                line('public ' + stat + 'final class ' + classOf(name) + ' extends ' + (endpoint ? 'Endpoint' : 'Path') + ' {');
+                    var pathElem = param ? 'value' : ('"' + name + '"');
+                    var pathMethod = (endpoint ? 'public final' : 'protected') + ' String path() { return ' +
+                        (level === 1
+                            ? '"' + path + '/" + ' + pathElem + '; }'
+                            : parentClass + '.this.path() + "/" + ' + pathElem + '; }');
 
-                level++;
-                var newPath = path;
-                if (name) {
-                    newPath += '/' + (param ? '{' + name + '}' : name);
+                    line(child);
+                    line('public ' + stat + 'final class ' + className + ' extends ' + (endpoint ? 'Endpoint' : 'Path') + ' {');
+
+                    level++;
+                    var newPath = path;
+                    if (name) {
+                        newPath += '/' + (param ? '{' + name + '}' : name);
+                    }
+                    line('public static final String PATH = "' + newPath + '";');
+                    if (param) {
+                        line('private final ' + javaType(param) + ' value;');
+                    }
+                    line(constructor);
+                    line(pathMethod);
+                    doWrite(obj[name], newPath, className, level);
+                    level--;
+
+                    line('}');
                 }
-                line('public static final String PATH = "' + newPath + '";');
-                if (param) {
-                    line('private final ' + javaType(param) + ' value;');
-                }
-                line(constructor);
-                line(pathMethod);
-                write(obj[name], newPath, name, level);
-                level--;
-
-                line('}');
             }
         }
     }
