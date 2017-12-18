@@ -118,9 +118,26 @@ function classOf(name) {
     return java.substring(0, 1).toUpperCase() + java.substring(1);
 }
 
+var reservedWords = [
+    'abstract', 'continue', 'for', 'new', 'switch',
+    'assert', 'default', 'goto', 'package', 'synchronized',
+    'boolean', 'do', 'if', 'private', 'this',
+    'break', 'double', 'implements', 'protected', 'throw',
+    'byte', 'else', 'import', 'public', 'throws',
+    'case', 'enum', 'instanceof', 'return', 'transient',
+    'catch', 'extends', 'int', 'short', 'try',
+    'char', 'final', 'interface', 'static', 'void',
+    'class', 'finally', 'long', 'strictfp', 'volatile',
+    'const', 'float', 'native', 'super', 'while'];
+var reserved = {};
+for (var i = 0; i < reservedWords.length; i++) {
+    reserved[reservedWords[i]] = true;
+}
+
 function fieldOf(name) {
     var java = javaOf(name);
-    return java.substring(0, 1).toLowerCase() + java.substring(1);
+    var lower = java.substring(0, 1).toLowerCase() + java.substring(1);
+    return reserved[lower] ? lower + '_' : lower;
 }
 
 function javaOf(name) {
@@ -140,14 +157,14 @@ function javaOf(name) {
 
 function javaType(type) {
     switch (type) {
-        case 'number':
-            return 'double';
-        case 'integer':
-            return 'int';
-        case 'boolean':
-            return 'boolean';
-        default:
-            return 'String';
+    case 'number':
+        return 'double';
+    case 'integer':
+        return 'int';
+    case 'boolean':
+        return 'boolean';
+    default:
+        return 'String';
     }
 }
 
