@@ -1,6 +1,6 @@
-var gutil = require('gulp-util');
-var colors = gutil.colors;
-var log = gutil.log;
+var File = require('vinyl');
+var colors = require('ansi-colors');
+var log = require('fancy-log');
 
 module.exports = function (javaPackage, apiName) {
     var contents = '';
@@ -29,7 +29,7 @@ module.exports = function (javaPackage, apiName) {
         },
         toFile: function () {
             log('Generated', colors.magenta('Paths.java'));
-            return new gutil.File({
+            return new File({
                 path: 'java/' + javaPackage.replace(/\./g, '/') + '/Paths.java',
                 contents: new Buffer(contents)
             });

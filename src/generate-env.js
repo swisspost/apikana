@@ -1,5 +1,5 @@
 var rename = require('gulp-rename');
-var gutil = require('gulp-util');
+var File = require('vinyl');
 var through = require('through2');
 var params = require('./params');
 
@@ -18,7 +18,7 @@ module.exports = {
         function enrichWithEnv() {
             return through.obj(function (file, enc, cb) {
                 variables = params.enrichWithParams(JSON.parse(file.contents));
-                this.push(new gutil.File({
+                this.push(new File({
                     path: file.path,
                     contents: new Buffer('var variables=' + JSON.stringify(variables, null, 2))
                 }));

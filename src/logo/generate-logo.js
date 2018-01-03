@@ -5,7 +5,7 @@
 fs = require('fs');
 
 var input = fs.readFileSync('input.txt').toString();
-var out = 'var chalk=require("chalk"), black=chalk.black, gray=chalk.gray, white=chalk.white; yellow=chalk.yellow; red=chalk.red; \nconsole.log(';
+var out = 'var colors=require("ansi-colors"), black=colors.black, gray=colors.gray, white=colors.white; yellow=colors.yellow; red=colors.red; \nconsole.log(';
 var r, last = null;
 while (input.length > 0) {
     if (r = /^<font color="(.*?)">(.*?)<\/font>/.exec(input)) {

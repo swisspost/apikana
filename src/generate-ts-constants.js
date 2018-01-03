@@ -1,6 +1,6 @@
-var gutil = require('gulp-util');
-var colors = gutil.colors;
-var log = gutil.log;
+var File = require('vinyl');
+var colors = require('ansi-colors');
+var log = require('fancy-log');
 
 module.exports = function (apiName, host, basePath) {
     var contents = '';
@@ -31,7 +31,7 @@ module.exports = function (apiName, host, basePath) {
         },
         toFile: function () {
             log('Generated', colors.magenta(fieldOf(apiName) + '.ts'));
-            return new gutil.File({
+            return new File({
                 path: 'ts/' + fieldOf(apiName) + '.ts',
                 contents: new Buffer(contents)
             });

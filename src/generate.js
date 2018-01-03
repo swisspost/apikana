@@ -1,9 +1,9 @@
 var gulp = require('gulp');
 var rename = require('gulp-rename');
 var inject = require('gulp-inject');
-var gutil = require('gulp-util');
-var colors = gutil.colors;
-var log = gutil.log;
+var File = require('vinyl');
+var colors = require('ansi-colors');
+var log = require('fancy-log');
 var replace = require('gulp-replace');
 var path = require('path');
 var fs = require('fs');
@@ -103,7 +103,7 @@ module.exports = {
         function streamFromString(s) {
             var src = new stream.Readable({objectMode: true});
             src._read = function () {
-                this.push(new gutil.File({path: '.', contents: new Buffer(s)}));
+                this.push(new File({path: '.', contents: new Buffer(s)}));
                 this.push(null);
             };
             return src;
@@ -333,7 +333,7 @@ module.exports = {
                     }
                     var configDir = path.dirname(file.path);
                     co.baseUrl = path.relative(configDir, dependencyPath + '/ts').replace(/\\/g, '/');
-                    this.push(new gutil.File({
+                    this.push(new File({
                         path: file.path,
                         contents: new Buffer(JSON.stringify(config, null, 2))
                     }));
@@ -353,7 +353,7 @@ module.exports = {
                 .pipe(through.obj(function (file, enc, cb) {
                     var schema = JSON.parse(file.contents.toString());
                     fileToType[path.parse(file.path).base] = schema.id;
-                    Object.assign(completeApi.definitions,schema.definitions);
+                    Object.assign(completeApi.definitions, schema.definitions);
                     delete schema.definitions;
                     delete schema.$schema;
                     completeApi.definitions[schema.id] = schema;
@@ -384,7 +384,7 @@ module.exports = {
             var proc = require('child_process').spawn(process.argv[0], args, {detached: true, stdio: 'ignore'});
             proc.unref();
             var port = params.port();
-            log('***** Serving API at', colors.blue.underline('http://localhost:' + port), '*****');
+            log('***** Serving API at', colors.blue(colors.underline('http://localhost:' + port)), '*****');
             return emptyStream();
         });
 

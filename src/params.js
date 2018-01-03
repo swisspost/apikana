@@ -1,36 +1,38 @@
-var gutil = require('gulp-util');
+var env = require('minimist')(process.argv.slice(2));
+var colors = require('ansi-colors');
+var log = require('fancy-log');
 var fs = require('fs');
 var objectPath = require('object-path');
 
-var models = noSlash(gutil.env.models || 'ts');
+var models = noSlash(env.models || 'ts');
 
 module.exports = {
     readConfigFile: function () {
-        if (gutil.env.config) {
-            var config = fs.readFileSync(gutil.env.config);
+        if (env.config) {
+            var config = fs.readFileSync(env.config);
             var configObj = JSON.parse(config);
             for (var prop in configObj) {
-                if (!gutil.env[prop]) {
-                    gutil.env[prop] = configObj[prop];
+                if (!env[prop]) {
+                    env[prop] = configObj[prop];
                 }
             }
         }
     },
     enrichWithParams: function (target) {
-        for (var prop in gutil.env) {
+        for (var prop in env) {
             try {
-                objectPath.set(target, prop, gutil.env[prop]);
+                objectPath.set(target, prop, env[prop]);
             } catch (e) {
-                gutil.log(gutil.colors.red('Conflicting environment variable, could not write "' + prop + '". Rename the variable if you need it, otherwise just ignore.'));
+                log(colors.red('Conflicting environment variable, could not write "' + prop + '". Rename the variable if you need it, otherwise just ignore.'));
             }
         }
         return target;
     },
     target: function () { //this is undocumented as it breaks dependency resolution when a dependent module has artifacts not in dist/
-        return gutil.env.target || 'dist';
+        return env.target || 'dist';
     },
     api: function () {
-        return noSlash(gutil.env.api || 'openapi/api.yaml');
+        return noSlash(env.api || 'openapi/api.yaml');
     },
     models: function (dir) {
         if (dir) {
@@ -39,25 +41,25 @@ module.exports = {
         return models;
     },
     style: function () {
-        return noSlash(gutil.env.style || 'style');
+        return noSlash(env.style || 'style');
     },
     port: function () {
-        return gutil.env.port || 8333;
+        return env.port || 8333;
     },
     javaPackage: function () {
-        return gutil.env.javaPackage;
+        return env.javaPackage;
     },
     dependencyPath: function () {
-        return gutil.env.dependencyPath || 'node_modules/$api-dependencies';
+        return env.dependencyPath || 'node_modules/$api-dependencies';
     },
     deploy: function () {
-        return gutil.env.deploy && gutil.env.deploy === 'true'
+        return env.deploy && env.deploy === 'true'
     },
     serve: function () {
-        return !gutil.env.serve || gutil.env.serve !== 'false';
+        return !env.serve || env.serve !== 'false';
     },
     openBrowser: function () {
-        return !gutil.env.openBrowser || gutil.env.openBrowser !== 'false';
+        return !env.openBrowser || env.openBrowser !== 'false';
     }
 };
 

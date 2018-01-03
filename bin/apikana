@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 var path = require('path');
 var fs = require('fs');
-var chalk = require('chalk');
+var colors = require('ansi-colors');
 var params = require('../src/params');
 var argc = process.argv.length;
 
@@ -28,22 +28,22 @@ if (argc === 2) {
 }
 
 function help() {
-    console.log(chalk.magenta('apikana help'), '                             Show this help.');
-    console.log(chalk.magenta('apikana init'), '                             Initialize a new API project.');
-    console.log(chalk.magenta('apikana start'), chalk.blue('[source]'), chalk.red('[options]'), 'Generate JSON schemas and HTML documentation from the API.');
-    console.log(chalk.blue('               source'), '                    Directory containing the APIs and models. Default: src');
-    console.log(chalk.red('             --api=<file>'), '                The main api file (yaml or json). Default: openapi/api.yaml');
-    console.log(chalk.red('             --models=<path>'), '             The directory containing the models, if no api file is given. Default: ts');
-    console.log(chalk.red('             --style=<path>'), '              The directory containing css files for the swagger GUI. Default: style');
-    console.log(chalk.red('             --config=<file>'), '             Read additional options from a file in JSON format.');
-    console.log(chalk.red('             --javaPackage=<name>'), '        Java package to use.');
-    console.log(chalk.red('             --deploy=<boolean>'), '          If the sources should be copied into the target directory. Default: false');
-    console.log(chalk.red('             --dependencyPath=<path>'), '     Directory containing API dependencies. Default: node_modules/$api-dependencies');
-    console.log(chalk.red('             --port=<number>'), '             Port to serve the HTML documentation. Default: 8333');
-    console.log(chalk.red('             --serve=<boolean>'), '           If the HTML documentation should be served over HTTP. Default: true');
-    console.log(chalk.red('             --openBrowser=<boolean>'), '     If the browser should be opened at first start. Default: true');
-    console.log(chalk.magenta('apikana stop '), chalk.red('[options]'), '                  Stop a running server.');
-    console.log(chalk.red('             --port=<number>'), '             Port of the server to be stopped. Default: 8333');
+    console.log(colors.magenta('apikana help'), '                             Show this help.');
+    console.log(colors.magenta('apikana init'), '                             Initialize a new API project.');
+    console.log(colors.magenta('apikana start'), colors.blue('[source]'), colors.red('[options]'), 'Generate JSON schemas and HTML documentation from the API.');
+    console.log(colors.blue('               source'), '                    Directory containing the APIs and models. Default: src');
+    console.log(colors.red('             --api=<file>'), '                The main api file (yaml or json). Default: openapi/api.yaml');
+    console.log(colors.red('             --models=<path>'), '             The directory containing the models, if no api file is given. Default: ts');
+    console.log(colors.red('             --style=<path>'), '              The directory containing css files for the swagger GUI. Default: style');
+    console.log(colors.red('             --config=<file>'), '             Read additional options from a file in JSON format.');
+    console.log(colors.red('             --javaPackage=<name>'), '        Java package to use.');
+    console.log(colors.red('             --deploy=<boolean>'), '          If the sources should be copied into the target directory. Default: false');
+    console.log(colors.red('             --dependencyPath=<path>'), '     Directory containing API dependencies. Default: node_modules/$api-dependencies');
+    console.log(colors.red('             --port=<number>'), '             Port to serve the HTML documentation. Default: 8333');
+    console.log(colors.red('             --serve=<boolean>'), '           If the HTML documentation should be served over HTTP. Default: true');
+    console.log(colors.red('             --openBrowser=<boolean>'), '     If the browser should be opened at first start. Default: true');
+    console.log(colors.magenta('apikana stop '), colors.red('[options]'), '                  Stop a running server.');
+    console.log(colors.red('             --port=<number>'), '             Port of the server to be stopped. Default: 8333');
 }
 
 function generate() {

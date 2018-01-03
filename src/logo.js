@@ -1,4 +1,4 @@
-var chalk=require("chalk"), black=chalk.black, gray=chalk.gray, white=chalk.white; yellow=chalk.yellow; red=chalk.red;
+var colors=require("ansi-colors"), black=colors.black, gray=colors.gray, white=colors.white; yellow=colors.yellow; red=colors.red;
 console.log("                                       "+gray("A")+white("API")+gray("KA")+"     ");
 console.log("     "+white("PIKANAAPIKANA")+"    "+gray("A")+white("NA")+"            "+gray("N")+white("A")+gray("A")+"    "+white("NA")+"    ");
 console.log("               "+gray("N")+white("AA")+"    "+gray("N")+white("AA")+"            "+gray("A")+white("A")+gray("P")+"    "+white("AA")+"    ");

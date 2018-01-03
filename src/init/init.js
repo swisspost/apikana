@@ -1,7 +1,7 @@
 var fs = require('fs');
 var fse = require('fs-extra');
 var path = require('path');
-var chalk = require('chalk');
+var colors = require('ansi-colors');
 var read = require('readline')
     .createInterface({input: process.stdin, output: process.stdout});
 
@@ -62,16 +62,16 @@ function init(name, isGlobal, forNode, opts) {
 
     function finish() {
         console.log('\nCreation finished. Have a look at it:');
-        console.log(pad('Go to your project:'), chalk.green('cd ' + name));
+        console.log(pad('Go to your project:'), colors.green('cd ' + name));
         if (forNode && !isGlobal) {
-            console.log(pad('Install dependencies:'), chalk.green('npm install'));
+            console.log(pad('Install dependencies:'), colors.green('npm install'));
         }
         if (forNode) {
-            console.log(pad('Create the documentation:'), chalk.green('npm start'));
+            console.log(pad('Create the documentation:'), colors.green('npm start'));
         } else {
-            console.log(pad('Create the documentation:'), chalk.green('mvn install'));
+            console.log(pad('Create the documentation:'), colors.green('mvn install'));
         }
-        console.log(pad('Open a browser at'), chalk.blue('http://localhost:8333'));
+        console.log(pad('Open a browser at'), colors.blue('http://localhost:8333'));
     }
 }
 
