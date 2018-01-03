@@ -52,7 +52,7 @@
     "traverse": "0.6.6",
     "typescript": "2.1.6",
     "typescript-to-json-schema": "0.2.1",
-    "typescript-to-json-schema-extra": "0.0.2",
+    "typescript-to-json-schema-extra": "0.1.0",
     "vinyl-buffer": "1.0.0",
     "vinyl-source-stream": "1.1.0",
     "yamljs": "0.2.8"

@@ -206,7 +206,8 @@ module.exports = {
                 }
             }
             return collector.on('finish', function () {
-                require('./generate-schema').generate(path.resolve(source, params.models(), 'tsconfig.json'), modelFiles, dest);
+                var tsconfig = path.resolve(source, params.models(), 'tsconfig.json');
+                require('./generate-schema').generate(tsconfig, modelFiles, dest, params.dependencyPath());
             });
         });
 
@@ -250,63 +251,65 @@ module.exports = {
                 .pipe(gulp.dest(dependencyPath));
         }
 
-        task('overwrite-schemas', ['generate-schema'], function () {
-            //overwrite local schemas with dependency schemas
-            //- javaType could be different
-            //- verify that schemas with same names are structurally equal (no redefinition allowed)
-            return merge(
-                gulp.src('json-schema-v3/**/*.json', {cwd: dependencyPath})
-                    .pipe(through.obj(function (file, enc, cb) {
-                        var filename = path.parse(file.path);
-                        var existing = path.resolve(dest, 'model/json-schema-v3', filename.base);
-                        if (fs.existsSync(existing)) {
-                            var schema1 = JSON.parse(fs.readFileSync(existing));
-                            var schema2 = JSON.parse(file.contents.toString());
-                            if (!schemaEquals(schema1, schema2)) {
-                                log(colors.red('Type'), colors.magenta(filename.name),
-                                    colors.red('is defined differently in'),
-                                    colors.magenta(schema1.definedIn, '(', path.relative(source, existing), ')'),
-                                    colors.red('and in'),
-                                    colors.magenta(schema2.definedIn, '(', path.relative(source, file.path), ')'));
-                                throw new gutil.PluginError('apikana', 'multi definition');
-                            }
-                        }
-                        this.push(file);
-                        cb();
-                    }))
-                    .pipe(rename(function (path) {
-                        path.dirname = '';
-                        return path;
-                    }))
-                    .pipe(gulp.dest('model/json-schema-v3', {cwd: dest})),
-                gulp.src('json-schema-v4/**/*.json', {cwd: dependencyPath})
-                    .pipe(rename(function (path) {
-                        path.dirname = '';
-                        return path;
-                    }))
-                    .pipe(gulp.dest('model/json-schema-v4', {cwd: dest})));
-        });
+        // TODO why should a dependency overwrite a local definition?
+        // TODO why must schemas with same name be equal? We have a proper dependency handling.
+        // task('overwrite-schemas', ['generate-schema'], function () {
+        //overwrite local schemas with dependency schemas
+        //- javaType could be different
+        //- verify that schemas with same names are structurally equal (no redefinition allowed)
+        // return merge(
+        //     gulp.src('json-schema-v3/**/*.json', {cwd: dependencyPath})
+        //         .pipe(through.obj(function (file, enc, cb) {
+        //             var filename = path.parse(file.path);
+        //             var existing = path.resolve(dest, 'model/json-schema-v3', filename.base);
+        //             if (fs.existsSync(existing)) {
+        //                 var schema1 = JSON.parse(fs.readFileSync(existing));
+        //                 var schema2 = JSON.parse(file.contents.toString());
+        //                 if (!schemaEquals(schema1, schema2)) {
+        //                     log(colors.red('Type'), colors.magenta(filename.name),
+        //                         colors.red('is defined differently in'),
+        //                         colors.magenta(schema1.definedIn, '(', path.relative(source, existing), ')'),
+        //                         colors.red('and in'),
+        //                         colors.magenta(schema2.definedIn, '(', path.relative(source, file.path), ')'));
+        //                     throw new gutil.PluginError('apikana', 'multi definition');
+        //                 }
+        //             }
+        //             this.push(file);
+        //             cb();
+        //         }))
+        //         .pipe(rename(function (path) {
+        //             path.dirname = '';
+        //             return path;
+        //         }))
+        //         .pipe(gulp.dest('model/json-schema-v3', {cwd: dest})),
+        //     gulp.src('json-schema-v4/**/*.json', {cwd: dependencyPath})
+        //         .pipe(rename(function (path) {
+        //             path.dirname = '';
+        //             return path;
+        //         }))
+        //         .pipe(gulp.dest('model/json-schema-v4', {cwd: dest})));
+        // });
 
-        function schemaEquals(s1, s2) {
-            if (Object.keys(s1).length !== Object.keys(s2).length) {
-                return false;
-            }
-            for (var p in s1) {
-                if (p === 'definedIn' || p === 'javaType') {
-                    continue;
-                }
-                var val1 = s1[p];
-                var val2 = s2[p];
-                if (typeof val1 === 'object' && val1 != null && val2 != null) {
-                    if (!schemaEquals(val1, val2)) {
-                        return false;
-                    }
-                } else if (val1 !== val2) {
-                    return false;
-                }
-            }
-            return true;
-        }
+        // function schemaEquals(s1, s2) {
+        //     if (Object.keys(s1).length !== Object.keys(s2).length) {
+        //         return false;
+        //     }
+        //     for (var p in s1) {
+        //         if (/*p === 'definedIn' ||*/ p === 'javaType') {
+        //             continue;
+        //         }
+        //         var val1 = s1[p];
+        //         var val2 = s2[p];
+        //         if (typeof val1 === 'object' && val1 != null && val2 != null) {
+        //             if (!schemaEquals(val1, val2)) {
+        //                 return false;
+        //             }
+        //         } else if (val1 !== val2) {
+        //             return false;
+        //         }
+        //     }
+        //     return true;
+        // }
 
         task('generate-tsconfig', ['read-rest-api'], function () {
             if (!fs.existsSync(path.resolve(source, params.models()))) {
@@ -339,7 +342,9 @@ module.exports = {
                 .pipe(gulp.dest(''));
         });
 
-        task('generate-full-rest', ['read-rest-api', 'overwrite-schemas'], function () {
+        //TODO same problem as in generate-schema: if there are schemas with the same name from different dependencies,
+        //we need structural comparision
+        task('generate-full-rest', ['read-rest-api'/*, 'overwrite-schemas'*/], function () {
             var completeApi = Object.assign({}, restApi);
             completeApi.definitions = {};
             delete completeApi.definitions.$ref;
@@ -348,6 +353,7 @@ module.exports = {
                 .pipe(through.obj(function (file, enc, cb) {
                     var schema = JSON.parse(file.contents.toString());
                     fileToType[path.parse(file.path).base] = schema.id;
+                    Object.assign(completeApi.definitions,schema.definitions);
                     delete schema.definitions;
                     delete schema.$schema;
                     completeApi.definitions[schema.id] = schema;

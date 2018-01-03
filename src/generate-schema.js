@@ -10,43 +10,50 @@ var params = require('./params');
 var generateEnv = require('./generate-env');
 
 module.exports = {
-    generate: function (tsconfig, files, dest) {
+    generate: function (tsconfig, files, dest, dependencyPath) {
+        var deps = path.resolve(dependencyPath).toLowerCase();
         fse.mkdirsSync(schemaDir('v3'));
         fse.mkdirsSync(schemaDir('v4'));
 
         var schemas = schemaGen.generate(tsconfig, files);
         for (var name in schemas) {
-            log('Found definition', colors.magenta(name));
             var schema = schemas[name];
-            var extRef = {};
-            extRef[name] = true;
-            for (var type in schema.definitions) {
-                var def = schema.definitions[type];
-                if (def.type === 'object' || def.enum) {
-                    delete schema.definitions[type];
-                    extRef[type] = true;
+            var fromDependency = path.relative(deps, schema.filename).substring(0, 3) === 'ts/';
+            log('Found ' + (fromDependency ? 'foreign' : 'own') + ' definition', colors.magenta(name));
+            if (!fromDependency) {
+                //TODO definitions could be turned into $refs but attention with types of the same name from different dependencies
+                //TODO -> structural comparision needed
+                // var extRef = {};
+                // extRef[name] = true;
+                // for (var type in schema.definitions) {
+                //     var def = schema.definitions[type];
+                //     if (def.type === 'object' || def.enum) {
+                //         delete schema.definitions[type];
+                //         extRef[type] = true;
+                //     }
+                // }
+                // schemaGen.processRefs(schema, function (ref) {
+                //     if (ref.substring(0, 14) === '#/definitions/' && extRef[ref.substring(14)]) {
+                //         return schemaName(ref.substring(14));
+                //     }
+                //     return ref;
+                // });
+                if (params.javaPackage()) {
+                    schema.javaType = params.javaPackage() + '.' + schema.id;
+                    schema.javaInterfaces = ['java.io.Serializable'];
                 }
+                // schema.definedIn = myProject();
+                delete schema.filename;
+                fs.writeFileSync(schemaFile(name, 'v4'), JSON.stringify(schema, null, 2));
+                convertToV3(schema);
+                fs.writeFileSync(schemaFile(name, 'v3'), JSON.stringify(schema, null, 2));
             }
-            schemaGen.processRefs(schema, function (ref) {
-                if (ref.substring(0, 14) === '#/definitions/' && extRef[ref.substring(14)]) {
-                    return schemaName(ref.substring(14));
-                }
-                return ref;
-            });
-            if (params.javaPackage()) {
-                schema.javaType = params.javaPackage() + '.' + schema.id;
-                schema.javaInterfaces = ['java.io.Serializable'];
-            }
-            schema.definedIn = myProject();
-            fs.writeFileSync(schemaFile(name, 'v4'), JSON.stringify(schema, null, 2));
-            convertToV3(schema);
-            fs.writeFileSync(schemaFile(name, 'v3'), JSON.stringify(schema, null, 2));
         }
 
-        function myProject() {
-            var vars = generateEnv.variables();
-            return vars.name || (vars.project && vars.project.artifactId) || path.parse(path.resolve('.')).name;
-        }
+        // function myProject() {
+        //     var vars = generateEnv.variables();
+        //     return vars.name || (vars.project && vars.project.artifactId) || path.parse(path.resolve('.')).name;
+        // }
 
         function schemaFile(type, version) {
             return path.resolve(schemaDir(version), schemaName(type));
