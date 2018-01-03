@@ -42,10 +42,7 @@ window.typescript.sys = (function () {
             return '.';
         },
         directoryExists: function (f) {
-            if (f.indexOf('@types') >= 0) {
-                return false;
-            }
-            return true;
+            return f.indexOf('@types') < 0;
         },
         getDirectories: function () {
             return [];

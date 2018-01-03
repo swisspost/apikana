@@ -5,10 +5,7 @@ var readFile = typescript.sys.readFile;
 if (!readFile.patched) {
     typescript.sys.readFile = function (name) {
         var file = readFile(name);
-        if (name.substring(name.length - 3) === '.ts' && name.substring(name.length - 5) !== '.d.ts') {
-            file = makeStringEnums(file);
-        }
-        return file;
+        return isTsFilename(name) ? makeStringEnums(file) : file;
 
         function makeStringEnums(file) {
             return file.replace(/(enum [^]*?\{)([^]*?\})/gm, function (match, s1, s2) {
@@ -17,6 +14,10 @@ if (!readFile.patched) {
         }
     };
     typescript.sys.readFile.patched = true;
+}
+
+function isTsFilename(name){
+    return name.substring(name.length - 3) === '.ts' && name.substring(name.length - 5) !== '.d.ts';
 }
 
 var tjs = require('typescript-to-json-schema-extra/dist');
@@ -30,9 +31,7 @@ exports = {
         try {
             var prg = program.createProgram(cfg, compilerOpts());
             var gen = new tjs.SchemaGenerator(prg, parser.createParser(prg, cfg), formatter.createFormatter(cfg));
-            var s = gen.createSchemas(function (fileName) {
-                return fileName.match('\.ts$') && !fileName.match('\.d\.ts$');
-            });
+            var s = gen.createSchemas(isTsFilename);
         } catch (e) {
             if (e.diagnostics) {
                 throw new Error('\n' + e.diagnostics.map(function (d) {
