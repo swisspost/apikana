@@ -1,3 +1,4 @@
+var packge = require('../package.json');
 var colors=require("ansi-colors"), black=colors.black, gray=colors.gray, white=colors.white; yellow=colors.yellow; red=colors.red;
 console.log("                                       "+gray("A")+white("API")+gray("KA")+"     ");
 console.log("     "+white("PIKANAAPIKANA")+"    "+gray("A")+white("NA")+"            "+gray("N")+white("A")+gray("A")+"    "+white("NA")+"    ");
@@ -10,5 +11,5 @@ console.log("        "+gray("K")+white("AN")+"           "+gray("K")+white("AN")
 console.log("        "+white("ANA")+"           "+gray("A")+white("NA")+"                         ");
 console.log("       "+gray("A")+white("NA")+"            "+gray("N")+white("AA")+"                         ");
 console.log("     "+gray("K")+white("AN")+gray("A")+"              "+white("API")+gray("KANAAPI")+"                 ");
-console.log("    "+gray("K")+white("A")+gray("N")+"                 "+gray("IKANAAPIKA")+"        "+red('apikana'));
+console.log("    "+gray("K")+white("A")+gray("N")+"                 "+gray("IKANAAPIKA")+"        "+red('apikana '+packge.version));
 console.log();

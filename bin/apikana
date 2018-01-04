@@ -3,27 +3,34 @@ var path = require('path');
 var fs = require('fs');
 var colors = require('ansi-colors');
 var params = require('../src/params');
+var compareVersions = require('compare-versions');
+var packge = require('../package.json');
 var argc = process.argv.length;
 
 require('../src/logo');
 if (argc === 2) {
     help();
 } else {
+    if (params.minVersion() && compareVersions(params.minVersion(), packge.version) > 0) {
+        console.log(colors.red('Expected minimum version'), params.minVersion(), colors.red('but current version is'), packge.version);
+        console.log(colors.red('Please update the global apikana installation:'), 'npm install -g apikana');
+        process.exit(1);
+    }
     switch (process.argv[2]) {
-        case 'init':
-            require('../src/init/init');
-            break;
-        case 'start':
-            generate();
-            break;
-        case 'stop':
-            require('../src/server/stop').stop(params.port(), function () {
-                console.log('Stopped');
-            });
-            break;
-        default:
-            help();
-            break;
+    case 'init':
+        require('../src/init/init');
+        break;
+    case 'start':
+        generate();
+        break;
+    case 'stop':
+        require('../src/server/stop').stop(params.port(), function () {
+            console.log('Stopped');
+        });
+        break;
+    default:
+        help();
+        break;
     }
 }
 
@@ -42,6 +49,7 @@ function help() {
     console.log(colors.red('             --port=<number>'), '             Port to serve the HTML documentation. Default: 8333');
     console.log(colors.red('             --serve=<boolean>'), '           If the HTML documentation should be served over HTTP. Default: true');
     console.log(colors.red('             --openBrowser=<boolean>'), '     If the browser should be opened at first start. Default: true');
+    console.log(colors.red('             --minVersion=<version>'), '      Fail if the current apikana version is lower than expected.');
     console.log(colors.magenta('apikana stop '), colors.red('[options]'), '                  Stop a running server.');
     console.log(colors.red('             --port=<number>'), '             Port of the server to be stopped. Default: 8333');
 }

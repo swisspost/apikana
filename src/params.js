@@ -60,6 +60,9 @@ module.exports = {
     },
     openBrowser: function () {
         return !env.openBrowser || env.openBrowser !== 'false';
+    },
+    minVersion: function () {
+        return env.minVersion;
     }
 };
 
