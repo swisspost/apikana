@@ -24,6 +24,7 @@ export interface User {
      */
     firstName: string // @asType integer
     lastName: string // the family name @pattern [A-Z]
+    anInt: string // @type integer
     age?: Int
     gender: Gender
     birthday: string

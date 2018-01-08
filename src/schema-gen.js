@@ -5,10 +5,14 @@ var readFile = typescript.sys.readFile;
 if (!readFile.patched) {
     typescript.sys.readFile = function (name) {
         var file = readFile(name);
-        return isTsFilename(name) ? makeStringEnums(file) : file;
+        return isTsFilename(name) ? makeAsTypes(makeStringEnums(file)) : file;
+
+        function makeAsTypes(file) {
+            return file.replace(/@type /g, '@asType ');
+        }
 
         function makeStringEnums(file) {
-            return file.replace(/(enum [^]*?\{)([^]*?\})/gm, function (match, s1, s2) {
+            return file.replace(/(enum [^]*?{)([^]*?})/gm, function (match, s1, s2) {
                 return s1 + s2.replace(/(.*?)([A-Z_0-9]+)/gm, '$1 $2="$2" as any');
             });
         }
@@ -16,7 +20,7 @@ if (!readFile.patched) {
     typescript.sys.readFile.patched = true;
 }
 
-function isTsFilename(name){
+function isTsFilename(name) {
     return name.substring(name.length - 3) === '.ts' && name.substring(name.length - 5) !== '.d.ts';
 }
 
