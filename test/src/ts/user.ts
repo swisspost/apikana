@@ -1,5 +1,6 @@
 import {CompanyInfo, UUID} from "./company";
 import {Int} from "apikana/default-types";
+
 // import {Gender} from "acorn/gender";
 
 export interface Users {
@@ -7,7 +8,7 @@ export interface Users {
     data: User[]
 }
 
-export enum Gender{
+export enum Gender {
     MALE, FEMALE
 }
 
@@ -30,6 +31,35 @@ export interface User {
     birthday: string
     parent?: User
     company: CompanyInfo
+}
+
+/**
+ * base
+ */
+export interface Base {
+    a: Int
+}
+
+interface Base2 {
+    b: Int
+}
+
+/**
+ * ext
+ */
+export interface Ext extends Base {
+    c: Int
+}
+
+/**
+ * ext ext
+ */
+export interface ExtExt extends Ext {
+    d: Int
+}
+
+export interface Ext2 extends User, Base2 {
+    e: Int
 }
 
 

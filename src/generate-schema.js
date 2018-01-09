@@ -20,27 +20,18 @@ module.exports = {
             if (info.source === '') {
                 log('Found definition', colors.magenta(name));
                 var schema = schemas[name];
-                for (var type in schema.definitions) {
-                    var def = schema.definitions[type];
-                    if (schemaInfos[type] && (def.type === 'object' || def.enum)) {
-                        delete schema.definitions[type];
-                    }
-                }
-                schemaGen.processRefs(schema, function (ref) {
-                    var info = schemaInfos[ref.substring(14)];
-                    //TODO types of the same name from different dependencies need structural comparision to find the right source!
-                    if (ref.substring(0, 14) === '#/definitions/' && info.source != null && info.object) {
-                        return info.source + schemaName(ref.substring(14));
-                    }
-                    return ref;
-                });
+                var v3 = handleAllOf(schema);
+                removeDefinitions(schema);
+                schemaGen.processRefs(schema, replaceLocalRef);
+                schemaGen.processRefs(v3, replaceLocalRef);
+
                 if (params.javaPackage()) {
                     schema.javaType = params.javaPackage() + '.' + schema.id;
                     schema.javaInterfaces = ['java.io.Serializable'];
                 }
                 delete schema.filename;
                 fs.writeFileSync(schemaFile(name, 'v4'), JSON.stringify(schema, null, 2));
-                convertToV3(schema);
+                convertToV3(schema, v3);
                 fs.writeFileSync(schemaFile(name, 'v3'), JSON.stringify(schema, null, 2));
             }
         }
@@ -55,10 +46,99 @@ module.exports = {
                 var source = rel.substring(0, 3) === 'ts/' ? relDeps + '/json-schema-v3/' + path.dirname(rel.substring(3)) + '/' : '';
                 infos[name] = {
                     source: source,
-                    object: schema.type === 'object' || schema.enum
+                    object: schema.type === 'object' || schema.enum || schema.allOf
                 };
             }
             return infos;
+        }
+
+        function handleAllOf(schema) {
+            for (var type in schema.definitions) {
+                var def = schema.definitions[type];
+                transformAllOf(type, def, schema.definitions);
+            }
+            return transformAllOf(schema.id, schema, schema.definitions);
+        }
+
+        function transformAllOf(name, schema, definitions) {
+            if (schema.allOf) {
+                schema.type = 'object';
+                schema.properties = {};
+                schema.additionalProperties = false;
+                schema.description = schema.description || '';
+                schema.required = [];
+                for (var i = 0; i < schema.allOf.length; i++) {
+                    var type = expandRefs(schema.allOf[i]);
+                    if (type) {
+                        if (type.type !== 'object' && !type.allOf) {
+                            log(colors.red(name + ' is not an interface or does inherit from a non-interface'));
+                        }
+                        if (type.description) {
+                            schema.description += (schema.description ? ' and ' : '') + type.description;
+                        }
+                        Array.prototype.push.apply(schema.required, type.required);
+                        for (var p in type.properties) {
+                            if (schema.properties[p]) {
+                                log(colors.red(name + ' inherits multiple times the same property ' + p));
+                            }
+                            schema.properties[p] = Object.assign({}, type.properties[p]);
+                        }
+                    }
+                }
+
+                if (schema.allOf.length === 2) {
+                    var v3 = {properties: {}};
+                    var type = expandRefs(schema.allOf[0]);
+                    if (type) {
+                        if (type.type !== 'object' && !type.allOf) {
+                            log(colors.red(name + ' is not an interface'));
+                        }
+                        v3.required = type.required;
+                        for (var p in type.properties) {
+                            v3.properties[p] = Object.assign({}, type.properties[p]);
+                        }
+                    }
+                    v3.extends = schema.allOf[1];
+                }
+
+                delete schema.allOf;
+                return v3;
+            }
+
+            function expandRefs(def) {
+                if (def.$ref) {
+                    if (!isLocalRef(def.$ref)) {
+                        log(colors.red(name + ' has a non local $ref "' + def.$ref + '". Ignoring it.'));
+                    } else {
+                        var res = Object.assign({}, def, definitions[def.$ref.substring(14)]);
+                        delete res.$ref;
+                        return res;
+                    }
+                }
+                return def;
+            }
+        }
+
+        function removeDefinitions(schema) {
+            for (var type in schema.definitions) {
+                var info = schemaInfos[type];
+                if (info && info.object) {
+                    delete schema.definitions[type];
+                }
+            }
+        }
+
+        function replaceLocalRef(ref) {
+            var info = schemaInfos[ref.substring(14)];
+            //TODO types of the same name from different dependencies need structural comparision to find the right source!
+            if (isLocalRef(ref) && info && info.source != null && info.object) {
+                return info.source + schemaName(ref.substring(14));
+            }
+            return ref;
+        }
+
+        function isLocalRef(ref) {
+            return ref.substring(0, 14) === '#/definitions/';
         }
 
         function schemaFile(type, version) {
@@ -73,8 +153,9 @@ module.exports = {
             return path.resolve(dest, 'model/json-schema-' + version);
         }
 
-        function convertToV3(schema) {
+        function convertToV3(schema, v3) {
             schema.$schema = 'http://json-schema.org/draft-03/schema#';
+            Object.assign(schema, v3);
             traverse(schema).forEach(function (value) {
                 if (value.required) {
                     for (var i = 0; i < value.required.length; i++) {
