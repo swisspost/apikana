@@ -71,7 +71,7 @@ $ = function (f) {
     }
 
     function fetchApi(url) {
-        return fetch(url).then(function (res) {
+        return fetch(url, {credentials: 'include'}).then(function (res) {
             if (res.ok) {
                 return res.text().then(function (contents) {
                     return url.substring(url.lastIndexOf('.')) === '.json'
