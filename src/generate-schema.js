@@ -26,6 +26,9 @@ module.exports = {
                 removeDefinitions(schema);
                 schemaGen.processProperty(schema, '$ref', replaceLocalRef);
                 schemaGen.processProperty(v3, '$ref', replaceLocalRef);
+                if (extendsWithoutOwnProperties(schema)){
+                    v3 = {extends: {$ref: schema.$ref}};
+                }
 
                 if (params.javaPackage()) {
                     schema.javaType = params.javaPackage() + '.' + schema.id;
@@ -36,6 +39,10 @@ module.exports = {
                 convertToV3(schema, v3);
                 fs.writeFileSync(schemaFile(name, 'v3'), JSON.stringify(schema, null, 2));
             }
+        }
+
+        function extendsWithoutOwnProperties(schema){
+            return schema.$ref && !schema.type;
         }
 
         function schemaInfos(schemas) {
@@ -168,6 +175,7 @@ module.exports = {
         function convertToV3(schema, v3) {
             schema.$schema = 'http://json-schema.org/draft-03/schema#';
             Object.assign(schema, v3);
+            delete schema.$ref; // rest when extendsWithoutOwnProperties()
             traverse(schema).forEach(function (value) {
                 if (value.required) {
                     for (var i = 0; i < value.required.length; i++) {

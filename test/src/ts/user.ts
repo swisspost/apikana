@@ -44,6 +44,9 @@ interface Base2 {
     b: Int
 }
 
+export interface ExtNix extends Base {
+}
+
 /**
  * ext
  */
