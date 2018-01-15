@@ -38,7 +38,7 @@ $ = function (f) {
             var schema = schemaGen.generate(models[0].substring(0, models[0].lastIndexOf('/')) + '/tsconfig.json', models);
             if (schema) {
                 for (var def in schema) {
-                    schemaGen.processRefs(schema[def], function (ref) {
+                    schemaGen.processProperty(schema[def], '$ref', function (ref) {
                         return ref.replace('/definitions', '');
                     });
                     spec.definitions[def] = schema[def];

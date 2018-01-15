@@ -24,11 +24,11 @@ export interface User {
      * @description afasdfsd
      */
     firstName: string // @asType integer
-    lastName: string // the family name @pattern [A-Z]
-    anInt: string // @type integer
+    lastName: string // the family name @pattern [A-Z] because
+    anInt: string // @type integer bla
     age?: Int
     gender: Gender
-    birthday: string
+    birthday: string // @format date-time hula
     parent?: User
     company: CompanyInfo
 }

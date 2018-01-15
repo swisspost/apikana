@@ -20,10 +20,12 @@ module.exports = {
             if (info.source === '') {
                 log('Found definition', colors.magenta(name));
                 var schema = schemas[name];
+                schemaGen.processProperty(schema, 'type', normalizeType);
+                schemaGen.processProperty(schema, 'format', normalizeType);
                 var v3 = handleAllOf(schema);
                 removeDefinitions(schema);
-                schemaGen.processRefs(schema, replaceLocalRef);
-                schemaGen.processRefs(v3, replaceLocalRef);
+                schemaGen.processProperty(schema, '$ref', replaceLocalRef);
+                schemaGen.processProperty(v3, '$ref', replaceLocalRef);
 
                 if (params.javaPackage()) {
                     schema.javaType = params.javaPackage() + '.' + schema.id;
@@ -50,6 +52,16 @@ module.exports = {
                 };
             }
             return infos;
+        }
+
+        function normalizeType(type) {
+            var pos = type.indexOf(' ');
+            if (pos < 0) {
+                return type;
+            }
+            var norm = type.substring(0, pos);
+            log(colors.red('Found illegal type/format "' + type + '", replacing it with "' + norm + '".'));
+            return norm;
         }
 
         function handleAllOf(schema) {

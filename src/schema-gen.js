@@ -73,14 +73,14 @@ exports = {
         }
     },
 
-    processRefs: function proc(schema, func) {
-        for (var prop in schema) {
-            var v = schema[prop];
-            if (prop === '$ref') {
-                schema[prop] = func(v);
+    processProperty: function proc(schema, prop, func) {
+        for (var p in schema) {
+            var v = schema[p];
+            if (p === prop) {
+                schema[p] = func(v);
             }
             if (typeof v === 'object') {
-                proc(v, func);
+                proc(v, prop, func);
             }
         }
     }
