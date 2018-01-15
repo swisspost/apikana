@@ -26,8 +26,8 @@ module.exports = {
                 removeDefinitions(schema);
                 schemaGen.processProperty(schema, '$ref', replaceLocalRef);
                 schemaGen.processProperty(v3, '$ref', replaceLocalRef);
-                if (extendsWithoutOwnProperties(schema)){
-                    v3 = {extends: {$ref: schema.$ref}};
+                if (extendsWithoutOwnProperties(schema)) {
+                    v3 = {type: 'object', additionalProperties: false, extends: {$ref: schema.$ref}};
                 }
 
                 if (params.javaPackage()) {
@@ -41,7 +41,7 @@ module.exports = {
             }
         }
 
-        function extendsWithoutOwnProperties(schema){
+        function extendsWithoutOwnProperties(schema) {
             return schema.$ref && !schema.type;
         }
 
