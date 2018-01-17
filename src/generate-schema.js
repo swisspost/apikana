@@ -177,13 +177,14 @@ module.exports = {
             Object.assign(schema, v3);
             delete schema.$ref; // rest when extendsWithoutOwnProperties()
             traverse(schema).forEach(function (value) {
-                if (value.required) {
+                if (value && value.required) {
                     for (var i = 0; i < value.required.length; i++) {
                         var prop = value.required[i];
                         value.properties[prop].required = true;
                     }
                 }
-                if (this.key === 'required' && Array.isArray(value)) {
+                // required property is undefined on objects without properties
+                if (this.key === 'required' && (Array.isArray(value) || value === undefined)) {
                     this.remove();
                 }
             });

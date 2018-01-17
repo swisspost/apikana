@@ -31,6 +31,7 @@ export interface User {
     birthday: string // @format date-time hula
     parent?: User
     company: CompanyInfo
+    properties?: { [key: string]: Int }
 }
 
 /**
