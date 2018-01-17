@@ -71,18 +71,6 @@ exports = {
             }
             return opts;
         }
-    },
-
-    processProperty: function proc(schema, prop, func) {
-        for (var p in schema) {
-            var v = schema[p];
-            if (p === prop) {
-                schema[p] = func(v);
-            }
-            if (typeof v === 'object') {
-                proc(v, prop, func);
-            }
-        }
     }
 };
 

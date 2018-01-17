@@ -38,9 +38,7 @@ $ = function (f) {
             var schema = schemaGen.generate(models[0].substring(0, models[0].lastIndexOf('/')) + '/tsconfig.json', models);
             if (schema) {
                 for (var def in schema) {
-                    schemaGen.processProperty(schema[def], '$ref', function (ref) {
-                        return ref.replace('/definitions', '');
-                    });
+                    processRefs(schema[def]);
                     spec.definitions[def] = schema[def];
                 }
             }
@@ -50,6 +48,18 @@ $ = function (f) {
     }).catch(function (err) {
         alert('Problem loading api: ' + err);
     });
+
+    function processRefs(schema) {
+        for (var p in schema) {
+            var v = schema[p];
+            if (p === '$ref') {
+                schema[p] = v.replace('/definitions', '');
+            }
+            if (typeof v === 'object') {
+                processRefs(v);
+            }
+        }
+    }
 
     function modelFiles(spec, path) {
         var models = spec.definitions.$ref || [];

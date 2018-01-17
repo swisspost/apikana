@@ -20,12 +20,15 @@ module.exports = {
             if (info.source === '') {
                 log('Found definition', colors.magenta(name));
                 var schema = schemas[name];
-                schemaGen.processProperty(schema, 'type', normalizeType);
-                schemaGen.processProperty(schema, 'format', normalizeType);
+                traverse(schema).forEach(function (value) {
+                    if ((this.key === 'type' || this.key === 'format') && typeof value === 'string') {
+                        this.update(normalizeType(value));
+                    }
+                });
                 var v3 = handleAllOf(schema);
                 removeDefinitions(schema);
-                schemaGen.processProperty(schema, '$ref', replaceLocalRef);
-                schemaGen.processProperty(v3, '$ref', replaceLocalRef);
+                replaceLocalRef(schema);
+                replaceLocalRef(v3);
                 if (extendsWithoutOwnProperties(schema)) {
                     v3 = {type: 'object', additionalProperties: false, extends: {$ref: schema.$ref}};
                 }
@@ -147,13 +150,16 @@ module.exports = {
             }
         }
 
-        function replaceLocalRef(ref) {
-            var info = schemaInfos[ref.substring(14)];
-            //TODO types of the same name from different dependencies need structural comparision to find the right source!
-            if (isLocalRef(ref) && info && info.source != null && info.object) {
-                return info.source + schemaName(ref.substring(14));
-            }
-            return ref;
+        function replaceLocalRef(schema) {
+            traverse(schema).forEach(function (value) {
+                if (this.key === '$ref') {
+                    var info = schemaInfos[value.substring(14)];
+                    //TODO types of the same name from different dependencies need structural comparision to find the right source!
+                    if (isLocalRef(value) && info && info.source != null && info.object) {
+                        this.update(info.source + schemaName(value.substring(14)));
+                    }
+                }
+            });
         }
 
         function isLocalRef(ref) {

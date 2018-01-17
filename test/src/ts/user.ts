@@ -32,6 +32,7 @@ export interface User {
     parent?: User
     company: CompanyInfo
     properties?: { [key: string]: Int }
+    type: string
 }
 
 /**
