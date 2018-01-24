@@ -65,6 +65,7 @@ module.exports = {
         }
 
         function normalizeType(type) {
+            type = type.trim();
             var pos = type.indexOf(' ');
             if (pos < 0) {
                 return type;
