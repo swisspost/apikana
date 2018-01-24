@@ -8,6 +8,13 @@ export interface Users {
     data: User[]
 }
 
+var a; //ignore too!
+
+/**
+ * dfgljfh df lh ölf // ignore!
+ * @type string
+ *
+ */
 export enum Gender {
     MALE, FEMALE
 }
@@ -67,4 +74,38 @@ export interface Ext2 extends User, Base2 {
     e: Int
 }
 
+export enum EnumSimple {
+    A, B
+}
+
+/**
+ * @type integer
+ */
+export enum EnumSimpleInt {
+    A, B
+}
+
+/**
+ * @type string
+ */
+export enum EnumSimpleString {
+    A, B
+}
+
+/**
+ * @type integer
+ */
+export enum EnumValueInt {
+    A = 5, B
+}
+
+export enum EnumValueString {
+    A = "a1" as any,
+    B = "b2" as any
+}
+
+export enum EnumValueMix {
+    A = 5,
+    B = "b2" as any
+}
 

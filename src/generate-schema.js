@@ -24,6 +24,15 @@ module.exports = {
                     if ((this.key === 'type' || this.key === 'format') && typeof value === 'string') {
                         this.update(normalizeType(value));
                     }
+                    if (this.key === 'enum') {
+                        if (this.parent.node.type === 'string' && this.parent.node.extra.members) {
+                            for (var i = 0; i < value.length; i++) {
+                                if (value[i] === i) {
+                                    value[i] = this.parent.node.extra.members[i];
+                                }
+                            }
+                        }
+                    }
                 });
                 var v3 = handleAllOf(schema);
                 removeDefinitions(schema);
@@ -37,7 +46,7 @@ module.exports = {
                     schema.javaType = params.javaPackage() + '.' + schema.id;
                     schema.javaInterfaces = ['java.io.Serializable'];
                 }
-                delete schema.filename;
+                delete schema.extra;
                 fs.writeFileSync(schemaFile(name, 'v4'), JSON.stringify(schema, null, 2));
                 convertToV3(schema, v3);
                 fs.writeFileSync(schemaFile(name, 'v3'), JSON.stringify(schema, null, 2));
@@ -54,7 +63,7 @@ module.exports = {
             var infos = {};
             for (var name in schemas) {
                 var schema = schemas[name];
-                var rel = path.relative(deps.toLowerCase(), schema.filename);
+                var rel = path.relative(deps.toLowerCase(), schema.extra.filename);
                 var source = rel.substring(0, 3) === 'ts/' ? relDeps + '/json-schema-v3/' + path.dirname(rel.substring(3)) + '/' : '';
                 infos[name] = {
                     source: source,
