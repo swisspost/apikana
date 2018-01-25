@@ -77,6 +77,22 @@ module.exports = function (apiName, host, basePath) {
     }
 };
 
+var reservedWords = [
+    'any', 'as', 'async', 'await', 'boolean', 'break',
+    'case', 'catch', 'class', 'const', 'constructor',
+    'continue', 'debugger', 'declare', 'default', 'delete',
+    'do', 'else', 'enum', 'export', 'extends', 'false',
+    'finally', 'for', 'from', 'function', 'get', 'if',
+    'implements', 'import', 'in', 'instanceof', 'interface',
+    'let', 'module', 'namespace', 'new', 'number', 'null',
+    'of', 'package', 'private', 'protected', 'public',
+    'require', 'return', 'set', 'static', 'string', 'super',
+    'switch', 'symbol', 'this', 'throw', 'true', 'try', 'type',
+    'typeof', 'var', 'void', 'while', 'with', 'yield'];
+var reserved = {};
+for (var i = 0; i < reservedWords.length; i++) {
+    reserved[reservedWords[i]] = true;
+}
 
 function classOf(name) {
     var java = tsOf(name);
@@ -85,7 +101,8 @@ function classOf(name) {
 
 function fieldOf(name) {
     var java = tsOf(name);
-    return java.substring(0, 1).toLowerCase() + java.substring(1);
+    var lower = java.substring(0, 1).toLowerCase() + java.substring(1);
+    return reserved[lower] ? lower + '_' : lower;
 }
 
 function tsOf(name) {
@@ -105,15 +122,15 @@ function tsOf(name) {
 
 function tsType(type) {
     switch (type) {
-        case 'number':
-        case 'integer':
-            return 'number';
-        case 'boolean':
-            return 'boolean';
-        case 'array':
-            return 'array<string>';
-        default:
-            return 'string';
+    case 'number':
+    case 'integer':
+        return 'number';
+    case 'boolean':
+        return 'boolean';
+    case 'array':
+        return 'array<string>';
+    default:
+        return 'string';
     }
 }
 

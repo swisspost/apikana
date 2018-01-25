@@ -12,7 +12,7 @@ paths:
   /sample/v1/alarmings:
   /sample/v1/alarmings/{class}/status:
   /sample/v1/alarmings/{class}/case/req-._uest:
-  /sample/v1:
+  /sample/v1/:
   /sample/v1/users/{id}:
     get:
       operationId: getUser
