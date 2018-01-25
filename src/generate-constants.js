@@ -37,19 +37,21 @@ module.exports = {
                     var model = {};
 
                     for (var path in paths) {
-                        var elems = path.substring(1).split('/');
+                        var elems = path.trim().split('/');
                         var m = model;
                         for (var i = 0; i < elems.length; i++) {
                             var elem = elems[i];
-                            var type = null;
-                            if (/\{.*?\}/.test(elem)) {
-                                elem = elem.substring(1, elem.length - 1);
-                                type = findParameterType(paths[path], elem);
+                            if (elem) {
+                                var type = null;
+                                if (/\{.*?\}/.test(elem)) {
+                                    elem = elem.substring(1, elem.length - 1);
+                                    type = findParameterType(paths[path], elem);
+                                }
+                                if (!m[elem]) {
+                                    m[elem] = {'/param': type};
+                                }
+                                m = m[elem];
                             }
-                            if (!m[elem]) {
-                                m[elem] = {'/param': type};
-                            }
-                            m = m[elem];
                         }
                         m['/end'] = true;
                     }
