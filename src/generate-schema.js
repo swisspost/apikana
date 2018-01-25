@@ -25,13 +25,7 @@ module.exports = {
                         this.update(normalizeType(value));
                     }
                     if (this.key === 'enum') {
-                        if (this.parent.node.type === 'string' && this.parent.node.extra.members) {
-                            for (var i = 0; i < value.length; i++) {
-                                if (value[i] === i) {
-                                    value[i] = this.parent.node.extra.members[i];
-                                }
-                            }
-                        }
+                        enumMembersAsValues(this.parent.node);
                     }
                 });
                 var v3 = handleAllOf(schema);
@@ -50,6 +44,17 @@ module.exports = {
                 fs.writeFileSync(schemaFile(name, 'v4'), JSON.stringify(schema, null, 2));
                 convertToV3(schema, v3);
                 fs.writeFileSync(schemaFile(name, 'v3'), JSON.stringify(schema, null, 2));
+            }
+        }
+
+        function enumMembersAsValues(schema) {
+            if ((schema.type === 'number' || schema.type === 'string') && schema.extra && schema.extra.members) {
+                schema.type = 'string';
+                for (var i = 0; i < schema.enum.length; i++) {
+                    if (schema.enum[i] === i) {
+                        schema.enum[i] = schema.extra.members[i];
+                    }
+                }
             }
         }
 
