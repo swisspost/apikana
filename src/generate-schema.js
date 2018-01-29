@@ -64,11 +64,11 @@ module.exports = {
 
         function schemaInfos(schemas) {
             var deps = path.resolve(dependencyPath);
-            var relDeps = path.relative(path.resolve(dest, 'model/json-schema'), deps);
+            var relDeps = relativePath(path.resolve(dest, 'model/json-schema'), deps);
             var infos = {};
             for (var name in schemas) {
                 var schema = schemas[name];
-                var rel = path.relative(deps.toLowerCase(), schema.extra.filename);
+                var rel = relativePath(deps.toLowerCase(), schema.extra.filename);
                 var source = rel.substring(0, 3) === 'ts/' ? relDeps + '/json-schema-v3/' + path.dirname(rel.substring(3)) + '/' : '';
                 infos[name] = {
                     source: source,
@@ -76,6 +76,10 @@ module.exports = {
                 };
             }
             return infos;
+        }
+
+        function relativePath(from,to){
+            return path.relative(from,to).replace(/\\/g,'/');
         }
 
         function normalizeType(type) {
