@@ -78,8 +78,8 @@ module.exports = {
             return infos;
         }
 
-        function relativePath(from,to){
-            return path.relative(from,to).replace(/\\/g,'/');
+        function relativePath(from, to) {
+            return path.relative(from, to).replace(/\\/g, '/');
         }
 
         function normalizeType(type) {
