@@ -20,14 +20,6 @@ module.exports = {
             if (info.source === '') {
                 log('Found definition', colors.magenta(name));
                 var schema = schemas[name];
-                traverse(schema).forEach(function (value) {
-                    if ((this.key === 'type' || this.key === 'format') && typeof value === 'string') {
-                        this.update(normalizeType(value));
-                    }
-                    if (this.key === 'enum') {
-                        enumMembersAsValues(this.parent.node);
-                    }
-                });
                 var v3 = handleAllOf(schema);
                 removeDefinitions(schema);
                 replaceLocalRef(schema);
@@ -44,17 +36,6 @@ module.exports = {
                 fs.writeFileSync(schemaFile(name, 'v4'), JSON.stringify(schema, null, 2));
                 convertToV3(schema, v3);
                 fs.writeFileSync(schemaFile(name, 'v3'), JSON.stringify(schema, null, 2));
-            }
-        }
-
-        function enumMembersAsValues(schema) {
-            if ((schema.type === 'number' || schema.type === 'string') && schema.extra && schema.extra.members) {
-                schema.type = 'string';
-                for (var i = 0; i < schema.enum.length; i++) {
-                    if (schema.enum[i] === i) {
-                        schema.enum[i] = schema.extra.members[i];
-                    }
-                }
             }
         }
 
@@ -89,17 +70,6 @@ module.exports = {
         function relativePath(from, to) {
             var r = path.relative(from, to);
             return path.sep === '\\' ? r.replace(/\\/g, '/') : r;
-        }
-
-        function normalizeType(type) {
-            type = type.trim();
-            var pos = type.indexOf(' ');
-            if (pos < 0) {
-                return type;
-            }
-            var norm = type.substring(0, pos);
-            log(colors.red('Found illegal type/format "' + type + '", replacing it with "' + norm + '".'));
-            return norm;
         }
 
         function handleAllOf(schema) {

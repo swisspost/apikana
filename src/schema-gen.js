@@ -29,7 +29,7 @@ exports = {
         try {
             var prg = program.createProgram(cfg, compilerOpts());
             var gen = new tjs.SchemaGenerator(prg, parser.createParser(prg, cfg), formatter.createFormatter(cfg));
-            var s = gen.createSchemas(isTsFilename);
+            return postProcess(gen.createSchemas(isTsFilename));
         } catch (e) {
             if (e.diagnostics) {
                 throw new Error('\n' + e.diagnostics.map(function (d) {
@@ -39,10 +39,53 @@ exports = {
             }
             throw e;
         }
-        for (var p in s) {
-            s[p].id = p;
+
+        function postProcess(schema) {
+            for (var p in schema) {
+                schema[p].id = p;
+                traverse(schema[p], function (parent, value, key) {
+                    if ((key === 'type' || key === 'format') && typeof value === 'string') {
+                        return normalizeType(value);
+                    }
+                    if (key === 'enum') {
+                        return enumMembersAsValues(parent);
+                    }
+                    return value;
+                });
+            }
+            return schema;
         }
-        return s;
+
+        function traverse(obj, func) {
+            for (var prop in obj) {
+                var val = func(obj, obj[prop], prop);
+                if (typeof val === 'object') {
+                    traverse(val, func);
+                }
+            }
+        }
+
+        function normalizeType(type) {
+            type = type.trim();
+            var pos = type.indexOf(' ');
+            if (pos < 0) {
+                return type;
+            }
+            var norm = type.substring(0, pos);
+            console.log('Found illegal type/format "' + type + '", replacing it with "' + norm + '".');
+            return norm;
+        }
+
+        function enumMembersAsValues(schema) {
+            if ((schema.type === 'number' || schema.type === 'string') && schema.extra && schema.extra.members) {
+                schema.type = 'string';
+                for (var i = 0; i < schema.enum.length; i++) {
+                    if (schema.enum[i] === i) {
+                        schema.enum[i] = schema.extra.members[i];
+                    }
+                }
+            }
+        }
 
         function calcPos(data, start) {
             var newLine = /\r?\n/g;
