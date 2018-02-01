@@ -10,7 +10,7 @@
   "scripts": {
     "test": "echo \"No test specified\"",
     "build": "browserify src/browserify.js -t brfs -i source-map-support > lib/browserify.js",
-    "test-build": "cd test && node ../bin/apikana start --javaPackage=apikana.test",
+    "test-build": "cd test && node ../bin/apikana start --javaPackage=apikana.test --verbose",
     "test-deploy": "cd test && node ../bin/apikana start --javaPackage=apikana.test --deploy",
     "test-serve": "cd test && node ../bin/apikana-serve --port=8222",
     "prepublishOnly": "crlf --set=LF bin/*"

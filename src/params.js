@@ -53,7 +53,10 @@ module.exports = {
         return env.dependencyPath || 'node_modules/$api-dependencies';
     },
     deploy: function () {
-        return env.deploy && env.deploy === 'true'
+        return env.deploy && env.deploy === 'true';
+    },
+    verbose: function () {
+        return env.verbose && env.verbose !== 'false';
     },
     serve: function () {
         return !env.serve || env.serve !== 'false';

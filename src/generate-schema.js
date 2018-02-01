@@ -66,20 +66,29 @@ module.exports = {
             var deps = path.resolve(dependencyPath);
             var relDeps = relativePath(path.resolve(dest, 'model/json-schema'), deps);
             var infos = {};
+            if (params.verbose()) {
+                log('Dependencies:              ', deps);
+            }
             for (var name in schemas) {
                 var schema = schemas[name];
                 var rel = relativePath(deps.toLowerCase(), schema.extra.filename);
-                var source = rel.substring(0, 3) === 'ts/' ? relDeps + '/json-schema-v3/' + path.dirname(rel.substring(3)) + '/' : '';
+                var source = rel.substring(0, 2) === '..' ? '' : (relDeps + '/json-schema-v3/' + path.dirname(rel.substring(3)) + '/');
                 infos[name] = {
                     source: source,
                     object: schema.type === 'object' || schema.enum || schema.allOf
                 };
+                if (params.verbose()) {
+                    log('Source file:               ', schema.extra.filename);
+                    log('- relative to dependencies:', rel);
+                    log('- as dependency:           ', source + name);
+                }
             }
             return infos;
         }
 
         function relativePath(from, to) {
-            return path.relative(from, to).replace(/\\/g, '/');
+            var r = path.relative(from, to);
+            return path.sep === '\\' ? r.replace(/\\/g, '/') : r;
         }
 
         function normalizeType(type) {
