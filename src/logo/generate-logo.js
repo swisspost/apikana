@@ -3,9 +3,10 @@
 //run generate-logo.js
 
 fs = require('fs');
+log = require('../log');
 
 var input = fs.readFileSync('input.txt').toString();
-var out = 'var colors=require("ansi-colors"), black=colors.black, gray=colors.gray, white=colors.white; yellow=colors.yellow; red=colors.red; \nconsole.log(';
+var out = 'var log=require("./log"), colors=require("ansi-colors"), black=colors.black, gray=colors.gray, white=colors.white; yellow=colors.yellow; red=colors.red; \nlog(';
 var r, last = null;
 while (input.length > 0) {
     if (r = /^<font color="(.*?)">(.*?)<\/font>/.exec(input)) {
@@ -17,7 +18,7 @@ while (input.length > 0) {
         } else if (r[1] === 'gray') {
             color = '128';
         } else {
-            console.log('color name ' + r[1]);
+            log('color name ' + r[1]);
         }
         if (color < 120) {
             color = 'white';
@@ -38,9 +39,9 @@ while (input.length > 0) {
     }
     else if (r = /^<br>/.exec(input)) {
         last = null;
-        out += '"));\nconsole.log(';
+        out += '"));\nlog(';
     } else {
-        console.log('unknown start ' + input);
+        log('unknown start ' + input);
         return;
     }
     input = input.substring(r[0].length);

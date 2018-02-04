@@ -1,6 +1,7 @@
 var fs = require('fs');
 var fse = require('fs-extra');
 var path = require('path');
+var log = require('../log');
 var colors = require('ansi-colors');
 var read = require('readline')
     .createInterface({input: process.stdin, output: process.stdout});
@@ -29,7 +30,7 @@ read.question(pad('Name of the project:'), function (name) {
 
 function init(name, isGlobal, forNode, opts) {
     if (fs.existsSync(name)) {
-        console.log('directory already exists.');
+        log('directory already exists.');
         process.exit(1);
     }
 
@@ -48,7 +49,7 @@ function init(name, isGlobal, forNode, opts) {
         fse.copySync(__dirname + '/template/maven', name);
         var pom = fs.readFileSync(name + '/pom.xml').toString();
         // opts.version = myPack.version;
-        opts.version = '0.3.12'; //TODO hardcode or myPack.version?
+        opts.version = '0.3.14'; //TODO hardcode or myPack.version?
         opts.global = isGlobal;
         for (var opt in opts) {
             pom = pom.replace('%' + opt + '%', opts[opt]);
@@ -61,17 +62,17 @@ function init(name, isGlobal, forNode, opts) {
     finish();
 
     function finish() {
-        console.log('\nCreation finished. Have a look at it:');
-        console.log(pad('Go to your project:'), colors.green('cd ' + name));
+        log('\nCreation finished. Have a look at it:');
+        log(pad('Go to your project:'), colors.green('cd ' + name));
         if (forNode && !isGlobal) {
-            console.log(pad('Install dependencies:'), colors.green('npm install'));
+            log(pad('Install dependencies:'), colors.green('npm install'));
         }
         if (forNode) {
-            console.log(pad('Create the documentation:'), colors.green('npm start'));
+            log(pad('Create the documentation:'), colors.green('npm start'));
         } else {
-            console.log(pad('Create the documentation:'), colors.green('mvn install'));
+            log(pad('Create the documentation:'), colors.green('mvn install'));
         }
-        console.log(pad('Open a browser at'), colors.blue('http://localhost:8333'));
+        log(pad('Open a browser at'), colors.blue('http://localhost:8333'));
     }
 }
 

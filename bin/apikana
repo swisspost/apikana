@@ -27,7 +27,7 @@ if (argc === 2) {
         break;
     case 'stop':
         require('../src/server/stop').stop(params.port(), function () {
-            console.log('Stopped');
+            log('Stopped');
         });
         break;
     default:
