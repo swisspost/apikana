@@ -1,12 +1,11 @@
 var colors = require('ansi-colors');
-var log = require('fancy-log');
+var log = require('./log');
 var traverse = require('traverse');
 var fs = require('fs');
 var fse = require('fs-extra');
 var path = require('path');
 var schemaGen = require('./schema-gen');
 var params = require('./params');
-var generateEnv = require('./generate-env');
 
 module.exports = {
     generate: function (tsconfig, files, dest, dependencyPath) {
@@ -18,16 +17,8 @@ module.exports = {
         for (var name in schemas) {
             var info = schemaInfos[name];
             if (info.source === '') {
-                log('Found definition', colors.magenta(name));
+                log.info('Found definition', colors.magenta(name));
                 var schema = schemas[name];
-                traverse(schema).forEach(function (value) {
-                    if ((this.key === 'type' || this.key === 'format') && typeof value === 'string') {
-                        this.update(normalizeType(value));
-                    }
-                    if (this.key === 'enum') {
-                        enumMembersAsValues(this.parent.node);
-                    }
-                });
                 var v3 = handleAllOf(schema);
                 removeDefinitions(schema);
                 replaceLocalRef(schema);
@@ -47,17 +38,6 @@ module.exports = {
             }
         }
 
-        function enumMembersAsValues(schema) {
-            if ((schema.type === 'number' || schema.type === 'string') && schema.extra && schema.extra.members) {
-                schema.type = 'string';
-                for (var i = 0; i < schema.enum.length; i++) {
-                    if (schema.enum[i] === i) {
-                        schema.enum[i] = schema.extra.members[i];
-                    }
-                }
-            }
-        }
-
         function extendsWithoutOwnProperties(schema) {
             return schema.$ref && !schema.type;
         }
@@ -66,31 +46,25 @@ module.exports = {
             var deps = path.resolve(dependencyPath);
             var relDeps = relativePath(path.resolve(dest, 'model/json-schema'), deps);
             var infos = {};
+            log.debug('Dependencies:              ', deps);
             for (var name in schemas) {
                 var schema = schemas[name];
                 var rel = relativePath(deps.toLowerCase(), schema.extra.filename);
-                var source = rel.substring(0, 3) === 'ts/' ? relDeps + '/json-schema-v3/' + path.dirname(rel.substring(3)) + '/' : '';
+                var source = rel.substring(0, 2) === '..' ? '' : (relDeps + '/json-schema-v3/' + path.dirname(rel.substring(3)) + '/');
                 infos[name] = {
                     source: source,
                     object: schema.type === 'object' || schema.enum || schema.allOf
                 };
+                log.debug('Source file:               ', schema.extra.filename);
+                log.debug('- relative to dependencies:', rel);
+                log.debug('- as dependency:           ', source + name);
             }
             return infos;
         }
 
         function relativePath(from, to) {
-            return path.relative(from, to).replace(/\\/g, '/');
-        }
-
-        function normalizeType(type) {
-            type = type.trim();
-            var pos = type.indexOf(' ');
-            if (pos < 0) {
-                return type;
-            }
-            var norm = type.substring(0, pos);
-            log(colors.red('Found illegal type/format "' + type + '", replacing it with "' + norm + '".'));
-            return norm;
+            var r = path.relative(from, to);
+            return path.sep === '\\' ? r.replace(/\\/g, '/') : r;
         }
 
         function handleAllOf(schema) {
@@ -112,7 +86,7 @@ module.exports = {
                     var type = expandRefs(schema.allOf[i]);
                     if (type) {
                         if (type.type !== 'object' && !type.allOf) {
-                            log(colors.red(name + ' is not an interface or does inherit from a non-interface'));
+                            log.error(colors.red(name + ' is not an interface or does inherit from a non-interface'));
                         }
                         if (type.description) {
                             schema.description += (schema.description ? ' and ' : '') + type.description;
@@ -120,7 +94,7 @@ module.exports = {
                         Array.prototype.push.apply(schema.required, type.required);
                         for (var p in type.properties) {
                             if (schema.properties[p]) {
-                                log(colors.red(name + ' inherits multiple times the same property ' + p));
+                                log.error(colors.red(name + ' inherits multiple times the same property ' + p));
                             }
                             schema.properties[p] = Object.assign({}, type.properties[p]);
                         }
@@ -132,7 +106,7 @@ module.exports = {
                     var type = expandRefs(schema.allOf[0]);
                     if (type) {
                         if (type.type !== 'object' && !type.allOf) {
-                            log(colors.red(name + ' is not an interface'));
+                            log.error(colors.red(name + ' is not an interface'));
                         }
                         v3.required = type.required;
                         for (var p in type.properties) {
@@ -149,7 +123,7 @@ module.exports = {
             function expandRefs(def) {
                 if (def.$ref) {
                     if (!isLocalRef(def.$ref)) {
-                        log(colors.red(name + ' has a non local $ref "' + def.$ref + '". Ignoring it.'));
+                        log.warn(colors.red(name + ' has a non local $ref "' + def.$ref + '". Ignoring it.'));
                     } else {
                         var res = Object.assign({}, def, definitions[def.$ref.substring(14)]);
                         delete res.$ref;
