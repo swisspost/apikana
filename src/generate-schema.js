@@ -1,12 +1,11 @@
 var colors = require('ansi-colors');
-var log = require('fancy-log');
+var log = require('./log');
 var traverse = require('traverse');
 var fs = require('fs');
 var fse = require('fs-extra');
 var path = require('path');
 var schemaGen = require('./schema-gen');
 var params = require('./params');
-var generateEnv = require('./generate-env');
 
 module.exports = {
     generate: function (tsconfig, files, dest, dependencyPath) {
@@ -18,7 +17,7 @@ module.exports = {
         for (var name in schemas) {
             var info = schemaInfos[name];
             if (info.source === '') {
-                log('Found definition', colors.magenta(name));
+                log.info('Found definition', colors.magenta(name));
                 var schema = schemas[name];
                 var v3 = handleAllOf(schema);
                 removeDefinitions(schema);
@@ -47,9 +46,7 @@ module.exports = {
             var deps = path.resolve(dependencyPath);
             var relDeps = relativePath(path.resolve(dest, 'model/json-schema'), deps);
             var infos = {};
-            if (params.verbose()) {
-                log('Dependencies:              ', deps);
-            }
+            log.debug('Dependencies:              ', deps);
             for (var name in schemas) {
                 var schema = schemas[name];
                 var rel = relativePath(deps.toLowerCase(), schema.extra.filename);
@@ -58,11 +55,9 @@ module.exports = {
                     source: source,
                     object: schema.type === 'object' || schema.enum || schema.allOf
                 };
-                if (params.verbose()) {
-                    log('Source file:               ', schema.extra.filename);
-                    log('- relative to dependencies:', rel);
-                    log('- as dependency:           ', source + name);
-                }
+                log.debug('Source file:               ', schema.extra.filename);
+                log.debug('- relative to dependencies:', rel);
+                log.debug('- as dependency:           ', source + name);
             }
             return infos;
         }
@@ -91,7 +86,7 @@ module.exports = {
                     var type = expandRefs(schema.allOf[i]);
                     if (type) {
                         if (type.type !== 'object' && !type.allOf) {
-                            log(colors.red(name + ' is not an interface or does inherit from a non-interface'));
+                            log.error(colors.red(name + ' is not an interface or does inherit from a non-interface'));
                         }
                         if (type.description) {
                             schema.description += (schema.description ? ' and ' : '') + type.description;
@@ -99,7 +94,7 @@ module.exports = {
                         Array.prototype.push.apply(schema.required, type.required);
                         for (var p in type.properties) {
                             if (schema.properties[p]) {
-                                log(colors.red(name + ' inherits multiple times the same property ' + p));
+                                log.error(colors.red(name + ' inherits multiple times the same property ' + p));
                             }
                             schema.properties[p] = Object.assign({}, type.properties[p]);
                         }
@@ -111,7 +106,7 @@ module.exports = {
                     var type = expandRefs(schema.allOf[0]);
                     if (type) {
                         if (type.type !== 'object' && !type.allOf) {
-                            log(colors.red(name + ' is not an interface'));
+                            log.error(colors.red(name + ' is not an interface'));
                         }
                         v3.required = type.required;
                         for (var p in type.properties) {
@@ -128,7 +123,7 @@ module.exports = {
             function expandRefs(def) {
                 if (def.$ref) {
                     if (!isLocalRef(def.$ref)) {
-                        log(colors.red(name + ' has a non local $ref "' + def.$ref + '". Ignoring it.'));
+                        log.warn(colors.red(name + ' has a non local $ref "' + def.$ref + '". Ignoring it.'));
                     } else {
                         var res = Object.assign({}, def, definitions[def.$ref.substring(14)]);
                         delete res.$ref;

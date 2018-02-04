@@ -1,3 +1,5 @@
+var log = require('./log');
+var colors = require('ansi-colors');
 var typescript = require('typescript');
 
 //important: patch readFile before require typescript-to-json-schema-extra
@@ -72,7 +74,7 @@ exports = {
                 return type;
             }
             var norm = type.substring(0, pos);
-            console.log('Found illegal type/format "' + type + '", replacing it with "' + norm + '".');
+            log.warn('Found illegal type/format "' + colors.red(type) + '", replacing it with "' + colors.green(norm) + '".');
             return norm;
         }
 

@@ -1,8 +1,10 @@
 var env = require('minimist')(process.argv.slice(2));
 var colors = require('ansi-colors');
-var log = require('fancy-log');
+var log = require('./log');
 var fs = require('fs');
 var objectPath = require('object-path');
+
+log.setLevel(env.log);
 
 var models = noSlash(env.models || 'ts');
 
@@ -23,7 +25,7 @@ module.exports = {
             try {
                 objectPath.set(target, prop, env[prop]);
             } catch (e) {
-                log(colors.red('Conflicting environment variable, could not write "' + prop + '". Rename the variable if you need it, otherwise just ignore.'));
+                log.warn(colors.red('Conflicting environment variable, could not write "' + prop + '". Rename the variable if you need it, otherwise just ignore.'));
             }
         }
         return target;
@@ -54,9 +56,6 @@ module.exports = {
     },
     deploy: function () {
         return env.deploy && env.deploy === 'true';
-    },
-    verbose: function () {
-        return env.verbose && env.verbose !== 'false';
     },
     serve: function () {
         return !env.serve || env.serve !== 'false';

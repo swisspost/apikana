@@ -3,7 +3,7 @@ var rename = require('gulp-rename');
 var inject = require('gulp-inject');
 var File = require('vinyl');
 var colors = require('ansi-colors');
-var log = require('fancy-log');
+var log = require('./log');
 var replace = require('gulp-replace');
 var path = require('path');
 var fs = require('fs');
@@ -26,7 +26,7 @@ module.exports = {
 
         var apiExist = fs.existsSync(path.resolve(source, params.api()));
         if (!apiExist) {
-            log(colors.red('API file ' + source + '/' + params.api() + ' not found.'));
+            log.warn(colors.red('API file ' + source + '/' + params.api() + ' not found.'));
         }
 
         function nonEmptyDir(path) {
@@ -61,10 +61,10 @@ module.exports = {
                         }
                     })
                     .on('finish', function () {
-                        log('Done', colors.green(name), 'in', first ? (Date.now() - first) / 1000 : '?', 's');
+                        log.info('Done', colors.green(name), 'in', first ? (Date.now() - first) / 1000 : '?', 's');
                     })
                     .on('error', function (err) {
-                        log('Error in', colors.green(name), colors.red(err));
+                        log.error('Error in', colors.green(name), colors.red(err));
                     });
             });
         }
@@ -176,7 +176,7 @@ module.exports = {
                                 if (model) {
                                     var modelFile = path.resolve(refBase, model);
                                     if (!fs.existsSync(modelFile)) {
-                                        log(colors.red('Referenced model file ' + modelFile + ' does not exist.'));
+                                        log.error(colors.red('Referenced model file ' + modelFile + ' does not exist.'));
                                     } else {
                                         modelFiles.push(modelFile);
                                     }
@@ -201,7 +201,7 @@ module.exports = {
                             cb();
                         }));
                 } else {
-                    log(colors.red('Model directory ' + source + '/' + params.models() + ' does not exist.'));
+                    log.warn(colors.red('Model directory ' + source + '/' + params.models() + ' does not exist.'));
                     return emptyStream();
                 }
             }
@@ -384,7 +384,7 @@ module.exports = {
             var proc = require('child_process').spawn(process.argv[0], args, {detached: true, stdio: 'ignore'});
             proc.unref();
             var port = params.port();
-            log('***** Serving API at', colors.blue(colors.underline('http://localhost:' + port)), '*****');
+            log.info('***** Serving API at', colors.blue(colors.underline('http://localhost:' + port)), '*****');
             return emptyStream();
         });
 

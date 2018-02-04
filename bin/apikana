@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 var path = require('path');
 var fs = require('fs');
+var log = require('../src/log');
 var colors = require('ansi-colors');
 var params = require('../src/params');
 var compareVersions = require('compare-versions');
@@ -8,12 +9,13 @@ var packge = require('../package.json');
 var argc = process.argv.length;
 
 require('../src/logo');
+
 if (argc === 2) {
     help();
 } else {
     if (params.minVersion() && compareVersions(params.minVersion(), packge.version) > 0) {
-        console.log(colors.red('Expected minimum version'), params.minVersion(), colors.red('but current version is'), packge.version);
-        console.log(colors.red('Please update the global apikana installation:'), 'npm install -g apikana');
+        log(colors.red('Expected minimum version'), params.minVersion(), colors.red('but current version is'), packge.version);
+        log(colors.red('Please update the global apikana installation:'), 'npm install -g apikana');
         process.exit(1);
     }
     switch (process.argv[2]) {
@@ -35,24 +37,24 @@ if (argc === 2) {
 }
 
 function help() {
-    console.log(colors.magenta('apikana help'), '                             Show this help.');
-    console.log(colors.magenta('apikana init'), '                             Initialize a new API project.');
-    console.log(colors.magenta('apikana start'), colors.blue('[source]'), colors.red('[options]'), 'Generate JSON schemas and HTML documentation from the API.');
-    console.log(colors.blue('               source'), '                    Directory containing the APIs and models. Default: src');
-    console.log(colors.red('             --api=<file>'), '                The main api file (yaml or json). Default: openapi/api.yaml');
-    console.log(colors.red('             --models=<path>'), '             The directory containing the models, if no api file is given. Default: ts');
-    console.log(colors.red('             --style=<path>'), '              The directory containing css files for the swagger GUI. Default: style');
-    console.log(colors.red('             --config=<file>'), '             Read additional options from a file in JSON format.');
-    console.log(colors.red('             --javaPackage=<name>'), '        Java package to use.');
-    console.log(colors.red('             --deploy=<boolean>'), '          If the sources should be copied into the target directory. Default: false');
-    console.log(colors.red('             --dependencyPath=<path>'), '     Directory containing API dependencies. Default: node_modules/$api-dependencies');
-    console.log(colors.red('             --port=<number>'), '             Port to serve the HTML documentation. Default: 8333');
-    console.log(colors.red('             --serve=<boolean>'), '           If the HTML documentation should be served over HTTP. Default: true');
-    console.log(colors.red('             --openBrowser=<boolean>'), '     If the browser should be opened at first start. Default: true');
-    console.log(colors.red('             --minVersion=<version>'), '      Fail if the current apikana version is lower than expected.');
-    console.log(colors.red('             --verbose<boolean>'), '          Log more.');
-    console.log(colors.magenta('apikana stop '), colors.red('[options]'), '                  Stop a running server.');
-    console.log(colors.red('             --port=<number>'), '             Port of the server to be stopped. Default: 8333');
+    log(colors.magenta('apikana help'), '                             Show this help.');
+    log(colors.magenta('apikana init'), '                             Initialize a new API project.');
+    log(colors.magenta('apikana start'), colors.blue('[source]'), colors.red('[options]'), 'Generate JSON schemas and HTML documentation from the API.');
+    log(colors.blue('               source'), '                    Directory containing the APIs and models. Default: src');
+    log(colors.red('             --api=<file>'), '                The main api file (yaml or json). Default: openapi/api.yaml');
+    log(colors.red('             --models=<path>'), '             The directory containing the models, if no api file is given. Default: ts');
+    log(colors.red('             --style=<path>'), '              The directory containing css files for the swagger GUI. Default: style');
+    log(colors.red('             --config=<file>'), '             Read additional options from a file in JSON format.');
+    log(colors.red('             --javaPackage=<name>'), '        Java package to use.');
+    log(colors.red('             --deploy=<boolean>'), '          If the sources should be copied into the target directory. Default: false');
+    log(colors.red('             --dependencyPath=<path>'), '     Directory containing API dependencies. Default: node_modules/$api-dependencies');
+    log(colors.red('             --port=<number>'), '             Port to serve the HTML documentation. Default: 8333');
+    log(colors.red('             --serve=<boolean>'), '           If the HTML documentation should be served over HTTP. Default: true');
+    log(colors.red('             --openBrowser=<boolean>'), '     If the browser should be opened at first start. Default: true');
+    log(colors.red('             --minVersion=<version>'), '      Fail if the current apikana version is lower than expected.');
+    log(colors.red('             --log=<level>'), '               Set log level (debug, info, warn, error). Default: info');
+    log(colors.magenta('apikana stop '), colors.red('[options]'), '                  Stop a running server.');
+    log(colors.red('             --port=<number>'), '             Port of the server to be stopped. Default: 8333');
 }
 
 function generate() {
@@ -63,7 +65,7 @@ function generate() {
     }
     params.readConfigFile();
 
-    console.log('Source: ', source);
+    log('Source: ', source);
 
     require('../src/generate').generate(path.resolve(source), params.target());
 }

@@ -1,6 +1,6 @@
 var File = require('vinyl');
 var colors = require('ansi-colors');
-var log = require('fancy-log');
+var log = require('./log');
 
 module.exports = function (javaPackage, apiName) {
     var contents = '';
@@ -28,7 +28,7 @@ module.exports = function (javaPackage, apiName) {
             contents += '}';
         },
         toFile: function () {
-            log('Generated', colors.magenta('Paths.java'));
+            log.info('Generated', colors.magenta('Paths.java'));
             return new File({
                 path: 'java/' + javaPackage.replace(/\./g, '/') + '/Paths.java',
                 contents: new Buffer(contents)

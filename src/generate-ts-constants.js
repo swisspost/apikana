@@ -1,6 +1,6 @@
 var File = require('vinyl');
 var colors = require('ansi-colors');
-var log = require('fancy-log');
+var log = require('./log');
 
 module.exports = function (apiName, host, basePath) {
     var contents = '';
@@ -30,7 +30,7 @@ module.exports = function (apiName, host, basePath) {
         finish: function () {
         },
         toFile: function () {
-            log('Generated', colors.magenta(fieldOf(apiName) + '.ts'));
+            log.info('Generated', colors.magenta(fieldOf(apiName) + '.ts'));
             return new File({
                 path: 'ts/' + fieldOf(apiName) + '.ts',
                 contents: new Buffer(contents)
