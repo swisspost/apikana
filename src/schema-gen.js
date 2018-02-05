@@ -50,7 +50,8 @@ exports = {
                         return normalizeType(value);
                     }
                     if (key === 'enum') {
-                        return enumMembersAsValues(parent);
+                        enumMembersAsValues(parent);
+                        return value;
                     }
                     return value;
                 });
@@ -60,9 +61,9 @@ exports = {
 
         function traverse(obj, func) {
             for (var prop in obj) {
-                var val = func(obj, obj[prop], prop);
-                if (typeof val === 'object') {
-                    traverse(val, func);
+                obj[prop] = func(obj, obj[prop], prop);
+                if (typeof obj[prop] === 'object') {
+                    traverse(obj[prop], func);
                 }
             }
         }
