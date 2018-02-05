@@ -44,27 +44,27 @@ module.exports = {
 
         function schemaInfos(schemas) {
             var deps = path.resolve(dependencyPath);
-            var relDeps = relativePath(path.resolve(dest, 'model/json-schema'), deps);
+            var relDeps = normPath(path.relative(path.resolve(dest, 'model/json-schema'), deps));
             var infos = {};
-            log.debug('Dependencies:              ', deps);
+            log.debug('Dependencies:              ', normPath(deps));
             for (var name in schemas) {
                 var schema = schemas[name];
-                var rel = relativePath(deps.toLowerCase(), schema.extra.filename);
-                var source = rel.substring(0, 2) === '..' ? '' : (relDeps + '/json-schema-v3/' + path.dirname(rel.substring(3)) + '/');
+                //thank you MS for messing around with filenames!
+                var filename = normPath(schema.extra.filename);
+                var source = filename.toLowerCase().startsWith(normPath(deps).toLowerCase())
+                    ? (relDeps + filename.substring(deps.length)) : '';
                 infos[name] = {
                     source: source,
                     object: schema.type === 'object' || schema.enum || schema.allOf
                 };
-                log.debug('Source file:               ', schema.extra.filename);
-                log.debug('- relative to dependencies:', rel);
-                log.debug('- as dependency:           ', source + name);
+                log.debug('Source file:               ', filename);
+                log.debug('- as dependency:           ', source);
             }
             return infos;
         }
 
-        function relativePath(from, to) {
-            var r = path.relative(from, to);
-            return path.sep === '\\' ? r.replace(/\\/g, '/') : r;
+        function normPath(p) {
+            return path.sep === '\\' ? p.replace(/\\/g, '/') : p;
         }
 
         function handleAllOf(schema) {
