@@ -52,13 +52,13 @@ module.exports = {
                 //thank you MS for messing around with filenames!
                 var filename = normPath(schema.extra.filename);
                 var source = filename.toLowerCase().startsWith(normPath(deps).toLowerCase())
-                    ? (relDeps + filename.substring(deps.length)) : '';
+                    ? (relDeps + '/json-schema-v3' + path.dirname(filename.substring(deps.length + 3)) + '/') : '';
                 infos[name] = {
                     source: source,
                     object: schema.type === 'object' || schema.enum || schema.allOf
                 };
                 log.debug('Source file:    ', colors.magenta(filename));
-                log.debug('- as dependency:', colors.magenta(source));
+                log.debug('- as dependency:', colors.magenta(source + name));
             }
             return infos;
         }
