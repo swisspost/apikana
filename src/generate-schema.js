@@ -46,7 +46,7 @@ module.exports = {
             var deps = path.resolve(dependencyPath);
             var relDeps = normPath(path.relative(path.resolve(dest, 'model/json-schema'), deps));
             var infos = {};
-            log.debug('Dependencies:              ', normPath(deps));
+            log.debug('Dependencies:   ', colors.magenta(normPath(deps)));
             for (var name in schemas) {
                 var schema = schemas[name];
                 //thank you MS for messing around with filenames!
@@ -57,8 +57,8 @@ module.exports = {
                     source: source,
                     object: schema.type === 'object' || schema.enum || schema.allOf
                 };
-                log.debug('Source file:               ', filename);
-                log.debug('- as dependency:           ', source);
+                log.debug('Source file:    ', colors.magenta(filename));
+                log.debug('- as dependency:', colors.magenta(source));
             }
             return infos;
         }
