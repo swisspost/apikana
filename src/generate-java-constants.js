@@ -2,13 +2,14 @@ var File = require('vinyl');
 var colors = require('ansi-colors');
 var log = require('./log');
 
-module.exports = function (javaPackage, apiName, host, basePath) {
+module.exports = function (model, javaPackage, apiName, host, basePath) {
     var contents = '';
     return {
         start: function () {
             contents += 'package ' + javaPackage + ';\n\n';
             contents += 'public final class ' + classOf(apiName) + ' {\n' +
                 '    public static final String BASE_URL = "' + (host || '') + (basePath || '') + '";\n' +
+                '    public static final String BASE_PATH = "' + model.prefix + '";\n' +
                 '    private static abstract class Path {\n' +
                 '        protected abstract String path();\n' +
                 '    }\n' +
@@ -29,7 +30,7 @@ module.exports = function (javaPackage, apiName, host, basePath) {
                 '        }\n' +
                 '    }\n';
         },
-        write: function (model) {
+        write: function () {
             write(model.simple, model.prefix);
         },
         finish: function () {

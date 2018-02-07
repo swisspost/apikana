@@ -20,15 +20,15 @@ module.exports = {
                 var model = createModel(api.paths);
 
                 if (javaPackage) {
-                    this.push(generate(model, new JavaGen(javaPackage, apiName, api.host, api.basePath)));
-                    this.push(generate(model, new OldJavaGen(javaPackage, apiName)));
+                    this.push(generate(new JavaGen(model,javaPackage, apiName, api.host, api.basePath)));
+                    this.push(generate(new OldJavaGen(model,javaPackage, apiName)));
                 }
-                this.push(generate(model, new TsGen(apiName, api.host, api.basePath)));
+                this.push(generate(new TsGen(model,apiName, api.host, api.basePath)));
                 cb();
 
-                function generate(model, generator) {
+                function generate(generator) {
                     generator.start();
-                    generator.write(model, api.paths);
+                    generator.write();
                     generator.finish();
                     return generator.toFile();
                 }
@@ -42,7 +42,7 @@ module.exports = {
                         prefix += '/' + p;
                         simple = simple[p];
                     }
-                    return {full: full, simple: simple, prefix: prefix};
+                    return {paths: paths, full: full, simple: simple, prefix: prefix};
                 }
 
                 function singleProp(obj) {
