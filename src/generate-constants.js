@@ -20,20 +20,45 @@ module.exports = {
                 var model = createModel(api.paths);
 
                 if (javaPackage) {
-                    this.push(generate(model, new JavaGen(javaPackage, apiName, api.host, api.basePath)));
-                    this.push(generate(model, new OldJavaGen(javaPackage, apiName)));
+                    this.push(generate(new JavaGen(model,javaPackage, apiName, api.host, api.basePath)));
+                    this.push(generate(new OldJavaGen(model,javaPackage, apiName)));
                 }
-                this.push(generate(model, new TsGen(apiName, api.host, api.basePath)));
+                this.push(generate(new TsGen(model,apiName, api.host, api.basePath)));
                 cb();
 
-                function generate(model, generator) {
+                function generate(generator) {
                     generator.start();
-                    generator.write(model, api.paths);
+                    generator.write();
                     generator.finish();
                     return generator.toFile();
                 }
 
                 function createModel(paths) {
+                    var full = createFullModel(paths);
+                    var simple = full;
+                    var prefix = '';
+                    var p;
+                    while (p = singleProp(simple)) {
+                        prefix += '/' + p;
+                        simple = simple[p];
+                    }
+                    return {paths: paths, full: full, simple: simple, prefix: prefix};
+                }
+
+                function singleProp(obj) {
+                    var prop;
+                    for (var p in obj) {
+                        if (p.charAt(0) !== '/') {
+                            if (prop || (obj[p] && obj[p]['/end'])) {
+                                return null;
+                            }
+                            prop = p;
+                        }
+                    }
+                    return prop;
+                }
+
+                function createFullModel(paths) {
                     var model = {};
 
                     for (var path in paths) {

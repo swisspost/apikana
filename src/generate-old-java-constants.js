@@ -2,7 +2,7 @@ var File = require('vinyl');
 var colors = require('ansi-colors');
 var log = require('./log');
 
-module.exports = function (javaPackage, apiName) {
+module.exports = function (model, javaPackage, apiName) {
     var contents = '';
     var lines = {};
     return {
@@ -14,8 +14,8 @@ module.exports = function (javaPackage, apiName) {
                 + '@Deprecated\n'
                 + 'public final class Paths {\n';
         },
-        write: function (obj, raw) {
-            write(obj, raw);
+        write: function () {
+            write(model.full, model.paths);
         },
         finish: function () {
             var ls = Object.keys(lines);

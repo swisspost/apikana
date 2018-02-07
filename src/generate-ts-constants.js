@@ -2,7 +2,7 @@ var File = require('vinyl');
 var colors = require('ansi-colors');
 var log = require('./log');
 
-module.exports = function (apiName, host, basePath) {
+module.exports = function (model, apiName, host, basePath) {
     var contents = '';
     var classes = {};
     return {
@@ -14,12 +14,13 @@ module.exports = function (apiName, host, basePath) {
                 '    }\n' +
                 '}\n\n';
         },
-        write: function (obj) {
+        write: function () {
             classes[''] = 'export default class ' + classOf(apiName) + ' {\n' +
                 '    private constructor(){}\n' +
                 '    static readonly baseUrl = "' + (host || '') + (basePath || '') + '";\n' +
-                '    private path() { return ""; }\n';
-            write(obj, '', 1);
+                '    static readonly basePath = "' + model.prefix + '";\n' +
+                '    private path() { return ' + classOf(apiName) + '.basePath; }\n';
+            write(model.simple, '', 1);
             for (var cn in classes) {
                 if (cn !== '') {
                     contents += classes[cn];
@@ -122,15 +123,15 @@ function tsOf(name) {
 
 function tsType(type) {
     switch (type) {
-    case 'number':
-    case 'integer':
-        return 'number';
-    case 'boolean':
-        return 'boolean';
-    case 'array':
-        return 'array<string>';
-    default:
-        return 'string';
+        case 'number':
+        case 'integer':
+            return 'number';
+        case 'boolean':
+            return 'boolean';
+        case 'array':
+            return 'array<string>';
+        default:
+            return 'string';
     }
 }
 
