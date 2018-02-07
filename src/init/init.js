@@ -49,7 +49,7 @@ function init(name, isGlobal, forNode, opts) {
         fse.copySync(__dirname + '/template/maven', name);
         var pom = fs.readFileSync(name + '/pom.xml').toString();
         // opts.version = myPack.version;
-        opts.version = '0.4.0'; //TODO hardcode or myPack.version?
+        opts.version = '0.4.1'; //TODO hardcode or myPack.version?
         opts.global = isGlobal;
         for (var opt in opts) {
             pom = pom.replace('%' + opt + '%', opts[opt]);
