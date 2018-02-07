@@ -14,8 +14,8 @@ module.exports = function (javaPackage, apiName) {
                 + '@Deprecated\n'
                 + 'public final class Paths {\n';
         },
-        write: function (obj, raw) {
-            write(obj, raw);
+        write: function (model, raw) {
+            write(model.full, raw);
         },
         finish: function () {
             var ls = Object.keys(lines);

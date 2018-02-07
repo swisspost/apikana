@@ -34,6 +34,31 @@ module.exports = {
                 }
 
                 function createModel(paths) {
+                    var full = createFullModel(paths);
+                    var simple = full;
+                    var prefix = '';
+                    var p;
+                    while (p = singleProp(simple)) {
+                        prefix += '/' + p;
+                        simple = simple[p];
+                    }
+                    return {full: full, simple: simple, prefix: prefix};
+                }
+
+                function singleProp(obj) {
+                    var prop;
+                    for (var p in obj) {
+                        if (p.charAt(0) !== '/') {
+                            if (prop || (obj[p] && obj[p]['/end'])) {
+                                return null;
+                            }
+                            prop = p;
+                        }
+                    }
+                    return prop;
+                }
+
+                function createFullModel(paths) {
                     var model = {};
 
                     for (var path in paths) {

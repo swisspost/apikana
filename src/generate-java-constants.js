@@ -9,7 +9,7 @@ module.exports = function (javaPackage, apiName, host, basePath) {
             contents += 'package ' + javaPackage + ';\n\n';
             contents += 'public final class ' + classOf(apiName) + ' {\n' +
                 '    public static final String BASE_URL = "' + (host || '') + (basePath || '') + '";\n' +
-                '    public static abstract class Path {\n' +
+                '    private static abstract class Path {\n' +
                 '        protected abstract String path();\n' +
                 '    }\n' +
                 '    private static abstract class Endpoint extends Path {\n' +
@@ -29,8 +29,8 @@ module.exports = function (javaPackage, apiName, host, basePath) {
                 '        }\n' +
                 '    }\n';
         },
-        write: function (obj) {
-            write(obj);
+        write: function (model) {
+            write(model.simple, model.prefix);
         },
         finish: function () {
             contents += '}';
@@ -44,9 +44,9 @@ module.exports = function (javaPackage, apiName, host, basePath) {
         }
     };
 
-    function write(obj) {
+    function write(obj, path) {
         var classes = {};
-        doWrite(obj, '', null, 1);
+        doWrite(obj, path, null, 1);
 
         function newClass(name) {
             var n = classOf(name);
@@ -157,14 +157,14 @@ function javaOf(name) {
 
 function javaType(type) {
     switch (type) {
-    case 'number':
-        return 'double';
-    case 'integer':
-        return 'int';
-    case 'boolean':
-        return 'boolean';
-    default:
-        return 'String';
+        case 'number':
+            return 'double';
+        case 'integer':
+            return 'int';
+        case 'boolean':
+            return 'boolean';
+        default:
+            return 'String';
     }
 }
 
