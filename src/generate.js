@@ -329,6 +329,12 @@ module.exports = {
         //TODO same problem as in generate-schema: if there are schemas with the same name from different dependencies,
         //we need structural comparision
         task('generate-full-rest', ['read-rest-api'/*, 'overwrite-schemas'*/], function () {
+            var out = path.resolve(dest, 'model/openapi');
+            if (!restApi) {
+                fse.removeSync(out);
+                return emptyStream();
+            }
+
             var completeApi = Object.assign({}, restApi);
             completeApi.definitions = {};
             delete completeApi.definitions.$ref;
@@ -349,7 +355,6 @@ module.exports = {
                             this.update('#/definitions/' + fileToType[value]);
                         }
                     });
-                    var out = path.resolve(dest, 'model/openapi');
                     fse.mkdirsSync(out);
                     fs.writeFileSync(path.resolve(out, 'api.json'), JSON.stringify(restApi, null, 2));
                     fs.writeFileSync(path.resolve(out, 'api.yaml'), yaml.stringify(restApi, 6, 2));
