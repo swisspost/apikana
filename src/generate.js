@@ -70,9 +70,6 @@ module.exports = {
         }
 
         task('copy-swagger', function () {
-            if (!apiExist) {
-                return emptyStream();
-            }
             return module('swagger-ui/dist/**').pipe(gulp.dest(uiPath));
         });
 
@@ -89,10 +86,6 @@ module.exports = {
         });
 
         task('copy-package', function () {
-            if (!apiExist) {
-                return emptyStream();
-            }
-
             var source = fs.existsSync('package.json')
                 ? gulp.src('package.json')
                 : streamFromString('{}');
@@ -110,9 +103,6 @@ module.exports = {
         }
 
         task('copy-deps', function () {
-            if (!apiExist) {
-                return emptyStream();
-            }
             return merge(
                 module(['yamljs/dist/yaml.js']).pipe(gulp.dest('patch', {cwd: uiPath})),
                 module(['object-path/index.js'])
@@ -122,9 +112,6 @@ module.exports = {
         });
 
         task('copy-lib', function () {
-            if (!apiExist) {
-                return emptyStream();
-            }
             return gulp.src('lib/*.js', {cwd: apikanaPath}).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
@@ -149,9 +136,6 @@ module.exports = {
         });
 
         task('copy-deps-unref', function () {
-            if (!apiExist) {
-                return emptyStream();
-            }
             return module(['typescript/lib/lib.d.ts']).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
@@ -375,7 +359,7 @@ module.exports = {
         });
 
         task('serve', ['inject-css'], function () {
-            if (!apiExist || !params.serve()) {
+            if (!params.serve()) {
                 return emptyStream();
             }
             //argv is node, apikana, start, options...

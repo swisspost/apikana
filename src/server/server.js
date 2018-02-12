@@ -1,4 +1,5 @@
 var path = require('path');
+var fs = require('fs');
 var opn = require('opn');
 var params = require('../params');
 
@@ -23,9 +24,14 @@ module.exports = {
                     return true;
                 }
                 if (req.url === '/') {
-                    res.setHeader('Location', '/ui/index.html?url=/src/' + params.api());
+                    var url = exists(path.resolve(source, params.api())) ? '/src/' + params.api() : '/src';
+                    res.setHeader('Location', '/ui/index.html?url=' + url);
                     res.statusCode = 302;
                     serve(req, res);
+                    return true;
+                }
+                if (req.url === '/src') {
+                    serve(req, res, JSON.stringify({definitions: {$ref: readdir(path.resolve(source))}}));
                     return true;
                 }
                 if (route(req, 'src/', source)) ;
@@ -64,6 +70,37 @@ module.exports = {
 
             function startsWith(s, sub) {
                 return s.substring(0, sub.length) === sub;
+            }
+
+            function endsWith(s, sub) {
+                return s.substring(s.length - sub.length) === sub;
+            }
+
+            function exists(file) {
+                try {
+                    fs.accessSync(file);
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            function readdir(basedir) {
+                var res = [];
+                readdir(basedir, res);
+                return res;
+
+                function readdir(dir, res) {
+                    var files = fs.readdirSync(dir);
+                    for (var i = 0; i < files.length; i++) {
+                        var name = path.resolve(dir, files[i]);
+                        if (fs.statSync(name).isDirectory()) {
+                            readdir(name, res);
+                        } else if (endsWith(files[i], '.ts')) {
+                            res.push('src/' + name.substring(basedir.length + 1).replace(/\\/g, '/'));
+                        }
+                    }
+                }
             }
         });
     }
