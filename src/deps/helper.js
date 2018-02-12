@@ -19,8 +19,12 @@ $ = function (f) {
 
     Handlebars.templates.signature = Handlebars.compile('{{sanitize signature}}');
 
-    var srcBase = 'sources/a/b/c/d'; //this must match with server.js
-    var apiUrl = getAbsoluteUrl(getUrlParameter('url')) || (srcBase + '/api.yaml');
+    var url = getUrlParameter('url');
+    if (!url) {
+        alert('Please specify the API to display using the "url" query parameter.\nE.g. ' + location.origin + location.pathname + '?url=/src/openapi/api.yaml');
+        return;
+    }
+    var apiUrl = getAbsoluteUrl(url);
 
     fetchApi(apiUrl).then(function (json) {
         spec = json;

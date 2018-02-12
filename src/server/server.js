@@ -2,9 +2,6 @@ var path = require('path');
 var opn = require('opn');
 var params = require('../params');
 
-var srcBase = 'sources/a/b/c/d'; //this must match with helper.js
-var srcStart = srcBase.substring(0, srcBase.indexOf('/') + 1);
-
 module.exports = {
     start: function (source, dest, port) {
         var dependencyPath = params.dependencyPath();
@@ -23,15 +20,17 @@ module.exports = {
             server.onRequest = function (req, res, serve) {
                 if (req.url === '/close') {
                     res.on('finish', process.exit).end('ok');
-                } else {
-                    if (route(req, srcStart, function () {
-                            var rel = path.relative('/' + srcBase, req.url);
-                            return '/' + source + '/' + path.dirname(params.api()) + '/' + rel;
-                        })) ;
-                    else if (route(req, 'src/', source)) ;
-                    else if (route(req, sourceRelDependencyPath, dependencyPath)) ;
-                    else if (route(req, '', dest + '/ui')) ;
+                    return true;
                 }
+                if (req.url === '/') {
+                    res.setHeader('Location', '/ui/index.html?url=/src/' + params.api());
+                    res.statusCode = 302;
+                    serve(req, res);
+                    return true;
+                }
+                if (route(req, 'src/', source)) ;
+                else if (route(req, sourceRelDependencyPath, dependencyPath)) ;
+                else if (route(req, '', dest)) ;
             };
 
             server.deploy({
@@ -39,19 +38,19 @@ module.exports = {
                 port: port,
                 root: '.',
                 server: {
-                    index: 'index.html',
+                    index: '',
                     noCache: true
                 },
                 contentType: {
                     html: 'text/html',
                     ico: 'image/x-icon',
-                    css: 'text/css',
-                    js: 'text/javascript',
-                    png: 'image/png',
-                    json: 'application/json',
-                    yaml: 'application/yaml',
                     gif: 'image/gif',
-                    ts: 'text/plain'
+                    png: 'image/png',
+                    css: 'text/css',
+                    ts: 'text/plain',
+                    js: 'text/javascript',
+                    json: 'application/json',
+                    yaml: 'application/yaml'
                 }
             });
 
