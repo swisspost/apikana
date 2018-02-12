@@ -31,7 +31,7 @@ module.exports = {
                     return true;
                 }
                 if (req.url === '/src') {
-                    serve(req, res, JSON.stringify({definitions: {$ref: readdir(path.resolve(source))}}));
+                    serve(req, res, JSON.stringify({definitions: {$ref: readdir(path.resolve(source), params.models())}}));
                     return true;
                 }
                 if (route(req, 'src/', source)) ;
@@ -85,19 +85,20 @@ module.exports = {
                 }
             }
 
-            function readdir(basedir) {
+            function readdir(basedir, models) {
                 var res = [];
-                readdir(basedir, res);
+                var start = path.resolve(basedir, models);
+                readdir(start, res);
                 return res;
 
                 function readdir(dir, res) {
                     var files = fs.readdirSync(dir);
                     for (var i = 0; i < files.length; i++) {
                         var name = path.resolve(dir, files[i]);
-                        if (fs.statSync(name).isDirectory()) {
+                        if (fs.statSync(name).isDirectory() && files[i] !== 'node_modules') {
                             readdir(name, res);
                         } else if (endsWith(files[i], '.ts')) {
-                            res.push('src/' + name.substring(basedir.length + 1).replace(/\\/g, '/'));
+                            res.push('src/' + models + name.substring(start.length).replace(/\\/g, '/'));
                         }
                     }
                 }
