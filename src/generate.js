@@ -24,16 +24,18 @@ module.exports = {
         var modulesPath = fs.existsSync(privateModules) ? privateModules : path.resolve('node_modules');
         var dependencyPath = path.resolve(params.dependencyPath());
 
-        var apiExist = fs.existsSync(path.resolve(source, params.api()));
-        if (!apiExist) {
+        var apiFile = path.resolve(source, params.api());
+        if (!fs.existsSync(apiFile)) {
             log.info('API file ', colors.magenta(source + '/' + params.api()), 'not found, generating one.');
+            var apiDir = path.dirname(apiFile);
             var api = {
                 swagger: '2.0',
                 info: {title: path.basename(path.resolve('')), version: '1.0'},
                 paths: [],
-                definitions: {$ref: readdir(path.resolve(source, params.models()), path.resolve(source, path.dirname(params.api())))}
+                definitions: {$ref: readdir(path.resolve(source, params.models()), apiDir)}
             };
-            fs.writeFileSync(path.resolve(source, params.api()), yaml.stringify(api, 6, 2));
+            fse.mkdirsSync(apiDir);
+            fs.writeFileSync(apiFile, yaml.stringify(api, 6, 2));
         }
 
         function readdir(basedir, relativeTo) {
