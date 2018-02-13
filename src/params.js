@@ -52,7 +52,7 @@ module.exports = {
         return env.javaPackage;
     },
     dependencyPath: function () {
-        return env.dependencyPath || 'node_modules/$api-dependencies';
+        return env.dependencyPath || 'node_modules/-api-dependencies';
     },
     deploy: function () {
         return env.deploy && env.deploy === 'true';

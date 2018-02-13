@@ -1,9 +1,7 @@
 var path = require('path');
+var fs = require('fs');
 var opn = require('opn');
 var params = require('../params');
-
-var srcBase = 'sources/a/b/c/d'; //this must match with helper.js
-var srcStart = srcBase.substring(0, srcBase.indexOf('/') + 1);
 
 module.exports = {
     start: function (source, dest, port) {
@@ -23,15 +21,22 @@ module.exports = {
             server.onRequest = function (req, res, serve) {
                 if (req.url === '/close') {
                     res.on('finish', process.exit).end('ok');
-                } else {
-                    if (route(req, srcStart, function () {
-                            var rel = path.relative('/' + srcBase, req.url);
-                            return '/' + source + '/' + path.dirname(params.api()) + '/' + rel;
-                        })) ;
-                    else if (route(req, 'src/', source)) ;
-                    else if (route(req, sourceRelDependencyPath, dependencyPath)) ;
-                    else if (route(req, '', dest + '/ui')) ;
+                    return true;
                 }
+                if (req.url === '/') {
+                    var url = exists(path.resolve(source, params.api())) ? '/src/' + params.api() : '/src';
+                    res.setHeader('Location', '/ui/index.html?url=' + url);
+                    res.statusCode = 302;
+                    serve(req, res);
+                    return true;
+                }
+                if (req.url === '/src') {
+                    serve(req, res, JSON.stringify({definitions: {$ref: readdir(path.resolve(source), params.models())}}));
+                    return true;
+                }
+                if (route(req, 'src/', source)) ;
+                else if (route(req, sourceRelDependencyPath, dependencyPath)) ;
+                else if (route(req, '', dest)) ;
             };
 
             server.deploy({
@@ -39,19 +44,19 @@ module.exports = {
                 port: port,
                 root: '.',
                 server: {
-                    index: 'index.html',
+                    index: '',
                     noCache: true
                 },
                 contentType: {
                     html: 'text/html',
                     ico: 'image/x-icon',
-                    css: 'text/css',
-                    js: 'text/javascript',
-                    png: 'image/png',
-                    json: 'application/json',
-                    yaml: 'application/yaml',
                     gif: 'image/gif',
-                    ts: 'text/plain'
+                    png: 'image/png',
+                    css: 'text/css',
+                    ts: 'text/plain',
+                    js: 'text/javascript',
+                    json: 'application/json',
+                    yaml: 'application/yaml'
                 }
             });
 
@@ -65,6 +70,38 @@ module.exports = {
 
             function startsWith(s, sub) {
                 return s.substring(0, sub.length) === sub;
+            }
+
+            function endsWith(s, sub) {
+                return s.substring(s.length - sub.length) === sub;
+            }
+
+            function exists(file) {
+                try {
+                    fs.accessSync(file);
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            function readdir(basedir, models) {
+                var res = [];
+                var start = path.resolve(basedir, models);
+                readdir(start, res);
+                return res;
+
+                function readdir(dir, res) {
+                    var files = fs.readdirSync(dir);
+                    for (var i = 0; i < files.length; i++) {
+                        var name = path.resolve(dir, files[i]);
+                        if (fs.statSync(name).isDirectory() && files[i] !== 'node_modules') {
+                            readdir(name, res);
+                        } else if (endsWith(files[i], '.ts')) {
+                            res.push('src/' + models + name.substring(start.length).replace(/\\/g, '/'));
+                        }
+                    }
+                }
             }
         });
     }

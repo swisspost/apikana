@@ -47,7 +47,7 @@ function help() {
     log(colors.red('             --config=<file>'), '             Read additional options from a file in JSON format.');
     log(colors.red('             --javaPackage=<name>'), '        Java package to use.');
     log(colors.red('             --deploy=<boolean>'), '          If the sources should be copied into the target directory. Default: false');
-    log(colors.red('             --dependencyPath=<path>'), '     Directory containing API dependencies. Default: node_modules/$api-dependencies');
+    log(colors.red('             --dependencyPath=<path>'), '     Directory containing API dependencies. Default: node_modules/-api-dependencies');
     log(colors.red('             --port=<number>'), '             Port to serve the HTML documentation. Default: 8333');
     log(colors.red('             --serve=<boolean>'), '           If the HTML documentation should be served over HTTP. Default: true');
     log(colors.red('             --openBrowser=<boolean>'), '     If the browser should be opened at first start. Default: true');

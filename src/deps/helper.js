@@ -19,8 +19,16 @@ $ = function (f) {
 
     Handlebars.templates.signature = Handlebars.compile('{{sanitize signature}}');
 
-    var srcBase = 'sources/a/b/c/d'; //this must match with server.js
-    var apiUrl = getAbsoluteUrl(getUrlParameter('url')) || (srcBase + '/api.yaml');
+    var url = getUrlParameter('url');
+    if (!url) {
+        alert('Please specify the API to display using the "url" query parameter.\nE.g. ' + location.origin + location.pathname + '?url=/src/openapi/api.yaml');
+        return;
+    }
+    if (!window.fetch){
+        alert('Please use a Browser.\nIt should at least support "fetch".');
+        return;
+    }
+    var apiUrl = getAbsoluteUrl(url);
 
     fetchApi(apiUrl).then(function (json) {
         spec = json;
@@ -41,6 +49,20 @@ $ = function (f) {
                     processRefs(schema[def]);
                     spec.definitions[def] = schema[def];
                 }
+                if (!json.paths) {
+                    $('<style>' +
+                        '.docson > .box { width: 600px; }' +
+                        '.models { margin: 50px auto; width: 600px; }' +
+                        '.models > span { font-family: sans-serif; font-size: 25px; font-weight: 700; }' +
+                        '#swagger-ui-container { display: none; }'+
+                        '</style>').appendTo('body');
+                    var modelDiv = $('<div class="models"><span>This module contains only models</span></div>').appendTo('#header');
+                    for (var def in schema) {
+                        if (isLocalSchema(models, schema[def])) {
+                            $('<div class="docson">' + def + '</div>').appendTo(modelDiv);
+                        }
+                    }
+                }
             }
         }
         _ = lodash;  //restore lodash
@@ -48,6 +70,12 @@ $ = function (f) {
     }).catch(function (err) {
         alert('Problem loading api: ' + err);
     });
+
+    function isLocalSchema(models, schema) {
+        return _.any(models, function (m) {
+            return schema.extra.filename === m;
+        });
+    }
 
     function processRefs(schema) {
         for (var p in schema) {
