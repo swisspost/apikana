@@ -54,6 +54,19 @@ module.exports = {
     dependencyPath: function () {
         return env.dependencyPath || 'node_modules/-api-dependencies';
     },
+    pathPrefix: function () {
+        var pp = env.pathPrefix;
+        if (pp == null) {
+            return null;
+        }
+        if (pp.substring(0, 1) !== '/') {
+            pp = '/' + pp;
+        }
+        if (pp.substring(pp.length - 1) === '/') {
+            pp = pp.substring(0, pp.length - 1);
+        }
+        return pp;
+    },
     deploy: function () {
         return env.deploy && env.deploy === 'true';
     },

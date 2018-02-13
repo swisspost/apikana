@@ -217,6 +217,7 @@ module.exports = {
                         }));
                 } else {
                     log.warn(colors.red('Model directory ' + source + '/' + params.models() + ' does not exist.'));
+                    require('./generate-schema').mkdirs(dest);
                     return emptyStream();
                 }
             }
