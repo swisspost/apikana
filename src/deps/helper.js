@@ -24,6 +24,10 @@ $ = function (f) {
         alert('Please specify the API to display using the "url" query parameter.\nE.g. ' + location.origin + location.pathname + '?url=/src/openapi/api.yaml');
         return;
     }
+    if (!window.fetch){
+        alert('Please use a Browser.\nIt should at least support "fetch".');
+        return;
+    }
     var apiUrl = getAbsoluteUrl(url);
 
     fetchApi(apiUrl).then(function (json) {
