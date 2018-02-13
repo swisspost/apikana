@@ -57,7 +57,7 @@ $ = function (f) {
                         '#swagger-ui-container { display: none; }' +
                         '</style>').appendTo('body');
                     var title = ((json.info || {}).title) || '';
-                    var desc = ((json.info || {}).description) || 'This module contains only models';
+                    var desc = ((json.info || {}).description) || 'This module contains only models.';
                     var modelDiv = $('<div class="models"><h1>' + title + '</h1><span>' + desc + '</span></div>').appendTo('#header');
                     for (var def in schema) {
                         if (isLocalSchema(models, schema[def])) {
