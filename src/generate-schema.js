@@ -8,10 +8,9 @@ var schemaGen = require('./schema-gen');
 var params = require('./params');
 
 module.exports = {
+    mkdirs: mkdirs,
     generate: function (tsconfig, files, dest, dependencyPath) {
-        fse.mkdirsSync(schemaDir('v3'));
-        fse.mkdirsSync(schemaDir('v4'));
-
+        mkdirs(dest);
         var schemas = schemaGen.generate(tsconfig, files);
         var schemaInfos = schemaInfos(schemas);
         for (var name in schemas) {
@@ -160,15 +159,11 @@ module.exports = {
         }
 
         function schemaFile(type, version) {
-            return path.resolve(schemaDir(version), schemaName(type));
+            return path.resolve(schemaDir(dest, version), schemaName(type));
         }
 
         function schemaName(type) {
             return type.replace(/([^^])([A-Z]+)/g, '$1-$2').toLowerCase() + '.json';
-        }
-
-        function schemaDir(version) {
-            return path.resolve(dest, 'model/json-schema-' + version);
         }
 
         function convertToV3(schema, v3) {
@@ -191,3 +186,11 @@ module.exports = {
     }
 };
 
+function mkdirs(dest) {
+    fse.mkdirsSync(schemaDir(dest, 'v3'));
+    fse.mkdirsSync(schemaDir(dest, 'v4'));
+}
+
+function schemaDir(dest, version) {
+    return path.resolve(dest, 'model/json-schema-' + version);
+}
