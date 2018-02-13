@@ -24,14 +24,9 @@ module.exports = {
                     return true;
                 }
                 if (req.url === '/') {
-                    var url = exists(path.resolve(source, params.api())) ? '/src/' + params.api() : '/src';
-                    res.setHeader('Location', '/ui/index.html?url=' + url);
+                    res.setHeader('Location', '/ui/index.html?url=/src/' + params.api());
                     res.statusCode = 302;
                     serve(req, res);
-                    return true;
-                }
-                if (req.url === '/src') {
-                    serve(req, res, JSON.stringify({definitions: {$ref: readdir(path.resolve(source), params.models())}}));
                     return true;
                 }
                 if (route(req, 'src/', source)) ;
@@ -70,38 +65,6 @@ module.exports = {
 
             function startsWith(s, sub) {
                 return s.substring(0, sub.length) === sub;
-            }
-
-            function endsWith(s, sub) {
-                return s.substring(s.length - sub.length) === sub;
-            }
-
-            function exists(file) {
-                try {
-                    fs.accessSync(file);
-                    return true;
-                } catch (e) {
-                    return false;
-                }
-            }
-
-            function readdir(basedir, models) {
-                var res = [];
-                var start = path.resolve(basedir, models);
-                readdir(start, res);
-                return res;
-
-                function readdir(dir, res) {
-                    var files = fs.readdirSync(dir);
-                    for (var i = 0; i < files.length; i++) {
-                        var name = path.resolve(dir, files[i]);
-                        if (fs.statSync(name).isDirectory() && files[i] !== 'node_modules') {
-                            readdir(name, res);
-                        } else if (endsWith(files[i], '.ts')) {
-                            res.push('src/' + models + name.substring(start.length).replace(/\\/g, '/'));
-                        }
-                    }
-                }
             }
         });
     }
