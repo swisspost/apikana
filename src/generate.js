@@ -26,7 +26,36 @@ module.exports = {
 
         var apiExist = fs.existsSync(path.resolve(source, params.api()));
         if (!apiExist) {
-            log.warn(colors.red('API file ' + source + '/' + params.api() + ' not found.'));
+            log.info('API file ', colors.magenta(source + '/' + params.api()), 'not found, generating one.');
+            var api = {
+                swagger: '2.0',
+                info: {title: path.basename(path.resolve('')), version: '1.0'},
+                paths: [],
+                definitions: {$ref: readdir(path.resolve(source, params.models()), path.resolve(source, path.dirname(params.api())))}
+            };
+            fs.writeFileSync(path.resolve(source, params.api()), yaml.stringify(api, 6, 2));
+        }
+
+        function readdir(basedir, relativeTo) {
+            var res = [];
+            readdir(basedir, res);
+            return res;
+
+            function readdir(dir, res) {
+                var files = fs.readdirSync(dir);
+                for (var i = 0; i < files.length; i++) {
+                    var name = path.resolve(dir, files[i]);
+                    if (fs.statSync(name).isDirectory()) {
+                        readdir(name, res);
+                    } else if (endsWith(files[i], '.ts')) {
+                        res.push(path.relative(relativeTo, name).replace(/\\/g, '/'));
+                    }
+                }
+            }
+
+            function endsWith(s, sub) {
+                return s.substring(s.length - sub.length) === sub;
+            }
         }
 
         function nonEmptyDir(path) {
@@ -329,12 +358,6 @@ module.exports = {
         //TODO same problem as in generate-schema: if there are schemas with the same name from different dependencies,
         //we need structural comparision
         task('generate-full-rest', ['read-rest-api'/*, 'overwrite-schemas'*/], function () {
-            var out = path.resolve(dest, 'model/openapi');
-            if (!restApi) {
-                fse.removeSync(out);
-                return emptyStream();
-            }
-
             var completeApi = Object.assign({}, restApi);
             completeApi.definitions = {};
             delete completeApi.definitions.$ref;
@@ -355,6 +378,7 @@ module.exports = {
                             this.update('#/definitions/' + fileToType[value]);
                         }
                     });
+                    var out = path.resolve(dest, 'model/openapi');
                     fse.mkdirsSync(out);
                     fs.writeFileSync(path.resolve(out, 'api.json'), JSON.stringify(restApi, null, 2));
                     fs.writeFileSync(path.resolve(out, 'api.yaml'), yaml.stringify(restApi, 6, 2));

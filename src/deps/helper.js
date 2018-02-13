@@ -24,7 +24,7 @@ $ = function (f) {
         alert('Please specify the API to display using the "url" query parameter.\nE.g. ' + location.origin + location.pathname + '?url=/src/openapi/api.yaml');
         return;
     }
-    if (!window.fetch){
+    if (!window.fetch) {
         alert('Please use a Browser.\nIt should at least support "fetch".');
         return;
     }
@@ -49,14 +49,16 @@ $ = function (f) {
                     processRefs(schema[def]);
                     spec.definitions[def] = schema[def];
                 }
-                if (!json.paths) {
+                if (!json.paths || json.paths.length === 0) {
                     $('<style>' +
                         '.docson > .box { width: 600px; }' +
-                        '.models { margin: 50px auto; width: 600px; }' +
-                        '.models > span { font-family: sans-serif; font-size: 25px; font-weight: 700; }' +
-                        '#swagger-ui-container { display: none; }'+
+                        '.models { font-family: sans-serif; margin: 50px auto; width: 600px; }' +
+                        '.models > h1 { font-size: 25px; font-weight: 700; }' +
+                        '#swagger-ui-container { display: none; }' +
                         '</style>').appendTo('body');
-                    var modelDiv = $('<div class="models"><span>This module contains only models</span></div>').appendTo('#header');
+                    var title = ((json.info || {}).title) || '';
+                    var desc = ((json.info || {}).description) || 'This module contains only models';
+                    var modelDiv = $('<div class="models"><h1>' + title + '</h1><span>' + desc + '</span></div>').appendTo('#header');
                     for (var def in schema) {
                         if (isLocalSchema(models, schema[def])) {
                             $('<div class="docson">' + def + '</div>').appendTo(modelDiv);
@@ -73,8 +75,18 @@ $ = function (f) {
 
     function isLocalSchema(models, schema) {
         return _.any(models, function (m) {
-            return schema.extra.filename === m;
+            return normalize(schema.extra.filename) === normalize(m);
         });
+
+        function normalize(path) {
+            path = path.replace(/\\/g, '/');
+            var regex = new RegExp('/[^/]+/\\.\\./');
+            var res;
+            while (res = regex.exec(path)) {
+                path = path.substring(0, res.index + 1) + path.substring(res.index + res[0].length);
+            }
+            return path;
+        }
     }
 
     function processRefs(schema) {
