@@ -1,5 +1,7 @@
 var through = require('through2');
 var path = require('path');
+var log = require('./log');
+var colors = require('ansi-colors');
 var fs = require('fs');
 var yaml = require('yamljs');
 var params = require('./params');
@@ -20,10 +22,10 @@ module.exports = {
                 var model = createModel(api.paths);
 
                 if (javaPackage) {
-                    this.push(generate(new JavaGen(model,javaPackage, apiName, api.host, api.basePath)));
-                    this.push(generate(new OldJavaGen(model,javaPackage, apiName)));
+                    this.push(generate(new JavaGen(model, javaPackage, apiName, api.host, api.basePath)));
+                    this.push(generate(new OldJavaGen(model, javaPackage, apiName)));
                 }
-                this.push(generate(new TsGen(model,apiName, api.host, api.basePath)));
+                this.push(generate(new TsGen(model, apiName, api.host, api.basePath)));
                 cb();
 
                 function generate(generator) {
@@ -38,9 +40,13 @@ module.exports = {
                     var simple = full;
                     var prefix = '';
                     var p;
-                    while (p = singleProp(simple)) {
+                    var hasPathPrefix = params.pathPrefix() !== null;
+                    while ((p = singleProp(simple)) && (!hasPathPrefix || prefix.length < params.pathPrefix().length)) {
                         prefix += '/' + p;
                         simple = simple[p];
+                    }
+                    if (hasPathPrefix && prefix !== params.pathPrefix()) {
+                        log.error(colors.red('Given path prefix "' + params.pathPrefix() + '" is not a prefix of all paths. Using "' + prefix + '" as prefix instead.'));
                     }
                     return {paths: paths, full: full, simple: simple, prefix: prefix};
                 }
