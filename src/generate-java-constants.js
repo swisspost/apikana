@@ -50,7 +50,7 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
                         line(level + 1, constructor + ' public static final String PATH = "' + newPath + '";');
                         doWrite(obj[name], newPath, level + 1, isBased);
                         if (!isBased && hasChildren(obj[name])) {
-                            line(level + 1, 'public static final class BASED {');
+                            line(level + 1, 'public final class BASED {');
                             doWrite(obj[name], '', level + 2, true);
                             line(level + 1, '}');
                         }
