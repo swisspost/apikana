@@ -46,17 +46,7 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
     };
 
     function write(obj, path) {
-        var classes = {};
         doWrite(obj, path, null, 1);
-
-        function newClass(name) {
-            var n = classOf(name);
-            while (classes[n]) {
-                n += '_';
-            }
-            classes[n] = true;
-            return n;
-        }
 
         function doWrite(obj, path, parentClass, level) {
             function line(s) {
@@ -72,7 +62,7 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
                     var endpoint = obj[name]['/end'];
                     var param = obj[name]['/param'];
 
-                    var className = newClass(name);
+                    var className = classOf(name);
                     var child = 'public ' + stat + 'final ' + className + ' ' + fieldOf(name) +
                         (param
                             ? '(' + javaType(param) + ' ' + fieldOf(name) + '){ return new ' + className + '(' + fieldOf(name) + '); }'
