@@ -3,32 +3,14 @@ var colors = require('ansi-colors');
 var log = require('./log');
 
 module.exports = function (model, javaPackage, apiName, host, basePath) {
+    apiName += 'Paths';
     var contents = '';
     return {
         start: function () {
             contents += 'package ' + javaPackage + ';\n\n';
             contents += 'public final class ' + classOf(apiName) + ' {\n' +
                 '    public static final String BASE_URL = "' + (host || '') + (basePath || '') + '";\n' +
-                '    public static final String BASE_PATH = "' + model.prefix + '";\n' +
-                '    private static abstract class Path {\n' +
-                '        protected abstract String path();\n' +
-                '    }\n' +
-                '    private static abstract class Endpoint extends Path {\n' +
-                '        public abstract String path();\n' +
-                '        public final String url() {\n' +
-                '            return BASE_URL + path();\n' +
-                '        }\n' +
-                '        public final String url(String base) {\n' +
-                '            return base + path();\n' +
-                '        }\n' +
-                '        public final String relativeTo(String other) {\n' +
-                '            if (!path().startsWith(other)) { throw new IllegalArgumentException(other + " is not a prefix of " + path()); }\n' +
-                '            return path().substring(other.length());\n' +
-                '        }\n' +
-                '        public final String relativeTo(Path other) {\n' +
-                '            return relativeTo(other.path());\n' +
-                '        }\n' +
-                '    }\n';
+                '    public static final String BASE_PATH = "' + model.prefix + '";\n';
         },
         write: function () {
             write(model.simple, model.prefix);
@@ -46,89 +28,56 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
     };
 
     function write(obj, path) {
-        doWrite(obj, path, null, 1);
+        doWrite(obj, path, 1);
 
-        function doWrite(obj, path, parentClass, level) {
-            function line(s) {
-                contents += pad(level) + s + '\n';
-            }
-
+        function doWrite(obj, path, level, isBased) {
             var keys = Object.keys(obj);
             keys.sort();
             var stat = level === 1 ? 'static ' : '';
             for (var i = 0; i < keys.length; i++) {
                 var name = keys[i];
                 if (name.charAt(0) !== '/') {
-                    var endpoint = obj[name]['/end'];
                     var param = obj[name]['/param'];
-
                     var className = classOf(name);
-                    var child = 'public ' + stat + 'final ' + className + ' ' + fieldOf(name) +
-                        (param
-                            ? '(' + javaType(param) + ' ' + fieldOf(name) + '){ return new ' + className + '(' + fieldOf(name) + '); }'
-                            : ' = new ' + className + '();');
+                    var constructor = 'private ' + className + '(){}';
 
-                    var constructor = 'private ' + className +
-                        (param
-                            ? '(' + javaType(param) + ' ' + fieldOf(name) + '){ this.value = ' + fieldOf(name) + '; }'
-                            : '(){}');
-
-                    var pathElem = param ? 'value' : ('"' + name + '"');
-                    var pathMethod = (endpoint ? 'public final' : 'protected') + ' String path() { return ' +
-                        (level === 1
-                            ? '"' + path + '/" + ' + pathElem + '; }'
-                            : parentClass + '.this.path() + "/" + ' + pathElem + '; }');
-
-                    line(child);
-                    line('public ' + stat + 'final class ' + className + ' extends ' + (endpoint ? 'Endpoint' : 'Path') + ' {');
-
-                    level++;
-                    var newPath = path;
-                    if (name) {
-                        newPath += '/' + (param ? '{' + name + '}' : name);
+                    line(level, 'public ' + stat + 'final class ' + className + ' {');
+                    {
+                        var newPath = path;
+                        if (name) {
+                            newPath += '/' + (param ? '{' + name + '}' : name);
+                        }
+                        line(level + 1, constructor + ' public static final String PATH = "' + newPath + '";');
+                        doWrite(obj[name], newPath, level + 1, isBased);
+                        if (!isBased && hasChildren(obj[name])) {
+                            line(level + 1, 'public static final class BASED {');
+                            doWrite(obj[name], '', level + 2, true);
+                            line(level + 1, '}');
+                        }
                     }
-                    line('public static final String PATH = "' + newPath + '";');
-                    if (param) {
-                        line('private final ' + javaType(param) + ' value;');
-                    }
-                    line(constructor);
-                    line(pathMethod);
-                    doWrite(obj[name], newPath, className, level);
-                    level--;
-
-                    line('}');
+                    line(level, '}');
                 }
             }
         }
     }
+
+    function line(level, s) {
+        contents += pad(level) + s + '\n';
+    }
 };
 
+function hasChildren(obj) {
+    for (var prop in obj) {
+        if (prop.charAt(0) !== '/') {
+            return true;
+        }
+    }
+    return false;
+}
 
 function classOf(name) {
     var java = javaOf(name);
     return java.substring(0, 1).toUpperCase() + java.substring(1);
-}
-
-var reservedWords = [
-    'abstract', 'continue', 'for', 'new', 'switch',
-    'assert', 'default', 'goto', 'package', 'synchronized',
-    'boolean', 'do', 'if', 'private', 'this',
-    'break', 'double', 'implements', 'protected', 'throw',
-    'byte', 'else', 'import', 'public', 'throws',
-    'case', 'enum', 'instanceof', 'return', 'transient',
-    'catch', 'extends', 'int', 'short', 'try',
-    'char', 'final', 'interface', 'static', 'void',
-    'class', 'finally', 'long', 'strictfp', 'volatile',
-    'const', 'float', 'native', 'super', 'while'];
-var reserved = {};
-for (var i = 0; i < reservedWords.length; i++) {
-    reserved[reservedWords[i]] = true;
-}
-
-function fieldOf(name) {
-    var java = javaOf(name);
-    var lower = java.substring(0, 1).toLowerCase() + java.substring(1);
-    return reserved[lower] ? lower + '_' : lower;
 }
 
 function javaOf(name) {
@@ -146,19 +95,6 @@ function javaOf(name) {
     return s;
 }
 
-function javaType(type) {
-    switch (type) {
-        case 'number':
-            return 'double';
-        case 'integer':
-            return 'int';
-        case 'boolean':
-            return 'boolean';
-        default:
-            return 'String';
-    }
-}
-
 function pad(n) {
     var s = '';
     while (s.length < 4 * n) {
@@ -166,4 +102,3 @@ function pad(n) {
     }
     return s;
 }
-

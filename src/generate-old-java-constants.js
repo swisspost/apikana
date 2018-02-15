@@ -9,7 +9,7 @@ module.exports = function (model, javaPackage, apiName) {
         start: function () {
             contents += 'package ' + javaPackage + ';\n\n'
                 + '/**\n'
-                + ' * @deprecated Use ' + classOf(apiName) + ' instead.\n'
+                + ' * @deprecated Use ' + classOf(apiName + 'Paths') + ' or ' + classOf(apiName + 'PathBuilder') + ' instead.\n'
                 + ' */\n'
                 + '@Deprecated\n'
                 + 'public final class Paths {\n';

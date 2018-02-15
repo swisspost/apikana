@@ -3,6 +3,7 @@ var colors = require('ansi-colors');
 var log = require('./log');
 
 module.exports = function (model, apiName, host, basePath) {
+    apiName+='Paths';
     var contents = '';
     var classes = {};
     return {

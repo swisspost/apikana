@@ -6,6 +6,7 @@ var fs = require('fs');
 var yaml = require('yamljs');
 var params = require('./params');
 var JavaGen = require('./generate-java-constants');
+var JavaBuilderGen = require('./generate-java-builder');
 var OldJavaGen = require('./generate-old-java-constants');
 var TsGen = require('./generate-ts-constants');
 
@@ -18,11 +19,12 @@ module.exports = {
         function createConstantsFile(javaPackage) {
             return through.obj(function (file, enc, cb) {
                 var api = fileContents(file);
-                var apiName = ((api.info || {}).title || '') + 'Paths';
+                var apiName = ((api.info || {}).title || '');
                 var model = createModel(api.paths);
 
                 if (javaPackage) {
                     this.push(generate(new JavaGen(model, javaPackage, apiName, api.host, api.basePath)));
+                    this.push(generate(new JavaBuilderGen(model, javaPackage, apiName, api.host, api.basePath)));
                     this.push(generate(new OldJavaGen(model, javaPackage, apiName)));
                 }
                 this.push(generate(new TsGen(model, apiName, api.host, api.basePath)));
