@@ -8,13 +8,13 @@ info:
   title: User API
   version: @version@
 paths:
-  /sample/v1/antrittscheck/alarmings/{uuid}/context:
-  /sample/v1/alarmings:
-  /sample/v1/alarmings/{class}/status:
-  /sample/v1/alarmings/{class}/case/req-._uest:
-  /sample/v1/:
-  /sample/v1/users/{class}:
-  /sample/v1/users/{id}:
+  /{sample}/v1/antrittscheck/alarmings/{uuid}/context:
+  /{sample}/v1/alarmings:
+  /{sample}/v1/alarmings/{className}/status:
+  /{sample}/v1/alarmings/{className}/case/req-._uest:
+  /{sample}/v1/:
+  /{sample}/v1/users/{class}:
+  /{sample}/v1/users/{id}:
     get:
       operationId: getUser
       parameters:
@@ -37,7 +37,7 @@ paths:
       summary: Retrieve a user
       tags:
         - user1
-  /sample/v1/users:
+  /{sample}/v1/users:
     get:
       description: bla
       operationId: getUsers

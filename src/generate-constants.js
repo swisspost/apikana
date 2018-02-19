@@ -5,7 +5,8 @@ var colors = require('ansi-colors');
 var fs = require('fs');
 var yaml = require('yamljs');
 var params = require('./params');
-var JavaGen = require('./generate-java-constants');
+var JavaPathsGen = require('./generate-java-paths');
+var JavaPathVarsGen = require('./generate-java-path-vars');
 var JavaBuilderGen = require('./generate-java-builder');
 var OldJavaGen = require('./generate-old-java-constants');
 var TsGen = require('./generate-ts-constants');
@@ -23,7 +24,8 @@ module.exports = {
                 var model = createModel(api.paths);
 
                 if (javaPackage) {
-                    this.push(generate(new JavaGen(model, javaPackage, apiName, api.host, api.basePath)));
+                    this.push(generate(new JavaPathsGen(model, javaPackage, apiName, api.host, api.basePath)));
+                    this.push(generate(new JavaPathVarsGen(model, javaPackage, apiName, api.host, api.basePath)));
                     this.push(generate(new JavaBuilderGen(model, javaPackage, apiName, api.host, api.basePath)));
                     this.push(generate(new OldJavaGen(model, javaPackage, apiName)));
                 }
@@ -44,7 +46,7 @@ module.exports = {
                     var p;
                     var hasPathPrefix = params.pathPrefix() !== null;
                     while ((p = singleProp(simple)) && (!hasPathPrefix || prefix.length < params.pathPrefix().length)) {
-                        prefix += '/' + p;
+                        prefix += '/' + (simple[p]['/param'] ? '{' + p + '}' : p);
                         simple = simple[p];
                     }
                     if (hasPathPrefix && prefix !== params.pathPrefix()) {

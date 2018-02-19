@@ -1,6 +1,7 @@
 var File = require('vinyl');
 var colors = require('ansi-colors');
 var log = require('./log');
+var gen = require('./java-gen');
 
 module.exports = function (model, javaPackage, apiName, host, basePath) {
     apiName += 'PathBuilder';
@@ -8,7 +9,7 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
     return {
         start: function () {
             contents += 'package ' + javaPackage + ';\n\n';
-            contents += 'public final class ' + classOf(apiName) + ' {\n' +
+            contents += 'public final class ' + gen.classOf(apiName) + ' {\n' +
                 '    public static final String BASE_URL = "' + (host || '') + (basePath || '') + '";\n' +
                 '    public static final String BASE_PATH = "' + model.prefix + '";\n' +
                 '    public static abstract class Path {\n' +
@@ -38,9 +39,9 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
             contents += '}';
         },
         toFile: function () {
-            log.info('Generated', colors.magenta(classOf(apiName) + '.java'));
+            log.info('Generated', colors.magenta(gen.classOf(apiName) + '.java'));
             return new File({
-                path: 'java/' + javaPackage.replace(/\./g, '/') + '/' + classOf(apiName) + '.java',
+                path: 'java/' + javaPackage.replace(/\./g, '/') + '/' + gen.classOf(apiName) + '.java',
                 contents: new Buffer(contents)
             });
         }
@@ -51,7 +52,7 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
 
         function doWrite(obj, path, parentClass, level) {
             function line(s) {
-                contents += pad(level) + s + '\n';
+                contents += gen.pad(level) + s + '\n';
             }
 
             var keys = Object.keys(obj);
@@ -63,15 +64,15 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
                     var endpoint = obj[name]['/end'];
                     var param = obj[name]['/param'];
 
-                    var className = classOf(name);
-                    var child = 'public ' + stat + 'final ' + className + ' ' + fieldOf(name) +
+                    var className = gen.classOf(name);
+                    var child = 'public ' + stat + 'final ' + className + ' ' + gen.fieldOf(name) +
                         (param
-                            ? '(' + javaType(param) + ' ' + fieldOf(name) + '){ return new ' + className + '(' + fieldOf(name) + '); }'
+                            ? '(' + gen.javaType(param) + ' ' + gen.fieldOf(name) + '){ return new ' + className + '(' + gen.fieldOf(name) + '); }'
                             : ' = new ' + className + '();');
 
                     var constructor = 'private ' + className +
                         (param
-                            ? '(' + javaType(param) + ' ' + fieldOf(name) + '){ this.value = ' + fieldOf(name) + '; }'
+                            ? '(' + gen.javaType(param) + ' ' + gen.fieldOf(name) + '){ this.value = ' + gen.fieldOf(name) + '; }'
                             : '(){}');
 
                     var pathElem = param ? 'value' : ('"' + name + '"');
@@ -89,7 +90,7 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
                         newPath += '/' + (param ? '{' + name + '}' : name);
                     }
                     if (param) {
-                        line('private final ' + javaType(param) + ' value;');
+                        line('private final ' + gen.javaType(param) + ' value;');
                     }
                     line(constructor);
                     line(pathMethod);
@@ -102,67 +103,3 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
         }
     }
 };
-
-
-function classOf(name) {
-    var java = javaOf(name);
-    return java.substring(0, 1).toUpperCase() + java.substring(1);
-}
-
-var reservedWords = [
-    'abstract', 'continue', 'for', 'new', 'switch',
-    'assert', 'default', 'goto', 'package', 'synchronized',
-    'boolean', 'do', 'if', 'private', 'this',
-    'break', 'double', 'implements', 'protected', 'throw',
-    'byte', 'else', 'import', 'public', 'throws',
-    'case', 'enum', 'instanceof', 'return', 'transient',
-    'catch', 'extends', 'int', 'short', 'try',
-    'char', 'final', 'interface', 'static', 'void',
-    'class', 'finally', 'long', 'strictfp', 'volatile',
-    'const', 'float', 'native', 'super', 'while'];
-var reserved = {};
-for (var i = 0; i < reservedWords.length; i++) {
-    reserved[reservedWords[i]] = true;
-}
-
-function fieldOf(name) {
-    var java = javaOf(name);
-    var lower = java.substring(0, 1).toLowerCase() + java.substring(1);
-    return reserved[lower] ? lower + '_' : lower;
-}
-
-function javaOf(name) {
-    var s = '';
-    var removed = false;
-    for (var i = 0; i < name.length; i++) {
-        var c = name.charAt(i);
-        if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
-            s += removed ? c.toUpperCase() : c;
-            removed = false;
-        } else {
-            removed = true;
-        }
-    }
-    return s;
-}
-
-function javaType(type) {
-    switch (type) {
-        case 'number':
-            return 'double';
-        case 'integer':
-            return 'int';
-        case 'boolean':
-            return 'boolean';
-        default:
-            return 'String';
-    }
-}
-
-function pad(n) {
-    var s = '';
-    while (s.length < 4 * n) {
-        s += ' ';
-    }
-    return s;
-}

@@ -1,6 +1,7 @@
 var File = require('vinyl');
 var colors = require('ansi-colors');
 var log = require('./log');
+var gen = require('./java-gen');
 
 module.exports = function (model, javaPackage, apiName, host, basePath) {
     apiName += 'Paths';
@@ -8,7 +9,7 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
     return {
         start: function () {
             contents += 'package ' + javaPackage + ';\n\n';
-            contents += 'public final class ' + classOf(apiName) + ' {\n' +
+            contents += 'public final class ' + gen.classOf(apiName) + ' {\n' +
                 '    public static final String BASE_URL = "' + (host || '') + (basePath || '') + '";\n' +
                 '    public static final String BASE_PATH = "' + model.prefix + '";\n';
         },
@@ -19,9 +20,9 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
             contents += '}';
         },
         toFile: function () {
-            log.info('Generated', colors.magenta(classOf(apiName) + '.java'));
+            log.info('Generated', colors.magenta(gen.classOf(apiName) + '.java'));
             return new File({
-                path: 'java/' + javaPackage.replace(/\./g, '/') + '/' + classOf(apiName) + '.java',
+                path: 'java/' + javaPackage.replace(/\./g, '/') + '/' + gen.classOf(apiName) + '.java',
                 contents: new Buffer(contents)
             });
         }
@@ -38,7 +39,7 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
                 var name = keys[i];
                 if (name.charAt(0) !== '/') {
                     var param = obj[name]['/param'];
-                    var className = classOf(name);
+                    var className = gen.classOf(name);
                     var constructor = 'private ' + className + '(){}';
 
                     line(level, 'public ' + stat + 'final class ' + className + ' {');
@@ -62,7 +63,7 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
     }
 
     function line(level, s) {
-        contents += pad(level) + s + '\n';
+        contents += gen.pad(level) + s + '\n';
     }
 };
 
@@ -73,32 +74,4 @@ function hasChildren(obj) {
         }
     }
     return false;
-}
-
-function classOf(name) {
-    var java = javaOf(name);
-    return java.substring(0, 1).toUpperCase() + java.substring(1);
-}
-
-function javaOf(name) {
-    var s = '';
-    var removed = false;
-    for (var i = 0; i < name.length; i++) {
-        var c = name.charAt(i);
-        if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
-            s += removed ? c.toUpperCase() : c;
-            removed = false;
-        } else {
-            removed = true;
-        }
-    }
-    return s;
-}
-
-function pad(n) {
-    var s = '';
-    while (s.length < 4 * n) {
-        s += ' ';
-    }
-    return s;
 }
