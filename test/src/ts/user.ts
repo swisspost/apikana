@@ -35,7 +35,7 @@ export interface User {
     anInt: string // @type integer bla
     age?: Int
     gender: Gender
-    birthday: string // @format date-time hula
+    birthday: string // @format date-time, hula
     parent?: User
     company: CompanyInfo
     properties?: { [key: string]: Int }

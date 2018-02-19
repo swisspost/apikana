@@ -70,13 +70,26 @@ exports = {
 
         function normalizeType(type) {
             type = type.trim();
-            var pos = type.indexOf(' ');
+            var pos = firstNonWordPos(type);
             if (pos < 0) {
                 return type;
             }
             var norm = type.substring(0, pos);
             log.warn('Found illegal type/format "' + colors.red(type) + '", replacing it with "' + colors.green(norm) + '".');
             return norm;
+
+            function firstNonWordPos(s) {
+                for (var i = 0; i < s.length; i++) {
+                    if (!isWordChar(s.charAt(i))) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+
+            function isWordChar(c) {
+                return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c === '-' || c === '_';
+            }
         }
 
         function enumMembersAsValues(schema) {
