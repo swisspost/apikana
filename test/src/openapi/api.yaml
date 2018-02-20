@@ -13,7 +13,7 @@ paths:
   /{sample}/v1/alarmings/{className}/alarmings:
   /{sample}/v1/alarmings/{className}/case/req-._uest:
   /{sample}/v1/:
-  /{sample}/v1/users/{class}:
+  /{sample}/v1/users/my-{class}.zip:
   /{sample}/v1/users/{id}:
     get:
       operationId: getUser

@@ -46,7 +46,8 @@ module.exports = {
                     var p;
                     var hasPathPrefix = params.pathPrefix() !== null;
                     while ((p = singleProp(simple)) && (!hasPathPrefix || prefix.length < params.pathPrefix().length)) {
-                        prefix += '/' + (simple[p]['/param'] ? '{' + p + '}' : p);
+                        var param = simple[p]['/param'];
+                        prefix += '/' + (param ? param.original : p);
                         simple = simple[p];
                     }
                     if (hasPathPrefix && prefix !== params.pathPrefix()) {
@@ -77,13 +78,19 @@ module.exports = {
                         for (var i = 0; i < elems.length; i++) {
                             var elem = elems[i];
                             if (elem) {
-                                var type = null;
-                                if (/\{.*?\}/.test(elem)) {
-                                    elem = elem.substring(1, elem.length - 1);
-                                    type = findParameterType(paths[path], elem);
+                                var value = {};
+                                var match = /{(.*?)}/.exec(elem);
+                                if (match) {
+                                    elem = match[1];
+                                    value['/param'] = {
+                                        type: findParameterType(paths[path], elem),
+                                        original: match.input,
+                                        prefix: match.input.substring(0, match.index),
+                                        suffix: match.input.substring(match.index + match[0].length)
+                                    };
                                 }
                                 if (!m[elem]) {
-                                    m[elem] = {'/param': type};
+                                    m[elem] = value;
                                 }
                                 m = m[elem];
                             }

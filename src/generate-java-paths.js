@@ -38,21 +38,22 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
             for (var i = 0; i < keys.length; i++) {
                 var name = keys[i];
                 if (name.charAt(0) !== '/') {
+                    var value = obj[name];
                     var newParents = gen.classOf(name, parents);
                     line(parents.length, 'public ' + stat + 'final class ' + newParents[0] + ' {');
                     {
                         var newPath = path;
                         if (name) {
-                            var param = obj[name]['/param'];
-                            newPath += '/' + (param ? '{' + name + '}' : name);
+                            var param = value['/param'];
+                            newPath += '/' + (param ? param.original : name);
                         }
                         var constructor = 'private ' + newParents[0] + '(){}';
                         var pathVar = isBased ? ('"' + newPath + '"') : ('BASE_PATH + "' + newPath.substring(model.prefix.length) + '"');
                         line(parents.length + 1, constructor + ' public static final String PATH = ' + pathVar + ';');
-                        doWrite(obj[name], newPath, newParents, isBased);
-                        if (!isBased && hasChildren(obj[name])) {
+                        doWrite(value, newPath, newParents, isBased);
+                        if (!isBased && hasChildren(value)) {
                             line(parents.length + 1, 'public final class BASED {');
-                            doWrite(obj[name], '', gen.classOf('_based', newParents), true);
+                            doWrite(value, '', gen.classOf('_based', newParents), true);
                             line(parents.length + 1, '}');
                         }
                     }

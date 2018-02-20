@@ -62,29 +62,35 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
                     var newParents = gen.classOf(name, parents);
                     var child = 'public ' + stat + 'final ' + newParents[0] + ' ' + gen.fieldOf(name) +
                         (param
-                            ? '(' + gen.javaType(param) + ' ' + gen.fieldOf(name) + '){ return new ' + newParents[0] + '(' + gen.fieldOf(name) + '); }'
+                            ? '(' + gen.javaType(param.type) + ' ' + gen.fieldOf(name) + '){ return new ' + newParents[0] + '(' + gen.fieldOf(name) + '); }'
                             : ' = new ' + newParents[0] + '();');
 
                     var constructor = 'private ' + newParents[0] +
                         (param
-                            ? '(' + gen.javaType(param) + ' ' + gen.fieldOf(name) + '){ this.value = ' + gen.fieldOf(name) + '; }'
+                            ? '(' + gen.javaType(param.type) + ' ' + gen.fieldOf(name) + '){ this.value = ' + gen.fieldOf(name) + '; }'
                             : '(){}');
 
-                    var pathElem = param ? 'value' : ('"' + name + '"');
+                    var pathElem;
+                    if (param) {
+                        var suff = param.suffix ? ' + "' + param.suffix + '"' : '';
+                        pathElem = '"/' + param.prefix + '" + value' + suff;
+                    } else {
+                        pathElem = '"/' + name + '"';
+                    }
                     var pathMethod = (endpoint ? 'public final' : 'protected') + ' String path() { return ' +
                         (parents.length === 0
                             ? '"' + path + '/" + ' + pathElem + '; }'
-                            : parents[0] + '.this.path() + "/" + ' + pathElem + '; }');
+                            : parents[0] + '.this.path() + ' + pathElem + '; }');
 
                     line(parents.length, child);
                     line(parents.length, 'public ' + stat + 'final class ' + newParents[0] + ' extends ' + (endpoint ? 'Endpoint' : 'Path') + ' {');
                     {
                         var newPath = path;
                         if (name) {
-                            newPath += '/' + (param ? '{' + name + '}' : name);
+                            newPath += '/' + (param ? param.original : name);
                         }
                         if (param) {
-                            line(parents.length + 1, 'private final ' + gen.javaType(param) + ' value;');
+                            line(parents.length + 1, 'private final ' + gen.javaType(param.type) + ' value;');
                         }
                         line(parents.length + 1, constructor);
                         line(parents.length + 1, pathMethod);
