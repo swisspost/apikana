@@ -48,58 +48,55 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
     };
 
     function write(obj, path) {
-        doWrite(obj, path, null, 1);
+        doWrite(obj, path, []);
 
-        function doWrite(obj, path, parentClass, level) {
-            function line(s) {
-                contents += gen.pad(level) + s + '\n';
-            }
-
+        function doWrite(obj, path, parents) {
             var keys = Object.keys(obj);
             keys.sort();
-            var stat = level === 1 ? 'static ' : '';
+            var stat = parents.length === 0 ? 'static ' : '';
             for (var i = 0; i < keys.length; i++) {
                 var name = keys[i];
                 if (name.charAt(0) !== '/') {
                     var endpoint = obj[name]['/end'];
                     var param = obj[name]['/param'];
-
-                    var className = gen.classOf(name);
-                    var child = 'public ' + stat + 'final ' + className + ' ' + gen.fieldOf(name) +
+                    var newParents = gen.classOf(name, parents);
+                    var child = 'public ' + stat + 'final ' + newParents[0] + ' ' + gen.fieldOf(name) +
                         (param
-                            ? '(' + gen.javaType(param) + ' ' + gen.fieldOf(name) + '){ return new ' + className + '(' + gen.fieldOf(name) + '); }'
-                            : ' = new ' + className + '();');
+                            ? '(' + gen.javaType(param) + ' ' + gen.fieldOf(name) + '){ return new ' + newParents[0] + '(' + gen.fieldOf(name) + '); }'
+                            : ' = new ' + newParents[0] + '();');
 
-                    var constructor = 'private ' + className +
+                    var constructor = 'private ' + newParents[0] +
                         (param
                             ? '(' + gen.javaType(param) + ' ' + gen.fieldOf(name) + '){ this.value = ' + gen.fieldOf(name) + '; }'
                             : '(){}');
 
                     var pathElem = param ? 'value' : ('"' + name + '"');
                     var pathMethod = (endpoint ? 'public final' : 'protected') + ' String path() { return ' +
-                        (level === 1
+                        (parents.length === 0
                             ? '"' + path + '/" + ' + pathElem + '; }'
-                            : parentClass + '.this.path() + "/" + ' + pathElem + '; }');
+                            : parents[0] + '.this.path() + "/" + ' + pathElem + '; }');
 
-                    line(child);
-                    line('public ' + stat + 'final class ' + className + ' extends ' + (endpoint ? 'Endpoint' : 'Path') + ' {');
-
-                    level++;
-                    var newPath = path;
-                    if (name) {
-                        newPath += '/' + (param ? '{' + name + '}' : name);
+                    line(parents.length, child);
+                    line(parents.length, 'public ' + stat + 'final class ' + newParents[0] + ' extends ' + (endpoint ? 'Endpoint' : 'Path') + ' {');
+                    {
+                        var newPath = path;
+                        if (name) {
+                            newPath += '/' + (param ? '{' + name + '}' : name);
+                        }
+                        if (param) {
+                            line(parents.length + 1, 'private final ' + gen.javaType(param) + ' value;');
+                        }
+                        line(parents.length + 1, constructor);
+                        line(parents.length + 1, pathMethod);
+                        doWrite(obj[name], newPath, newParents);
                     }
-                    if (param) {
-                        line('private final ' + gen.javaType(param) + ' value;');
-                    }
-                    line(constructor);
-                    line(pathMethod);
-                    doWrite(obj[name], newPath, className, level);
-                    level--;
-
-                    line('}');
+                    line(parents.length, '}');
                 }
             }
+        }
+
+        function line(level, s) {
+            contents += gen.pad(level + 1) + s + '\n';
         }
     }
 };

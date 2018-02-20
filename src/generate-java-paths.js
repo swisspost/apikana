@@ -29,41 +29,41 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
     };
 
     function write(obj, path) {
-        doWrite(obj, path, 1);
+        doWrite(obj, path, []);
 
-        function doWrite(obj, path, level, isBased) {
+        function doWrite(obj, path, parents, isBased) {
             var keys = Object.keys(obj);
             keys.sort();
-            var stat = level === 1 ? 'static ' : '';
+            var stat = parents.length === 0 ? 'static ' : '';
             for (var i = 0; i < keys.length; i++) {
                 var name = keys[i];
                 if (name.charAt(0) !== '/') {
-                    var className = gen.classOf(name);
-                    line(level, 'public ' + stat + 'final class ' + className + ' {');
+                    var newParents = gen.classOf(name, parents);
+                    line(parents.length, 'public ' + stat + 'final class ' + newParents[0] + ' {');
                     {
                         var newPath = path;
                         if (name) {
                             var param = obj[name]['/param'];
                             newPath += '/' + (param ? '{' + name + '}' : name);
                         }
-                        var constructor = 'private ' + className + '(){}';
+                        var constructor = 'private ' + newParents[0] + '(){}';
                         var pathVar = isBased ? ('"' + newPath + '"') : ('BASE_PATH + "' + newPath.substring(model.prefix.length) + '"');
-                        line(level + 1, constructor + ' public static final String PATH = ' + pathVar + ';');
-                        doWrite(obj[name], newPath, level + 1, isBased);
+                        line(parents.length + 1, constructor + ' public static final String PATH = ' + pathVar + ';');
+                        doWrite(obj[name], newPath, newParents, isBased);
                         if (!isBased && hasChildren(obj[name])) {
-                            line(level + 1, 'public final class BASED {');
-                            doWrite(obj[name], '', level + 2, true);
-                            line(level + 1, '}');
+                            line(parents.length + 1, 'public final class BASED {');
+                            doWrite(obj[name], '', gen.classOf('_based', newParents), true);
+                            line(parents.length + 1, '}');
                         }
                     }
-                    line(level, '}');
+                    line(parents.length, '}');
                 }
             }
         }
     }
 
     function line(level, s) {
-        contents += gen.pad(level) + s + '\n';
+        contents += gen.pad(level + 1) + s + '\n';
     }
 };
 

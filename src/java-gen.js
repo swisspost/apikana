@@ -37,11 +37,19 @@ function constOf(name) {
     }
 }
 
-function classOf(name) {
+function classOf(name, parents) {
     var java = javaOf(name);
-    return java.substring(0, 1).toUpperCase() + java.substring(1);
+    var cls = java.substring(0, 1).toUpperCase() + java.substring(1);
+    if (parents){
+        while (parents && parents.includes(cls)) {
+            cls = cls + '_';
+        }
+        var res = parents.slice();
+        res.unshift(cls);
+        return res;
+    }
+    return cls;
 }
-
 
 function fieldOf(name) {
     var java = javaOf(name);

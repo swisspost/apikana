@@ -10,7 +10,7 @@ info:
 paths:
   /{sample}/v1/antrittscheck/alarmings/{uuid}/context:
   /{sample}/v1/alarmings:
-  /{sample}/v1/alarmings/{className}/status:
+  /{sample}/v1/alarmings/{className}/alarmings:
   /{sample}/v1/alarmings/{className}/case/req-._uest:
   /{sample}/v1/:
   /{sample}/v1/users/{class}:
