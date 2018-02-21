@@ -227,7 +227,10 @@ module.exports = {
             });
         });
 
-        task('generate-constants', function () {
+        task('generate-constants', ['read-rest-api'], function () {
+            if (restApi.paths == null || restApi.paths.length === 0) {
+                return emptyStream();
+            }
             return require('./generate-constants').generate(
                 gulp.src(params.api(), {cwd: source}),
                 gulp.dest('model', {cwd: dest}));

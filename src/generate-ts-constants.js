@@ -3,6 +3,7 @@ var colors = require('ansi-colors');
 var log = require('./log');
 
 module.exports = function (model, apiName, host, basePath) {
+    apiName+='Paths';
     var contents = '';
     var classes = {};
     return {
@@ -56,11 +57,11 @@ module.exports = function (model, apiName, host, basePath) {
                 var param = obj[name]['/param'];
 
                 var child = stat + (param
-                    ? fieldOf(name) + '(' + fieldOf(name) + '?: ' + tsType(param) + '){ return new ' + classOf(newPath) + '(' + thisExpr + ', ' + fieldOf(name) + '); }'
+                    ? fieldOf(name) + '(' + fieldOf(name) + '?: ' + tsType(param.type) + '){ return new ' + classOf(newPath) + '(' + thisExpr + ', ' + fieldOf(name) + '); }'
                     : 'readonly ' + fieldOf(name) + ' = new ' + classOf(newPath) + '(' + thisExpr + ');');
 
                 var constructor = 'constructor(private parent' +
-                    (param ? ', private value?: ' + tsType(param) : '') + '){' +
+                    (param ? ', private value?: ' + tsType(param.type) : '') + '){' +
                     (endpoint ? 'super();' : '') + '}';
                 var pathElem = param ? '(this.value ? this.value : "{' + name + '}")' : ('"' + name + '"');
                 var pathMethod = (endpoint ? '' : 'private ') + 'path() { return ' + 'this.parent.path() + "/" + ' + pathElem + '; }';

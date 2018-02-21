@@ -1,6 +1,6 @@
 {
   "name": "apikana",
-  "version": "0.4.7",
+  "version": "0.4.13",
   "description": "Integrated tools for REST API design - ｱﾋﾟ",
   "main": "index.js",
   "bin": {
@@ -10,7 +10,7 @@
   "scripts": {
     "test": "echo \"No test specified\"",
     "build": "browserify src/browserify.js -t brfs -i source-map-support > lib/browserify.js",
-    "test-build": "cd test && node ../bin/apikana start --javaPackage=apikana.test",
+    "test-build": "cd test && node ../bin/apikana start --javaPackage=apikana.test --log=info",
     "test-deploy": "cd test && node ../bin/apikana start --javaPackage=apikana.test --deploy",
     "test-serve": "cd test && node ../bin/apikana-serve --port=8222",
     "prepublishOnly": "crlf --set=LF bin/*"

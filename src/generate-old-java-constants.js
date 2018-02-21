@@ -1,6 +1,7 @@
 var File = require('vinyl');
 var colors = require('ansi-colors');
 var log = require('./log');
+var gen = require('./java-gen');
 
 module.exports = function (model, javaPackage, apiName) {
     var contents = '';
@@ -9,7 +10,7 @@ module.exports = function (model, javaPackage, apiName) {
         start: function () {
             contents += 'package ' + javaPackage + ';\n\n'
                 + '/**\n'
-                + ' * @deprecated Use ' + classOf(apiName) + ' instead.\n'
+                + ' * @deprecated Use ' + gen.classOf(apiName + 'Paths') + ', ' + gen.classOf(apiName + 'PathVariables') + ' or ' + gen.classOf(apiName + 'PathBuilder') + ' instead.\n'
                 + ' */\n'
                 + '@Deprecated\n'
                 + 'public final class Paths {\n';
@@ -71,24 +72,3 @@ module.exports = function (model, javaPackage, apiName) {
     }
 
 };
-
-
-function classOf(name) {
-    var java = javaOf(name);
-    return java.substring(0, 1).toUpperCase() + java.substring(1);
-}
-
-function javaOf(name) {
-    var s = '';
-    var removed = false;
-    for (var i = 0; i < name.length; i++) {
-        var c = name.charAt(i);
-        if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
-            s += removed ? c.toUpperCase() : c;
-            removed = false;
-        } else {
-            removed = true;
-        }
-    }
-    return s;
-}
