@@ -3,3 +3,6 @@ language: node_js
 node_js:
   - "node"
   - "4"
+after_success:
+  - set -e
+  - if [[ $TRAVIS_NODE_VERSION = node && "$TRAVIS_BRANCH" = "master" ]]; then bash ./release.sh; fi
