@@ -91,3 +91,5 @@ Then simply run `npm start`.
 The development is done in the `develop` branch.
 Releasing is done by updating the version with `npm version patch|minor|major` and by rebasing the develop branch onto the master branch.
 [Travis CI](https://travis-ci.org) will then pick this up and perform the release.
+To publish to npmjs.com, the environment variable `NPM_TOKEN` must be set. Do this by executing
+`npm login` locally and the take the corresponding value out of `~/.nmprc`.

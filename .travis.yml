@@ -4,4 +4,5 @@ node_js:
   - "node"
   - "4"
 after_success:
-  - if [ "$TRAVIS_BRANCH" = "master" ]; then bash ./release.sh; fi
+  - set -e
+  - if [[ $TRAVIS_NODE_VERSION = node && "$TRAVIS_BRANCH" = "master" ]; then bash ./release.sh; fi
