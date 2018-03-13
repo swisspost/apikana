@@ -86,3 +86,8 @@ A sample configuration would look like:
 ````
 
 Then simply run `npm start`.
+
+### Development
+The development is done in the `develop` branch.
+Releasing is done by updating the version with `npm version patch|minor|major` and by rebasing the develop branch onto the master branch.
+[Travis CI](https://travis-ci.org) will then pick this up and perform the release.
