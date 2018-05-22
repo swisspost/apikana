@@ -2,7 +2,7 @@ var File = require('vinyl');
 var colors = require('ansi-colors');
 var log = require('./log');
 var gen = require('./java-gen');
-var UrlUtils = require('./url-utils');
+var urlUtils = require('./url-utils');
 
 module.exports = function (model, javaPackage, apiName, host, basePath) {
     apiName += 'PathBuilder';
@@ -12,7 +12,7 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
             contents += 'package ' + javaPackage + ';\n\n';
             contents += 'public final class ' + gen.classOf(apiName) + ' {\n' +
                 '    public static final String BASE_URL = "' + (host || '') + (basePath || '') + '";\n' +
-                '    public static final String BASE_PATH = "' + UrlUtils.dropLeadingSlashes(model.prefix) + '";\n' +
+                '    public static final String BASE_PATH = "' + urlUtils.dropLeadingSlashes(model.prefix) + '";\n' +
                 '    public static abstract class Path {\n' +
                 '        protected abstract String path();\n' +
                 '    }\n' +
