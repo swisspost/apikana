@@ -3,6 +3,7 @@ var colors = require('ansi-colors');
 var log = require('./log');
 var gen = require('./java-gen');
 var urlUtils = require('./url-utils');
+var params = require('./params');
 
 module.exports = function (model, javaPackage, apiName, host, basePath) {
     apiName += 'Paths';
@@ -12,7 +13,7 @@ module.exports = function (model, javaPackage, apiName, host, basePath) {
             contents += 'package ' + javaPackage + ';\n\n';
             contents += 'public final class ' + gen.classOf(apiName) + ' {\n' +
                 '    public static final String BASE_URL = "' + (host || '') + (basePath || '') + '";\n' +
-                '    public static final String BASE_PATH = "' + urlUtils.dropLeadingSlashes(model.prefix) + '";\n';
+                '    public static final String BASE_PATH = "' + (params.useLeadingSlashes() ? model.prefix : urlUtils.dropLeadingSlashes(model.prefix)) + '";\n';
         },
         write: function () {
             write(model.simple, model.prefix);

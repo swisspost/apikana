@@ -56,6 +56,7 @@ function help() {
     log(colors.red('             --log=<level>'), '               Set log level (debug, info, warn, error). Default: info');
     log(colors.magenta('apikana stop '), colors.red('[options]'), '                  Stop a running server.');
     log(colors.red('             --port=<number>'), '             Port of the server to be stopped. Default: 8333');
+    log(colors.red('             --useLeadingSlashes=<boolean>'), 'Specifies if generated paths begin with slash or not. Default: true');
 }
 
 function generate() {

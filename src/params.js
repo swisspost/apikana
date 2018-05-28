@@ -67,6 +67,9 @@ module.exports = {
         }
         return pp;
     },
+    useLeadingSlashes: function() {
+        return env.useLeadingSlashes !== "false";
+    },
     deploy: function () {
         return env.deploy && env.deploy === 'true';
     },
