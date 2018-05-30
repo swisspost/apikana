@@ -24,9 +24,17 @@ module.exports = {
                 var model = createModel(api.paths);
 
                 if (javaPackage) {
-                    this.push(generate(new JavaPathsGen(model, javaPackage, apiName, api.host, api.basePath)));
-                    this.push(generate(new JavaPathVarsGen(model, javaPackage, apiName, api.host, api.basePath)));
-                    this.push(generate(new JavaBuilderGen(model, javaPackage, apiName, api.host, api.basePath)));
+                    // Give precedence to basePath from parameters over that from api file to allow overriding.
+                    var basePath = params.basePath();
+                    if( basePath ){
+                        log.debug( "Using BASE_PATH='"+ basePath +"' overriden by '--basePath' param." );
+                    }else{
+                        basePath = api.basePath;
+                        log.debug( "Using BASE_PATH='"+basePath+"' from api file." );
+                    }
+                    this.push(generate(new JavaPathsGen(model, javaPackage, apiName, api.host, basePath)));
+                    this.push(generate(new JavaPathVarsGen(model, javaPackage, apiName, api.host, basePath)));
+                    this.push(generate(new JavaBuilderGen(model, javaPackage, apiName, api.host, basePath)));
                     this.push(generate(new OldJavaGen(model, javaPackage, apiName)));
                 }
                 this.push(generate(new TsGen(model, apiName, api.host, api.basePath)));

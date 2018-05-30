@@ -9,6 +9,9 @@ log.setLevel(env.log);
 var models = noSlash(env.models || 'ts');
 
 module.exports = {
+    basePath: function () {
+        return env.basePath;
+    },
     readConfigFile: function () {
         if (env.config) {
             var config = fs.readFileSync(env.config);
@@ -66,9 +69,6 @@ module.exports = {
             pp = pp.substring(0, pp.length - 1);
         }
         return pp;
-    },
-    useLeadingSlashes: function() {
-        return env.useLeadingSlashes !== "false";
     },
     deploy: function () {
         return env.deploy && env.deploy === 'true';
