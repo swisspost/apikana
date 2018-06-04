@@ -368,7 +368,7 @@ module.exports = {
             completeApi.definitions = {};
             delete completeApi.definitions.$ref;
             var fileToType = {};
-            return gulp.src('model/json-schema-v3/**/*.json', {cwd: dest})
+            return gulp.src('model/json-schema-v4/**/*.json', {cwd: dest})
                 .pipe(through.obj(function (file, enc, cb) {
                     var schema = JSON.parse(file.contents.toString());
                     fileToType[path.parse(file.path).base] = schema.id;
