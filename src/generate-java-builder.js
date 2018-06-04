@@ -2,16 +2,24 @@ var File = require('vinyl');
 var colors = require('ansi-colors');
 var log = require('./log');
 var gen = require('./java-gen');
+var urlUtils = require('./url-utils');
 
 module.exports = function (model, javaPackage, apiName, host, basePath) {
     apiName += 'PathBuilder';
     var contents = '';
     return {
         start: function () {
+            var valueForBasePathConstant = model.prefix;
+            if( basePath && basePath.endsWith('/') ){
+                // Drop leading slash in constant because basePath already provides one.
+                log.debug( "Dropped leading slashes for BASE_PATH java constant because BASE_URL (aka api.basePath) already wears trailing slash." );
+                valueForBasePathConstant = urlUtils.dropLeadingSlashes( valueForBasePathConstant );
+            }
+            log.debug( "Using BASE_PATH = '"+ valueForBasePathConstant +"'.");
             contents += 'package ' + javaPackage + ';\n\n';
             contents += 'public final class ' + gen.classOf(apiName) + ' {\n' +
                 '    public static final String BASE_URL = "' + (host || '') + (basePath || '') + '";\n' +
-                '    public static final String BASE_PATH = "' + model.prefix + '";\n' +
+                '    public static final String BASE_PATH = "' + valueForBasePathConstant + '";\n' +
                 '    public static abstract class Path {\n' +
                 '        protected abstract String path();\n' +
                 '    }\n' +

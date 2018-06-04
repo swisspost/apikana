@@ -93,11 +93,21 @@ $ = function (f) {
         for (var p in schema) {
             var v = schema[p];
             if (p === '$ref') {
-                schema[p] = v.replace('/definitions', '');
+                schema[p] = extractTypeNameFromUrlFragment( v );
             }
             if (typeof v === 'object') {
                 processRefs(v);
             }
+        }
+    }
+
+    function extractTypeNameFromUrlFragment( urlFragment ) {
+        var groups = /.*\/([^\/]+)$/.exec( urlFragment );
+        if( groups && groups[1] ){
+            return groups[1];
+        }else{
+            console.warn("Failed to extract type name from '"+urlFragment+"'.");
+            return urlFragment;
         }
     }
 
