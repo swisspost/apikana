@@ -9,6 +9,9 @@ log.setLevel(env.log);
 var models = noSlash(env.models || 'ts');
 
 module.exports = {
+    basePath: function () {
+        return env.basePath;
+    },
     readConfigFile: function () {
         if (env.config) {
             var config = fs.readFileSync(env.config);
