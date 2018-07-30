@@ -40,6 +40,7 @@ export interface User {
     company: CompanyInfo
     properties?: { [key: string]: Int }
     type: string
+    noRequiredFields: NoRequiredFields
 }
 
 /**
@@ -109,3 +110,9 @@ export enum EnumValueMix {
     B = "b2" as any
 }
 
+/**
+ * Type with only optional fields.
+ */
+export interface NoRequiredFields {
+    optionalField?: string;
+}
