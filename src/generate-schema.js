@@ -31,6 +31,13 @@ module.exports = {
                     schema.javaInterfaces = ['java.io.Serializable'];
                 }
                 delete schema.extra;
+
+                // If there are no required fields, the required attribute must be undefined (NOT an empty array)
+                // See https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.4.3
+                if (schema.required && schema.required.length === 0) {
+                    delete schema.required;
+                }
+
                 fs.writeFileSync(schemaFile(name, 'v4'), JSON.stringify(schema, null, 2));
                 convertToV3(schema, v3);
                 fs.writeFileSync(schemaFile(name, 'v3'), JSON.stringify(schema, null, 2));
