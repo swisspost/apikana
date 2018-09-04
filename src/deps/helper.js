@@ -43,21 +43,25 @@ $ = function (f) {
         var apiBase = apiUrl.substring(0, apiUrl.lastIndexOf('/') + 1);
         var models = modelFiles(spec, apiBase);
         if (models.length > 0) {
-            var schema = schemaGen.generate(models[0].substring(0, models[0].lastIndexOf('/')) + '/tsconfig.json', models);
+            return generateSchema(models);
+        } else {
+            return null;
+        }
+    }).then(function(schema) {        
             if (schema) {
                 for (var def in schema) {
                     processRefs(schema[def]);
                     spec.definitions[def] = schema[def];
                 }
-                if (!json.paths || json.paths.length === 0) {
+            if (!spec.paths || spec.paths.length === 0) {
                     $('<style>' +
                         '.docson > .box { width: 600px; }' +
                         '.models { font-family: sans-serif; margin: 50px auto; width: 600px; }' +
                         '.models > h1 { font-size: 25px; font-weight: 700; }' +
                         '#swagger-ui-container { display: none; }' +
                         '</style>').appendTo('body');
-                    var title = ((json.info || {}).title) || '';
-                    var desc = ((json.info || {}).description) || 'This module contains only models.';
+                var title = ((spec.info || {}).title) || '';
+                var desc = ((spec.info || {}).description) || 'This module contains only models.';
                     var modelDiv = $('<div class="models"><h1>' + title + '</h1><span>' + desc + '</span></div>').appendTo('#header');
                     for (var def in schema) {
                         if (isLocalSchema(models, schema[def])) {
@@ -66,12 +70,28 @@ $ = function (f) {
                     }
                 }
             }
-        }
         _ = lodash;  //restore lodash
         f();
     }).catch(function (err) {
         alert('Problem loading api: ' + err);
     });
+
+    function generateSchema(models) {        
+        return new Promise(
+            function (resolve, reject) {
+                var w = new Worker("worker.js");
+                w.onmessage = function(event) {
+                    if(event.data) {
+                        resolve(event.data);
+                    } else {
+                        reject("No schema generated");
+                    }
+                    w.terminate();
+                };        
+                w.postMessage(models);
+            }
+        )        
+    }
 
     function isLocalSchema(models, schema) {
         return _.any(models, function (m) {
