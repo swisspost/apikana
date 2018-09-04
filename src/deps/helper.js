@@ -84,7 +84,7 @@ $ = function (f) {
                     if(event.data) {
                         resolve(event.data);
                     } else {
-                        reject("No schema generated");
+                        reject(new Error("No schema generated"));
                     }
                     w.terminate();
                 };        
