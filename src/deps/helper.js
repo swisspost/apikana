@@ -48,28 +48,28 @@ $ = function (f) {
             return null;
         }
     }).then(function(schema) {        
-            if (schema) {
-                for (var def in schema) {
-                    processRefs(schema[def]);
-                    spec.definitions[def] = schema[def];
-                }
+        if (schema) {
+            for (var def in schema) {
+                processRefs(schema[def]);
+                spec.definitions[def] = schema[def];
+            }
             if (!spec.paths || spec.paths.length === 0) {
-                    $('<style>' +
-                        '.docson > .box { width: 600px; }' +
-                        '.models { font-family: sans-serif; margin: 50px auto; width: 600px; }' +
-                        '.models > h1 { font-size: 25px; font-weight: 700; }' +
-                        '#swagger-ui-container { display: none; }' +
-                        '</style>').appendTo('body');
+                $('<style>' +
+                    '.docson > .box { width: 600px; }' +
+                    '.models { font-family: sans-serif; margin: 50px auto; width: 600px; }' +
+                    '.models > h1 { font-size: 25px; font-weight: 700; }' +
+                    '#swagger-ui-container { display: none; }' +
+                    '</style>').appendTo('body');
                 var title = ((spec.info || {}).title) || '';
                 var desc = ((spec.info || {}).description) || 'This module contains only models.';
-                    var modelDiv = $('<div class="models"><h1>' + title + '</h1><span>' + desc + '</span></div>').appendTo('#header');
-                    for (var def in schema) {
-                        if (isLocalSchema(models, schema[def])) {
-                            $('<div class="docson">' + def + '</div>').appendTo(modelDiv);
-                        }
+                var modelDiv = $('<div class="models"><h1>' + title + '</h1><span>' + desc + '</span></div>').appendTo('#header');
+                for (var def in schema) {
+                    if (isLocalSchema(models, schema[def])) {
+                        $('<div class="docson">' + def + '</div>').appendTo(modelDiv);
                     }
                 }
             }
+        }
         _ = lodash;  //restore lodash
         f();
     }).catch(function (err) {
