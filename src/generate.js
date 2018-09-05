@@ -139,7 +139,8 @@ module.exports = {
                 module(['object-path/index.js'])
                     .pipe(rename('object-path.js'))
                     .pipe(gulp.dest('patch', {cwd: uiPath})),
-                gulp.src('src/deps/*.js', {cwd: apikanaPath}).pipe(gulp.dest('patch', {cwd: uiPath})));
+                gulp.src('src/deps/*.js', {cwd: apikanaPath}).pipe(gulp.dest('patch', {cwd: uiPath})),
+                gulp.src('src/root/*.js', {cwd: apikanaPath}).pipe(gulp.dest(uiPath)));
         });
 
         task('copy-lib', function () {
