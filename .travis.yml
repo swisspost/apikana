@@ -3,6 +3,8 @@ language: node_js
 node_js:
   - "node"
   - "4"
+before_script:
+  - export "NODE_PATH=$PWD:$NODE_PATH"
 after_success:
   - set -e
   - if [[ $TRAVIS_NODE_VERSION = node && "$TRAVIS_BRANCH" = "master" ]]; then bash ./release.sh; fi
