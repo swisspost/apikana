@@ -34,14 +34,14 @@ This starts an interactive wizard that lets you define the main aspects of the A
 When `apikana start src` is executed, it looks in `src/openapi` for a file named `api.yaml`.
 This is an [OpenAPI 2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) file defining the REST API.
 In the `definitions` section a `$ref` can be given which references typescript file(s) defining the data models.
-`$ref` can be a comma or newline separated string or an array thereof. 
+`$ref` can be a comma or newline separated string or an array thereof.
 The models should be defined as typescript `export interface`s.
 
 At the end, the `dist` directory contains the json schemas and a complete HTML documentation of the API.
 Just open a browser at `http://localhost:8333`.
 
 `src/openapi/api.yaml`
-````yaml
+```yaml
 paths:
   /sample/users:
     get:
@@ -53,17 +53,17 @@ paths:
             $ref: "#/definitions/User"
 definitions:
   $ref: ../ts/user.ts
-````
+```
 
 `src/ts/user.ts`
-````ts
+```ts
 export interface User {
     id: number
     firstName: string // The given name
     lastName: string // the family name @pattern [A-Z][a-z]*
     age?: number
 }
-````
+```
 
 The `src/style` directory can contain `css` and image files which can be used to style the generated HTML document.
 
@@ -73,7 +73,7 @@ The `src/style` directory can contain `css` and image files which can be used to
 Instead of being globally installed, apikana can also be defined as a `devDependency` of a project.
 A sample configuration would look like:
 
-````json
+```json
 {
   "name": "My API project",
   "scripts": {
@@ -83,13 +83,32 @@ A sample configuration would look like:
     "apikana": "0.4.13"
   }
 }
-````
+```
 
 Then simply run `npm start`.
 
-### Development
-The development is done in the `develop` branch.
-Releasing is done by updating the version with `npm version patch|minor|major` and by rebasing the develop branch onto the master branch.
-[Travis CI](https://travis-ci.org) will then pick this up and perform the release.
-To publish to npmjs.com, the environment variable `NPM_TOKEN` must be set. Do this by executing
-`npm login` locally and the take the corresponding value out of `~/.nmprc`.
+
+## Development
+
+Development is done within feature branches in forked repositories. When ready
+it gets merged to _swisspush/develop_ via merge request (at best including review).
+
+
+### Testing
+
+You can run tests using `npm test` within projects root directory.
+
+
+### Releasing
+
+Releasing is done by updating the version with `npm version patch|minor|major`
+and merging _develop_ into _master_. Then [Travis CI](https://travis-ci.org)
+will notice the changes on master and perform the release.
+
+
+### Publishing
+
+To publish to _npmjs.org_, environment variable `NPM_TOKEN` must be set. You
+can accomplish this by executing `npm login` locally and afterwards extracting
+corresponding value from `~/.nmprc`.
+
