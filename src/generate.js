@@ -15,6 +15,10 @@ var yaml = require('yamljs');
 var params = require('./params');
 var generateEnv = require('./generate-env');
 var fse = require('fs-extra');
+const Stream = require('stream');
+const StreamUtils = require('./util/stream-utils');
+const PathV3Generator = require('./path-v3-generator/path-v3-generator');
+const JavaGen = require('./java-gen');
 
 module.exports = {
     generate: function (source, dest) {
@@ -235,6 +239,50 @@ module.exports = {
             return require('./generate-constants').generate(
                 gulp.src(params.api(), {cwd: source}),
                 gulp.dest('model', {cwd: dest}));
+        });
+
+        task('generate-3rdGen-constants', ['copy-src','read-rest-api'], function(){
+            const generate3rdGenPaths = params.generate3rdGenPaths();
+            const gulpOStream = gulp.dest( "model/" , {cwd: dest});
+            if( !generate3rdGenPaths ){
+                log.warn( "3rd generation paths are disabled (--generate3rdGenPaths). Skip." );
+                return StreamUtils.emptyStream().pipe( gulpOStream );
+            }
+            const javaPackage = params.javaPackage() +".path";
+            // Below evaluation copied from 2ndGen Generator.
+            const apiName = ((restApi.info || {}).title || '');
+            const outputFilePath = 'java/' + javaPackage.replace(/\./g, '/') + '/' + JavaGen.classOf(apiName) + '.java';
+            // Seems vinyls 'File' isn't designed for streaming. Therefore we'll collect
+            // our generated code here and pass it as one huge chunk (aka vinyl File) to
+            // make our dependencies happy.
+            const collectWholeFileStream = new Stream.Readable({ objectMode:true , read:function(){
+                if( this._isRunning ){ return; }else{ this._isRunning=true; } // <-- Make sure to fire only once.
+                const contentBuffers = [];
+                // Instantiate a generator.
+                PathV3Generator.createPathV3Generator({
+                        openApi:     restApi,
+                        javaPackage: javaPackage,
+                        pathPrefix:  params.pathPrefix(),
+                    })
+                    .readable()
+                    // Append received chunks to our collection.
+                    .on( "data" , contentBuffers.push.bind(contentBuffers) )
+                    // Continue below as soon all chunks are collected.
+                    .on( "end" , whenFileCollected )
+                ;
+                function whenFileCollected(){
+                    // Pack all the collected file content into one buffer and wrap that within a
+                    // vinyl File.
+                    collectWholeFileStream.push(new File({
+                        path: outputFilePath,
+                        contents: Buffer.concat(contentBuffers)
+                    }));
+                    // EOF: Signalize that was the last chunk in this stream.
+                    collectWholeFileStream.push( null );
+                }
+            }});
+            collectWholeFileStream.pipe( gulpOStream );
+            return gulpOStream;
         });
 
         task('copy-src', function () {
