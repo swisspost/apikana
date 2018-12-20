@@ -183,7 +183,7 @@ describe( "PathV3Generator" , ()=>{
             const compileUnit = JavaParser.parse( result , {});
             const values = collectAllValuesOfResourceConstants( compileUnit );
             expect( values.length ).toBe( 24 );
-            for( var i=0 ; i<values.length ; ++i ){
+            for( let i=0 ; i<values.length ; ++i ){
                 const value = values[i];
                 expect( value ).toMatch( /^"\// ); // MUST HAVE leading slash.
                 expect( value ).toMatch( /[^\/]"$/ ); // MUST NOT HAVE trailing slash.
@@ -235,7 +235,7 @@ describe( "PathV3Generator" , ()=>{
             const compileUnit = JavaParser.parse( result , {});
             const values = collectAllValuesOfCollectionConstants( compileUnit );
             expect( values.length ).toBe( 18 );
-            for( var i=0 ; i<values.length ; ++i ){
+            for( let i=0 ; i<values.length ; ++i ){
                 const value = values[i];
                 expect( value ).toEqual( 'RESOURCE + "/"' );
             }

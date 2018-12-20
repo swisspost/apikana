@@ -1,11 +1,12 @@
 sudo: false
 language: node_js
 node_js:
-  - "node"
-  - "4"
+  - "lts/*"
+  - "8"
+  - "6"
 before_script:
   # Use DEBUG mode to ensure more accurate tests.
   - export "DEBUG=1"
 after_success:
   - set -e
-  - if [[ $TRAVIS_NODE_VERSION = node && "$TRAVIS_BRANCH" = "master" ]]; then bash ./release.sh; fi
+  - if [ "$TRAVIS_NODE_VERSION" = "lts/*" -a "$TRAVIS_BRANCH" = "master" ]; then bash ./release.sh; fi
