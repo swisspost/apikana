@@ -63,6 +63,7 @@
     "browserify": "13.0.0",
     "crlf": "1.1.0",
     "docson": "1.0.2",
-    "jasmine": "3.3.0"
+    "jasmine": "3.3.0",
+    "java-parser": "0.0.2"
   }
 }

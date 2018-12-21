@@ -48,6 +48,12 @@ function help() {
     log(colors.red('             --javaPackage=<name>'), '        Java package to use.');
     log(colors.red('             --pathPrefix=<prefix>'), '       The common prefix for api paths to be used in generated *Paths files. Default: none');
     log(colors.red('             --basePath=<path>'), '           Override basePath specified in api file');
+    log(colors.red('             --generate3rdGenPaths=<boolean>'),'\n' +
+                       '                                          Enable/disable generator for 3rd generation path constants. This feature is\n' +
+                       '                                          experimental! Therefore You\'ve to expect breaking changes when using it. May\n' +
+                       '                                          this feature will become more stable in future and may the default will switch\n' +
+                       '                                          to \'enabled\'.\n' +
+                       '                                          Default: false (disabled)');
     log(colors.red('             --deploy=<boolean>'), '          If the sources should be copied into the target directory. Default: false');
     log(colors.red('             --dependencyPath=<path>'), '     Directory containing API dependencies. Default: node_modules/-api-dependencies');
     log(colors.red('             --port=<number>'), '             Port to serve the HTML documentation. Default: 8333');
