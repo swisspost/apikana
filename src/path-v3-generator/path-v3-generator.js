@@ -95,6 +95,14 @@ function createResourceField( options ){
     }
     const path = options.path;
     options = null;
+    // Ensure fail-fast in case we would produce invalid slashing somehow. A
+    // resource path always has to:
+    // 1. Start with a slash,
+    // 2. End without a slash,
+    // 3. Doesn't contain empty segments (aka double slash).
+    if( /^[^\/]|\/$|\/\//.test(path) ){
+        throw Error("Fail-fast because proceeding would produce corrupt path '"+path+"'. May this is an issue in the openapi file. But this also could be a bug in apikana.");
+    }
     return {
         readable: createReadable,
     };
@@ -153,6 +161,12 @@ function createClass( name , node , pathPrefix ){
     /** 'null' when not based or integer offset instead. */
     const baseOffset = (!isNaN(arguments[4]) ? arguments[4] : null);
 
+    // Normalize pathPrefix to have leading slash only.
+    pathPrefix = UrlUtils.dropSurroundingSlashes( pathPrefix );
+    if( pathPrefix !== "" ){
+        pathPrefix = '/'+ pathPrefix;
+    }
+
     const thisClassName = mangleNameToDifferFromEarlierEqualSegments( segmentToConstantName(name) , segmentStack.slice(0,segmentStack.length-1) );
 
     // Setup constructor
@@ -160,7 +174,14 @@ function createClass( name , node , pathPrefix ){
 
     // Setup constants.
     // 'slice' only when offset is required (baseOffset not null).
-    const resourceFieldPath = (isNaN(baseOffset)?segmentStack:segmentStack.slice(baseOffset)).join('/');
+    var resourceFieldPath = (isNaN(baseOffset)?segmentStack:segmentStack.slice(baseOffset)).join('/');
+    if( resourceFieldPath !== "" ){ // Prefix with slash if not empty.
+        resourceFieldPath = '/'+ resourceFieldPath;
+    }
+    if( baseOffset===null ){
+        // Not based. Therefore also prefix with full pathPrefix.
+        resourceFieldPath = pathPrefix + resourceFieldPath;
+    }
     var resourceField;
     var collectionField;
     if( resourceFieldPath === '' ){
@@ -170,7 +191,7 @@ function createClass( name , node , pathPrefix ){
         };
     }else{
         resourceField = createResourceField({
-            path: "/"+ resourceFieldPath,
+            path: resourceFieldPath,
         });
         collectionField = createCollectionField();
     }
