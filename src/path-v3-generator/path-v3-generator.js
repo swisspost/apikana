@@ -45,23 +45,22 @@ function createPathV3Generator( options ) {
         "readable": createReadable,
     };
     function createReadable(){
-        // Evaluation of apiName simply copy-pasted from 2ndGen path generator.
-        const rootClassName = JavaGen.classOf((openApi.info || {}).title || '');
-        const paths = (openApi.paths || {});
-        var rootNode;
         try{
-            rootNode = transformPathsToTree( paths ); // May throws in case slashing isn't valid.
+            // Evaluation of apiName simply copy-pasted from 2ndGen path generator.
+            const rootClassName = JavaGen.classOf((openApi.info || {}).title || '');
+            const paths = (openApi.paths || {});
+            const rootNode = transformPathsToTree( paths );
             throwIfTreeWouldProduceNameConflict( rootNode );
+            const firstNodeAfterBasePath = shiftAwayBasePath( rootNode , pathPrefix );
+            const fileBeginReadable = StreamUtils.streamFromString( "package "+ javaPackage +";\n\n" );
+            const rootClass = createClass( rootClassName , firstNodeAfterBasePath , pathPrefix );
+            return StreamUtils.streamConcat([
+                fileBeginReadable,
+                rootClass.readable()
+            ]);
         }catch( e ){
             return StreamUtils.streamFromError( e );
         }
-        const firstNodeAfterBasePath = shiftAwayBasePath( rootNode , pathPrefix );
-        const fileBeginReadable = StreamUtils.streamFromString( "package "+ javaPackage +";\n\n" );
-        const rootClass = createClass( rootClassName , firstNodeAfterBasePath , pathPrefix );
-        return StreamUtils.streamConcat([
-            fileBeginReadable,
-            rootClass.readable()
-        ]);
     }
 }
 
@@ -355,6 +354,9 @@ function createJavaVariable( options ) {
  *		passed map as paths.
  * @return {Map<string,Map<any>>}
  *		A tree representing the passed in paths.
+ * @throws Error
+ *      In case there's something wrong with slashes. Eg: leading slash
+ *      missing.
  */
 function transformPathsToTree( paths ){
     const segments2d = splitAllPathsToArrays( paths );
@@ -377,9 +379,12 @@ function transformPathsToTree( paths ){
  *      Path to remove from specified rootNode.
  * @return
  *      Node representing latest segment present in specified pathPrefix.
+ * @throws Error
+ *      In case there is a path which doesn't fit into path-prefix.
  */
 function shiftAwayBasePath( node , pathPrefix ){
     pathPrefix = UrlUtils.dropSurroundingSlashes( pathPrefix );
+    const segmentStack = [];
     if( !pathPrefix || pathPrefix.length === 0 ){
         return node;
     }
@@ -387,18 +392,35 @@ function shiftAwayBasePath( node , pathPrefix ){
     for( let i=0 ; i<pathPrefix.length ; ++i ){
         const key = pathPrefix[i];
         const actualKeys = Object.keys( node );
-        if( actualKeys.length > 1 ){
-            delete actualKeys[key];  // Remove correct key.
-            const exampleKey = actualKeys[0];  // Take a random bad key.
-            // TODO: Provide full path (not only segment) in this error msg.
-            throw Error( "Segment '"+exampleKey+"' doesn't fit into pathPrefix" );
-        }else if( actualKeys[0] !== key ){
-            // TODO: Provide full path (not only segment) in this error msg.
-            throw Error( "Segment '"+actualKeys[0]+"' doesn't fit into pathPrefix" );
+        if( actualKeys.length > 1 || actualKeys[0] !== key ){
+            // Error: We either found multiple segments for this level or the only segment
+            // doesn't match path-prefix.
+            throwSegmentMismatchError( actualKeys , key );
         }
+        segmentStack.push( key );
         node = node[key]; // Shift down one step.
     }
     return node;
+    function throwSegmentMismatchError( actualSegments , pathPrefixSegment ){
+        // Find first mismatching segment.
+        var badKey = null;
+        for( let i=0 ; i<actualSegments.length ; ++i ){
+            if( actualSegments[i] !== pathPrefixSegment ){
+                badKey = actualSegments[i];
+                break;
+            }
+        }
+        // Start full path by available stack.
+        var fullPath = '/'+ segmentStack.join('/');
+        // Append the current segment.
+        if( !fullPath.endsWith('/') ){ fullPath+='/'; }
+        fullPath += badKey;
+        // Also append the later segments we've not iterated yet.
+        for( let it=node[badKey],subKey ; subKey=Object.keys(it)[0] ; it=it[subKey] ){
+            fullPath += '/'+ subKey;
+        }
+        throw Error( "Path '"+fullPath+"' doesn't fit into path-prefix '/"+pathPrefix.join('/')+"/'" );
+    }
 }
 
 

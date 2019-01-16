@@ -674,6 +674,120 @@ describe( "PathV3Generator" , ()=>{
     });
 
 
+    it( "Will fail-fast if 1st segment of a path doesn't match path-prefix" , function( done ){
+        const victim = PathV3Generator.createPathV3Generator({
+            openApi: {
+                info: {
+                    title: "foo blubb API",
+                },
+                paths: {
+                    "/foo/v1/one": null,
+                    "/foo/v1/two": null,
+                    "/bar/v1/a-bad-one": null,
+                    "/foo/v1/three": null,
+                }
+            },
+            javaPackage: "com.example",
+            pathPrefix: "foo/v1/",
+        });
+
+        const myFail = function( ctxt ){
+            if( ctxt.alreadyFailed ){ return; }else{ ctxt.alreadyFailed=true; }
+            fail( "No data expected" );
+            done();
+        }.bind(0,{ alreadyFailed:false });
+
+        victim.readable()
+            // Neither data nor end expected.
+            .on( "data" , myFail ).on( "end" , myFail )
+            // We only expect an error.
+            .on( "error" , function( err ){
+                const msg = err.message;
+                // The path is mentioned.
+                expect( msg ).toContain( "/bar/v1/a-bad-one" );
+                // Also the path-prefix is mentioned.
+                expect( msg ).toContain( "foo/v1/" );
+                done();
+            })
+        ;
+    });
+
+
+    it( "Will fail-fast if there's a segment somewhere in path not matching path-prefix" , function( done ){
+        const victim = PathV3Generator.createPathV3Generator({
+            openApi: {
+                info: {
+                    title: "foo blubb API",
+                },
+                paths: {
+                    "/foo/blubb/api/v1/one": null,
+                    "/foo/blubb/api/v2/a-bad-one": null,
+                    "/foo/blubb/api/v1/two": null,
+                    "/foo/blubb/api/v1/three": null,
+                }
+            },
+            javaPackage: "com.example",
+            pathPrefix: "foo/blubb/api/v1/",
+        });
+
+        const myFail = function( ctxt ){
+            if( ctxt.alreadyFailed ){ return; }else{ ctxt.alreadyFailed=true; }
+            fail( "No data expected" );
+            done();
+        }.bind(0,{ alreadyFailed:false });
+
+        victim.readable()
+            // Neither data nor end expected.
+            .on( "data" , myFail ).on( "end" , myFail )
+            // We only expect an error.
+            .on( "error" , function( err ){
+                const msg = err.message;
+                // The path is mentioned.
+                expect( msg ).toContain( "/foo/blubb/api/v2/a-bad-one" );
+                // Also the path-prefix is mentioned.
+                expect( msg ).toContain( "foo/blubb/api/v1/" );
+                done();
+            })
+        ;
+    });
+
+
+    it( "Will fail-fast if a single path mismatches path-prefix" , function( done ){
+        const victim = PathV3Generator.createPathV3Generator({
+            openApi: {
+                info: {
+                    title: "foo blubb API",
+                },
+                paths: {
+                    "/foo/v2/bad/version": null,
+                }
+            },
+            javaPackage: "com.example",
+            pathPrefix: "/foo/v1/",
+        });
+
+        const myFail = function( ctxt ){
+            if( ctxt.alreadyFailed ){ return; }else{ ctxt.alreadyFailed=true; }
+            fail( "No data expected" );
+            done();
+        }.bind(0,{ alreadyFailed:false });
+
+        victim.readable()
+            // Neither data nor end expected.
+            .on( "data" , myFail ).on( "end" , myFail )
+            // We only expect an error.
+            .on( "error" , function( err ){
+                const msg = err.message;
+                // The path is mentioned.
+                expect( msg ).toContain( "/foo/v2/bad/version" );
+                // Also the path-prefix is mentioned.
+                expect( msg ).toContain( "/foo/v1/" );
+                done();
+            })
+        ;
+    });
+
+
 });
 
 
