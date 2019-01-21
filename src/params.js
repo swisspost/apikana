@@ -82,6 +82,30 @@ module.exports = {
     minVersion: function () {
         return env.minVersion;
     },
+    generate1stGenPaths: function(){
+        const input = env["generate1stGenPaths"];
+        var result;
+        if( input===undefined ){
+            result = true; // Enabled by default.
+        }else if( input.toUpperCase()==="FALSE" ){
+            result = false;
+        }else{
+            result = true;
+        }
+        return result;
+    },
+    generate2ndGenPaths: function(){
+        const input = env["generate2ndGenPaths"];
+        var result;
+        if( input===undefined ){
+            result = true; // Enabled by default.
+        }else if( input.toUpperCase()==="FALSE" ){
+            result = false;
+        }else{
+            result = true;
+        }
+        return result;
+    },
     generate3rdGenPaths: function(){
         const input = env["generate3rdGenPaths"];
         var result;

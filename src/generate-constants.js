@@ -12,7 +12,11 @@ var OldJavaGen = require('./generate-old-java-constants');
 var TsGen = require('./generate-ts-constants');
 
 module.exports = {
-    generate: function (source, dest) {
+    generate: function (source, dest, options) {
+        if( !options ){ options = {}; }
+        const generate1stGenPaths = !!options.generate1stGenPaths;
+        const generate2ndGenPaths = !!options.generate2ndGenPaths;
+        options = null; // Prevent further access.
         return source
             .pipe(createConstantsFile(params.javaPackage()))
             .pipe(dest);
@@ -32,10 +36,20 @@ module.exports = {
                         basePath = api.basePath;
                         log.debug( "Using BASE_PATH='"+basePath+"' from api file." );
                     }
-                    this.push(generate(new JavaPathsGen(model, javaPackage, apiName, api.host, basePath)));
-                    this.push(generate(new JavaPathVarsGen(model, javaPackage, apiName, api.host, basePath)));
-                    this.push(generate(new JavaBuilderGen(model, javaPackage, apiName, api.host, basePath)));
-                    this.push(generate(new OldJavaGen(model, javaPackage, apiName)));
+                    if( generate2ndGenPaths ){
+                        log.debug( "options.generate2ndGenPaths=true -> Generate." );
+                        this.push(generate(new JavaPathsGen(model, javaPackage, apiName, api.host, basePath)));
+                        this.push(generate(new JavaPathVarsGen(model, javaPackage, apiName, api.host, basePath)));
+                        this.push(generate(new JavaBuilderGen(model, javaPackage, apiName, api.host, basePath)));
+                    }else{
+                        log.debug( "options.generate2ndGenPaths=false -> Don't generate." );
+                    }
+                    if( generate1stGenPaths ){
+                        log.debug( "options.generate1stGenPaths=true -> Generate." );
+                        this.push(generate(new OldJavaGen(model, javaPackage, apiName)));
+                    }else{
+                        log.debug( "options.generate1stGenPaths=false -> Don't generate." );
+                    }
                 }
                 this.push(generate(new TsGen(model, apiName, api.host, api.basePath)));
                 cb();
