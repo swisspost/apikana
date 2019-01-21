@@ -115,9 +115,9 @@ describe( "PathV3Generator" , ()=>{
         function assertResult( result ){
             const compilationUnit = JavaParser.parse( result , {} );
             const clazz = compilationUnit.types[0];
-            const foo = clazz.bodyDeclarations.filter( e => e.name.identifier==="foo" )[0];
+            const foo = clazz.bodyDeclarations.filter( e => e.name && e.name.identifier==="foo" )[0];
             expect( foo ).toBeTruthy();
-            const bar = clazz.bodyDeclarations.filter( e => e.name.identifier==="bar" )[0];
+            const bar = clazz.bodyDeclarations.filter( e => e.name && e.name.identifier==="bar" )[0];
             expect( bar ).toBeTruthy();
             done();
         }
@@ -146,11 +146,11 @@ describe( "PathV3Generator" , ()=>{
         function assertResult( result ){
             const compilationUnit = JavaParser.parse( result , {} );
             const clazz = compilationUnit.types[0];
-            const one = clazz.bodyDeclarations.filter( e => e.name.identifier==="one" )[0];
+            const one = clazz.bodyDeclarations.filter( e => e.name && e.name.identifier==="one" )[0];
             const two = one.bodyDeclarations.filter( e => e.name && e.name.identifier==="two" )[0];
             const three = two.bodyDeclarations.filter( e => e.name && e.name.identifier==="three" )[0];
             const res = three.bodyDeclarations.filter( e => e.fragments && e.fragments[0].name.identifier==="RESOURCE" )[0];
-            expect( res.fragments[0].initializer.escapedValue ).toEqual( '"/one/two/three"' );
+            expect( res.fragments[0].initializer.escapedValue ).toEqual( '"/my/api/v1/one/two/three"' );
             done();
         }
     });
