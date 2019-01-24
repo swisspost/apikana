@@ -236,16 +236,22 @@ module.exports = {
             if (restApi.paths == null || restApi.paths.length === 0) {
                 return emptyStream();
             }
+            const generate1stGenPaths = params.generate1stGenPaths();
+            const generate2ndGenPaths = params.generate2ndGenPaths();
+            log.info( "1st generation paths are "+(generate1stGenPaths?"\x1b[1;35menabled ":"\x1b[35mdisabled")+"\x1b[0m (--generate1stGenPaths="+generate1stGenPaths+")." );
+            log.info( "2nd generation paths are "+(generate2ndGenPaths?"\x1b[1;35menabled ":"\x1b[35mdisabled")+"\x1b[0m (--generate2ndGenPaths="+generate2ndGenPaths+")." );
             return require('./generate-constants').generate(
                 gulp.src(params.api(), {cwd: source}),
-                gulp.dest('model', {cwd: dest}));
+                gulp.dest('model', {cwd: dest}),
+                { generate1stGenPaths:generate1stGenPaths , generate2ndGenPaths:generate2ndGenPaths }
+            );
         });
 
         task('generate-3rdGen-constants', ['copy-src','read-rest-api'], function(){
             const generate3rdGenPaths = params.generate3rdGenPaths();
             const gulpOStream = gulp.dest( "model/" , {cwd: dest});
+            log.info( "3rd generation paths are "+(generate3rdGenPaths?"\x1b[1;35menabled ":"\x1b[35mdisabled")+"\x1b[0m (--generate3rdGenPaths="+generate3rdGenPaths+")." );
             if( !generate3rdGenPaths ){
-                log.warn( "3rd generation paths are disabled (--generate3rdGenPaths). Skip." );
                 return StreamUtils.emptyStream().pipe( gulpOStream );
             }
             const javaPackage = params.javaPackage() +".path";
