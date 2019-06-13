@@ -67,6 +67,8 @@ export interface User {
 }
 ```
 
+Annotations like `@pattern` can be used to specify more precise constraints. They correspond to the [JSON Schema validation keywords](https://json-schema.org/latest/json-schema-validation.html#rfc.section.6).  
+
 The `src/style` directory can contain `css` and image files which can be used to style the generated HTML document.
 
 
