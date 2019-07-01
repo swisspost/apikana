@@ -435,10 +435,12 @@ function shiftAwayBasePath( node , pathPrefix ){
         var fullPath = '/'+ segmentStack.join('/');
         // Append the current segment.
         if( !fullPath.endsWith('/') ){ fullPath+='/'; }
-        fullPath += badKey;
-        // Also append the later segments we've not iterated yet.
-        for( let it=node[badKey],subKey ; subKey=Object.keys(it)[0] ; it=it[subKey] ){
-            fullPath += '/'+ subKey;
+        if(badKey){
+            fullPath += badKey;
+            // Also append the later segments we've not iterated yet. (If there are some available).
+            for( let it=node[badKey],subKey ; subKey=Object.keys(it)[0] ; it=it[subKey] ){
+                fullPath += '/'+ subKey;
+            }
         }
         throw Error( "Path '"+fullPath+"' doesn't fit into path-prefix '/"+pathPrefix.join('/')+"/'" );
     }
