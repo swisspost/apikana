@@ -163,8 +163,8 @@ module.exports = {
                     read: false
                 }), {
                     relative: true,
-                    starttag: "<!-- <script src='lang/en.js' type='text/javascript'></script> -->",
-                    endtag: '<script '
+                    starttag: "<script src='lib/swagger-oauth.js' type='text/javascript'></script>",
+                    endtag: '<'
                 }))
                 .pipe(replace('url: url,', 'url:"", spec:spec, validatorUrl:null,'))
                 .pipe(replace('onComplete: function(swaggerApi, swaggerUi){', 'onComplete: function(swaggerApi, swaggerUi){ renderDocson();'))
