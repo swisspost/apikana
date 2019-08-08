@@ -418,7 +418,7 @@ module.exports = {
 
         //TODO same problem as in generate-schema: if there are schemas with the same name from different dependencies,
         //we need structural comparision
-        task('generate-full-rest', ['read-rest-api'/*, 'overwrite-schemas'*/], function () {
+        task('generate-full-rest', ['read-rest-api', 'generate-schema'/*, 'overwrite-schemas'*/], function () {
             var completeApi = Object.assign({}, restApi);
             completeApi.definitions = {};
             delete completeApi.definitions.$ref;
