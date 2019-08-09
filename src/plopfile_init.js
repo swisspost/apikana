@@ -143,7 +143,6 @@ module.exports = function (plop, cfg) {
             })
             .filter(entry => entry[1])
             .map(entry => {
-                console.log(__dirname);
                 return {
                     type: 'addMany',
                     data: { apikanaVersion },
