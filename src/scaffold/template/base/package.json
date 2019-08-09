@@ -1,0 +1,16 @@
+{
+  "name": "{{ projectName }}",
+  "version": "1.0.0-rc.1",
+  "description": "{{ title }}",
+  "scripts": {
+    "start": "apikana start src dist"
+  },
+  "author": "{{ author }}",
+  "license": "Apache-2.0",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "apikana": "{{ apikanaVersion }}"
+  },
+  "customConfig": {{{ configuration }}}
+}

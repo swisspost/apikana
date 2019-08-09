@@ -1,0 +1,24 @@
+#header {
+    display: none;
+}
+
+.http_method {
+    max-width: 0;
+}
+
+.http_method a {
+    visibility: hidden;   
+    max-width: 0; 
+}
+
+.operation .heading {
+    background-color: palegoldenrod !important;
+}
+
+.path {
+    font-weight: bold;
+}
+
+.response-class h4, .response-content-type, .sandbox {
+    display: none;
+}
