@@ -74,15 +74,23 @@ function help() {
     log(colors.red('             --port=<number>'), '             Port of the server to be stopped. Default: 8333');
 }
 
-function generate() {
+function generate() { 
     var source = 'src';
 
     if (argc > 3 && process.argv[3].substring(0, 2) !== '--') {
         source = process.argv[3];
     }
     params.readConfigFile();
-
+    
     log('Source: ', source);
 
-    require('../src/generate').generate(path.resolve(source), params.target());
+    const nodePlop = require("node-plop");
+    const plop = nodePlop(__dirname +`/../src/plopfile_start.js`);
+    const generator = plop.getGenerator('start');
+    generator.runPrompts().then(answers => generator.runActions(answers).then(result => {
+       
+        require('../src/generate').generate(path.resolve(source), params.target());
+    }));
+
+    
 }
