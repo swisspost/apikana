@@ -13,9 +13,7 @@ module.exports = function (plop, cfg) {
     const { defaults } = cfg;
     const currentPath  = process.cwd();
 
-    plop.setHelper('configuration', function(data) {
-        return JSON.stringify(data.data.root, null, 4);
-    });
+    plop.setHelper('json', (data) => JSON.stringify(data, null, 4));
 
     plop.setGenerator('init', {
         description: '',
