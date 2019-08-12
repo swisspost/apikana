@@ -136,6 +136,7 @@ module.exports = function (plop, cfg) {
             var result = Object.entries({
                 'base': true,
                 'openapi': answers.type != 'api',
+                'generic': answers.type == 'api',
                 'rest': answers.type == 'rest-api',
                 'stream': answers.type == 'stream-api'
             })
