@@ -9,17 +9,12 @@ module.exports = function (plop) {
     plop.setGenerator('start', {
         description: '',
         prompts: [],
-        actions: (answers) => Object.entries({
-            'maven': customConfig.plugins.includes('maven'),
-            'nuget': customConfig.plugins.includes('nuget')
-        })
-        .filter(entry => entry[1])
-        .map((entry) => {
+        actions: (answers) => customConfig.plugins.map(plugin => {
             return {
                 type: 'addMany',
                 destination: currentPath,
-                base: './scaffold/template/'+entry[0],
-                templateFiles: './scaffold/template/'+entry[0]+'/**',
+                base: './scaffold/template/'+plugin,
+                templateFiles: './scaffold/template/'+plugin+'/**',
                 force: true
             };
         })
