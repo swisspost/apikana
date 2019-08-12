@@ -63,7 +63,7 @@ $ = function (f) {
                     '#swagger-ui-container { display: none; }' +
                     '</style>').appendTo('body');
                 var title = ((spec.info || {}).title) || '';
-                var desc = ((spec.info || {}).description);
+                var desc = ((spec.info || {}).description || '');
                 var modelDiv = $('<div class="models"><h1>' + title + '</h1><p>' + desc + '</p></div>').appendTo('body');
                 for (var def in schema) {
                     if (isLocalSchema(models, schema[def])) {
