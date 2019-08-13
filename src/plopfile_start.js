@@ -9,7 +9,7 @@ module.exports = function (plop) {
         var result = [];
 
         for(var key in dependencies) {
-            const packageRoot = path.resolve('node_modules', key);
+            const packageRoot = path.resolve(currentPath+'/node_modules', key);
             if(fs.existsSync(packageRoot)) {
                 const packageJSON = JSON.parse(fs.readFileSync(path.resolve(packageRoot, './package.json').toString()));
 
@@ -22,16 +22,17 @@ module.exports = function (plop) {
                         version: dependencies[key]
                     });
                 }
+            } else {
+                console.error("Package " + key + " not found in node_modules. Run `npm install`")
             }
         }
-           
-       return result;
+        return result;
     });
 
     plop.setGenerator('start', {
         description: '',
         prompts: [],
-        actions: (customConfig) => customConfig.plugins.map(plugin => {
+        actions: (packageJSON) => packageJSON.customConfig.plugins.map(plugin => {
             return {
                 type: 'addMany',
                 destination: currentPath,
