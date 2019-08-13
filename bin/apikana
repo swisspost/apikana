@@ -89,9 +89,9 @@ function generate() {
     const generator = plop.getGenerator('start');
     
     const currentPath = process.cwd();
-    const customConfig = JSON.parse(fs.readFileSync(path.resolve(currentPath, './package.json'))).customConfig;
-    
-    generator.runPrompts().then(_ => generator.runActions(customConfig).then(_ => {
+    const packageJSON = JSON.parse(fs.readFileSync(path.resolve(currentPath, './package.json')));
+
+    generator.runPrompts().then(_ => generator.runActions(packageJSON).then(_ => {
         require('../src/generate').generate(path.resolve(source), params.target());
     }));
 
