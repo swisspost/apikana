@@ -103,19 +103,19 @@ module.exports = function (plop, cfg) {
             type: 'input',
             name: 'dotnetNamespace',
             message: 'Which .NET namespace do you want to use?',
-            when: answers => answers.plugins.includes('nuget'),
+            when: answers => answers.plugins.includes('dotnet'),
             default: answers => 
                 dotTitle(prefix(answers)).replace(new RegExp('^' + (
-                    defaults.plugins.nuget &&
-                    defaults.plugins.nuget.ignoreDomainPrefix || '') + '\\.', 'g'), '')+'.'+
+                    defaults.plugins.dotnet &&
+                    defaults.plugins.dotnet.ignoreDomainPrefix || '') + '\\.', 'g'), '')+'.'+
                 dotTitle(answers.namespace).replace(new RegExp('^' + (
-                    defaults.plugins.nuget &&
-                    defaults.plugins.nuget.ignoreNamespacePrefix || '') + '\\.', 'g'), '')
+                    defaults.plugins.dotnet &&
+                    defaults.plugins.dotnet.ignoreNamespacePrefix || '') + '\\.', 'g'), '')
         },{
             type: 'input',
             name: 'dotnetPackageId',
-            message: 'Which NuGet PackageId do you want to use?',
-            when: answers => answers.plugins.includes('nuget'),
+            message: 'Which .NET PackageId do you want to use?',
+            when: answers => answers.plugins.includes('dotnet'),
             default: answers => 
                 answers.dotnetNamespace.split('.').slice(0,-1).join('.') + '.' +
                 changeCase.pascalCase(defaults[answers.type] && defaults[answers.type].suffix || answers.type)
