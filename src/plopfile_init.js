@@ -78,7 +78,7 @@ module.exports = function (plop, cfg) {
             default: Object.keys(defaults.plugins || {}).filter(key => defaults.plugins[key].active),
             choices: [ 
                 { name: 'Maven artifact with Java classes', value: 'maven' },
-                { name: 'Nuget package with C# classes', value: 'nuget' },
+                { name: 'C# project', value: 'dotnet' },
                 { name: 'Markdown documentation', value: 'markdown' }
             ]
         },{
