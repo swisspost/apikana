@@ -14,7 +14,7 @@ module.exports = function (plop) {
                 const packageJSON = JSON.parse(fs.readFileSync(path.resolve(packageRoot, './package.json').toString()));
 
                 if(packageJSON.hasOwnProperty('customConfig') 
-                    && packageJSON.customConfig.hasOwnProperty('mavenGroupId')) {
+                    && packageJSON.customConfig.plugins.includes('maven')) {
 
                     result.push({
                         groupId: packageJSON.customConfig.mavenGroupId,
