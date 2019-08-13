@@ -5,7 +5,7 @@
     <name>{{ customConfig.shortName }}</name>
     <groupId>{{ customConfig.mavenGroupId }}</groupId>
     <artifactId>{{ customConfig.projectName }}</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>{{ConvertVersion version }}</version>
 
     <packaging>jar</packaging>
     <description>{{ customConfig.title }}</description>
@@ -58,11 +58,11 @@
             <artifactId>joda-time</artifactId>
             <version>2.9.7</version>
         </dependency>
-        {{#each (ToMavenDependency dependencies)}}
+        {{#each (ConvertDependency dependencies)}}
         <dependency>
             <groupId>{{groupId}}</groupId>
             <artifactId>{{artifactId}}</artifactId>
-            <version>{{version}}</version>
+            <version>{{ConvertVersion version}}</version>
         </dependency>
         {{/each}}
     </dependencies>
