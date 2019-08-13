@@ -4,12 +4,34 @@ const path = require('path');
 module.exports = function (plop) {
     
     const currentPath = process.cwd();
-    const customConfig = JSON.parse(fs.readFileSync(path.resolve(currentPath, './package.json'))).customConfig;
-    
+
+    plop.setHelper('ToMavenDependency', (dependencies) => {
+        var result = [];
+
+        for(var key in dependencies) {
+            const packageRoot = path.resolve('node_modules', key);
+            if(fs.existsSync(packageRoot)) {
+                const packageJSON = JSON.parse(fs.readFileSync(path.resolve(packageRoot, './package.json').toString()));
+
+                if(packageJSON.hasOwnProperty('customConfig') 
+                    && packageJSON.customConfig.hasOwnProperty('mavenGroupId')) {
+
+                    result.push({
+                        groupId: packageJSON.customConfig.mavenGroupId,
+                        artifactId: packageJSON.customConfig.projectName,
+                        version: dependencies[key]
+                    });
+                }
+            }
+        }
+           
+       return result;
+    });
+
     plop.setGenerator('start', {
         description: '',
         prompts: [],
-        actions: (answers) => customConfig.plugins.map(plugin => {
+        actions: (customConfig) => customConfig.plugins.map(plugin => {
             return {
                 type: 'addMany',
                 destination: currentPath,
