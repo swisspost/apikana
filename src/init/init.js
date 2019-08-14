@@ -7,7 +7,7 @@ var path = require('path');
 const PluginManager = require('live-plugin-manager').PluginManager;
 const manager = new PluginManager({
     npmRegistryUrl: registryUrl(),
-    pluginsPath: path.join(os.tmpdir(), 'plugin_packages')
+    pluginsPath: path.join(os.tmpdir(), 'apikana-plugin-packages')
 });
 
 process.stdout.write("Loading defaults... ");
