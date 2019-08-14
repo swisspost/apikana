@@ -115,7 +115,7 @@ module.exports = {
 
             function copy(dir) {
                 return merge(
-                    gulp.src('*', {cwd: dir}).pipe(gulp.dest('style', {cwd: uiPath})),
+                    gulp.src('**/*', {cwd: dir}).pipe(gulp.dest('style', {cwd: uiPath})),
                     gulp.src('favicon*', {cwd: dir}).pipe(gulp.dest('images', {cwd: uiPath})));
             }
         });
@@ -153,10 +153,10 @@ module.exports = {
 
         task('inject-css', ['copy-swagger', 'copy-custom', 'copy-deps', 'copy-lib'], function () {
             return gulp.src('index.html', {cwd: uiPath})
-                .pipe(inject(gulp.src('style/*.css', {cwd: uiPath, read: false}), {
+                .pipe(inject(gulp.src('style/**/*.css', {cwd: uiPath, read: false}), {
                     relative: true,
                     starttag: "<link href='css/print.css' media='print' rel='stylesheet' type='text/css'/>",
-                    endtag: '<script '
+                    endtag: '<'
                 }))
                 .pipe(inject(gulp.src(['helper.js', 'browserify.js', 'object-path.js', 'variables.js', 'yaml.js'], {
                     cwd: uiPath + '/patch',
@@ -215,7 +215,7 @@ module.exports = {
             var collector = emptyStream();
             if (modelFiles.length === 0) {
                 if (fs.existsSync(path.resolve(source, params.models()))) {
-                    collector = gulp.src(params.models() + '/**/*.ts', {cwd: source})
+                    collector = gulp.src(params.models() + '/**/*.ts', {cwd: source, base: './ts/'})
                         .pipe(through.obj(function (file, enc, cb) {
                             modelFiles.push(file.path);
                             cb();
