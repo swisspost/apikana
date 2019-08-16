@@ -156,7 +156,7 @@ module.exports = function (plop, cfg) {
             result.push({
                 type: 'add',
                 path: currentPath+'/{{ projectName }}/.gitignore',
-                template: "node_modules/\ndist/",
+                template: "node_modules/\ndist/\ngen/",
                 skipIfExists: true
             });
 
