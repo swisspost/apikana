@@ -152,6 +152,14 @@ module.exports = function (plop, cfg) {
                 };
             });
             
+            // create .gitignore file
+            result.push({
+                type: 'add',
+                path: currentPath+'/{{ projectName }}/.gitignore',
+                template: "node_modules/\ndist/",
+                skipIfExists: true
+            });
+
             result.push((answers) => {
                 log('\nCreation finished. Have a look at it:');
                 log(pad('Go to your project:'), colors.green('cd ' + answers.projectName));
