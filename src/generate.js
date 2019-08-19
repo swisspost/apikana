@@ -166,7 +166,7 @@ module.exports = {
                     starttag: "<script src='lib/swagger-oauth.js' type='text/javascript'></script>",
                     endtag: '<'
                 }))
-                .pipe(replace('&nbsp;</div>', 'Initializing swagger-ui...</div>'))
+                .pipe(replace('&nbsp;</div>', 'Loading...</div>'))
                 .pipe(replace('url: url,', 'url:"", spec:spec, validatorUrl:null,'))
                 .pipe(replace('onComplete: function(swaggerApi, swaggerUi){', 'onComplete: function(swaggerApi, swaggerUi){ renderDocson();'))
                 .pipe(gulp.dest(uiPath));
