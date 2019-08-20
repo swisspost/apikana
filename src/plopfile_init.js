@@ -117,7 +117,7 @@ module.exports = function (plop, cfg) {
             message: 'Which .NET PackageId do you want to use?',
             when: answers => answers.plugins.includes('dotnet'),
             default: answers => 
-                answers.dotnetNamespace.split('.').slice(0,-1).join('.') + '.' +
+                answers.dotnetNamespace.split('.').join('.') + '.' +
                 changeCase.pascalCase(defaults[answers.type] && defaults[answers.type].suffix || answers.type)
         },{
             type: 'list',
