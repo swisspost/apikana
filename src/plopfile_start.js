@@ -1,5 +1,7 @@
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
+const slash = require('slash');
 
 module.exports = function (plop) {
     
@@ -35,14 +37,30 @@ module.exports = function (plop) {
     plop.setGenerator('start', {
         description: '',
         prompts: [],
-        actions: (packageJSON) => packageJSON.customConfig.plugins.map(plugin => {
-            return {
-                type: 'addMany',
-                destination: currentPath,
-                base: './scaffold/template/'+plugin,
-                templateFiles: './scaffold/template/'+plugin+'/**',
-                force: true
-            };
-        })
+        actions: (packageJSON) =>  {
+            var actions = [];
+            
+            packageJSON.customConfig.plugins.map(plugin => {
+                // by default add default files directly from apikana
+                actions.push({
+                    type: 'addMany',
+                    destination: currentPath,
+                    base: slash(path.join(__dirname, 'scaffold', 'template', plugin)),
+                    templateFiles: slash(path.join(__dirname, 'scaffold', 'template', plugin, '**')),
+                    force: true
+                });
+
+                // overwrite all matching if apikana-defaults contains any
+                actions.push({
+                    type: 'addMany',
+                    destination: currentPath,
+                    base: slash(path.join(os.tmpdir(),'apikana-plugin-packages', 'apikana-defaults', 'templates', plugin)),
+                    templateFiles: slash(path.join(os.tmpdir(),'apikana-plugin-packages', 'apikana-defaults', 'templates', plugin, '**')),
+                    force: true
+                });
+            });
+
+            return actions;
+        }
     });
 };
