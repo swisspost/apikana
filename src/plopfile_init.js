@@ -15,7 +15,11 @@ module.exports = function (plop, cfg) {
     const { defaults } = cfg;
     const currentPath  = process.cwd();
 
-    plop.setHelper('json', (data) => JSON.stringify(data, null, 4));
+    plop.setHelper('json', (data) => {
+        delete data.apikanaVersion;
+        var stringified = JSON.stringify(data, null, 4);
+        return stringified;
+    });
 
     plop.setHelper('inArray', (array, str, options) => (array.includes(str)) ? options.fn(this) : options.inverse(this));
 
