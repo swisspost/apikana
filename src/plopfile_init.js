@@ -17,6 +17,8 @@ module.exports = function (plop, cfg) {
 
     plop.setHelper('json', (data) => JSON.stringify(data, null, 4));
 
+    plop.setHelper('inArray', (array, str, options) => (array.includes(str)) ? options.fn(this) : options.inverse(this));
+
     plop.setGenerator('init', {
         description: '',
         prompts: [{
