@@ -4,6 +4,8 @@ const os = require("os");
 const fs = require('fs');
 const path = require('path');
 
+const slash = require('slash');
+
 var log = require('./log');
 var colors = require('ansi-colors');
 
@@ -14,6 +16,8 @@ module.exports = function (plop, cfg) {
     const currentPath  = process.cwd();
 
     plop.setHelper('json', (data) => JSON.stringify(data, null, 4));
+
+    plop.setHelper('inArray', (array, str, options) => (array.includes(str)) ? options.fn(this) : options.inverse(this));
 
     plop.setGenerator('init', {
         description: '',
@@ -132,34 +136,50 @@ module.exports = function (plop, cfg) {
             when: answers => answers.mqs == 'Other',
         }],
         actions: (answers) => {
-            var result = Object.entries({
+            
+            var actions = [];
+
+            var summary = Object.entries({
                 'base': true,
                 'openapi': answers.type != 'api',
                 'generic': answers.type == 'api',
                 'rest': answers.type == 'rest-api',
                 'stream': answers.type == 'stream-api'
-            })
-            .filter(entry => entry[1])
-            .map(entry => {
-                return {
-                    type: 'addMany',
-                    data: { apikanaVersion },
-                    destination: currentPath+'/{{ projectName }}',
-                    base: './scaffold/template/'+entry[0],
-                    templateFiles: './scaffold/template/'+entry[0]+'/**',
-                    force: true
-                };
             });
-            
+
+            for(let [key, value] of summary) {
+                if(value == true) {
+                    // by default add default files directly from apikana
+                    actions.push({
+                        type: 'addMany',
+                        data: { apikanaVersion },
+                        destination: slash(path.join(currentPath, answers.projectName)),
+                        base: slash(path.join(__dirname, 'scaffold', 'template', key)),
+                        templateFiles: slash(path.join(__dirname, 'scaffold', 'template', key, '**')),
+                        force: true
+                    });
+                    
+                    // overwrite all matching if apikana-defaults contains any
+                    actions.push({
+                        type: 'addMany',
+                        data: { apikanaVersion },
+                        destination: slash(path.join(currentPath, answers.projectName)),
+                        base: slash(path.join(os.tmpdir(),'apikana-plugin-packages', 'apikana-defaults', 'templates', 'init', key)),
+                        templateFiles: slash(path.join(os.tmpdir(), 'apikana-plugin-packages', 'apikana-defaults', 'templates', 'init', key, '**')),
+                        force: true
+                    });
+                }
+            }
+
             // create .gitignore file
-            result.push({
+            actions.push({
                 type: 'add',
-                path: currentPath+'/{{ projectName }}/.gitignore',
+                path: slash(path.join(currentPath, answers.projectName, '.gitignore')),
                 template: "node_modules/\ndist/\ngen/",
                 skipIfExists: true
             });
 
-            result.push((answers) => {
+            actions.push((answers) => {
                 log('\nCreation finished. Have a look at it:');
                 log(pad('Go to your project:'), colors.green('cd ' + answers.projectName));
                 log(pad('Install dependencies:'), colors.green('npm install'));
@@ -167,7 +187,7 @@ module.exports = function (plop, cfg) {
                 log(pad('Open a browser at'), colors.blue('http://localhost:8333'));
             });
 
-            return result;
+            return actions;
         }
     });
 };
