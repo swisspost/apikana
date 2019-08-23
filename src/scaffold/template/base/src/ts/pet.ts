@@ -21,8 +21,7 @@ export interface Pet {
     birthday: string
 
     legs: Int
-
-    parent?: Pet
+    
 }
 
 
