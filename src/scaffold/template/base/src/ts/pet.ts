@@ -1,5 +1,9 @@
 import {Int} from "apikana/default-types";
 
+export interface PetList {
+    pets: Pet[]
+}
+
 export interface Pet {
     id: string // the id
 
@@ -15,13 +19,12 @@ export interface Pet {
      */
     lastName: string
 
-    /**
-     * @format date
-     */
-    birthday: string
+    birthday: Date
 
-    legs: Int
-    
+    /**
+     * @format integer
+     */
+    numberOfLegs: number
 }
 
 
