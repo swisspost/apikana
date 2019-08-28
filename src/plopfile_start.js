@@ -24,7 +24,7 @@ module.exports = function (plop) {
                         groupId: packageJSON.customConfig.mavenGroupId,
                         artifactId: packageJSON.customConfig.projectName,
                         packageId: packageJSON.customConfig.dotnetPackageId,
-                        version: dependencies[key]
+                        version: packageJSON.version
                     });
                 }
             } else {
