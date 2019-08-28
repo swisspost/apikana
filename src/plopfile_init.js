@@ -28,7 +28,7 @@ module.exports = function (plop, cfg) {
         prompts: [{
             type: 'list',
             name: 'type',
-            choices: [ 
+            choices: [
                 { name: 'REST API', value: 'rest-api'},
                 { name: 'Stream/Messaging API', value: 'stream-api'},
                 { name: 'Generic (only type definitions)', value: 'api' }
@@ -71,20 +71,20 @@ module.exports = function (plop, cfg) {
             type: 'input',
             name: 'projectName',
             message: 'What is the API project name?',
-            default: answers => 
-                (answers.shortName || answers.namespace) + '-' + 
+            default: answers =>
+                (answers.shortName || answers.namespace) + '-' +
                 (defaults[answers.type] && defaults[answers.type].suffix || answers.type)
         },{
             type: 'input',
             name: 'title',
             message: 'What is the API project title?',
-            default: answers => changeCase.title(answers.projectName).replace('Rest', 'REST').replace('Api', 'API')                
+            default: answers => changeCase.title(answers.projectName).replace('Rest', 'REST').replace('Api', 'API')
         },{
             type: 'checkbox',
             name: 'plugins',
             message: 'Which plugins do you want to activate?',
             default: Object.keys(defaults.plugins || {}).filter(key => defaults.plugins[key].active),
-            choices: [ 
+            choices: [
                 { name: 'Maven artifact with Java classes', value: 'maven' },
                 { name: 'C# project', value: 'dotnet' }
             ]
@@ -93,7 +93,7 @@ module.exports = function (plop, cfg) {
             name: 'javaPackage',
             message: 'Which java package do you want to use?',
             when: answers => answers.plugins.includes('maven'),
-            default: answers => 
+            default: answers =>
                 prefix(answers).replace(new RegExp('^' + (
                     defaults.plugins.maven &&
                     defaults.plugins.maven.ignoreDomainPrefix || '') + '\\.', 'g'), '')+'.'+
@@ -111,7 +111,7 @@ module.exports = function (plop, cfg) {
             name: 'dotnetNamespace',
             message: 'Which .NET namespace do you want to use?',
             when: answers => answers.plugins.includes('dotnet'),
-            default: answers => 
+            default: answers =>
                 dotTitle(prefix(answers)).replace(new RegExp('^' + (
                     defaults.plugins.dotnet &&
                     defaults.plugins.dotnet.ignoreDomainPrefix || '') + '\\.', 'g'), '')+'.'+
@@ -123,7 +123,7 @@ module.exports = function (plop, cfg) {
             name: 'dotnetPackageId',
             message: 'Which .NET PackageId do you want to use?',
             when: answers => answers.plugins.includes('dotnet'),
-            default: answers => 
+            default: answers =>
                 answers.dotnetNamespace.split('.').join('.') + '.' +
                 changeCase.pascalCase(defaults[answers.type] && defaults[answers.type].suffix || answers.type)
         },{
@@ -140,12 +140,11 @@ module.exports = function (plop, cfg) {
             when: answers => answers.mqs == 'Other',
         }],
         actions: (answers) => {
-            
+
             var actions = [];
 
             var summary = Object.entries({
                 'base': true,
-                'openapi': answers.type != 'api',
                 'generic': answers.type == 'api',
                 'rest': answers.type == 'rest-api',
                 'stream': answers.type == 'stream-api'
@@ -162,7 +161,7 @@ module.exports = function (plop, cfg) {
                         templateFiles: slash(path.join(__dirname, 'scaffold', 'template', key, '**')),
                         force: true
                     });
-                    
+
                     // overwrite all matching if apikana-defaults contains any
                     actions.push({
                         type: 'addMany',
