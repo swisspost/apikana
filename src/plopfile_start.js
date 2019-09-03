@@ -3,8 +3,8 @@ const os = require('os');
 const path = require('path');
 const slash = require('slash');
 
-module.exports = function (plop) {
-    
+module.exports = function (plop, cfg) {
+    const { defaults } = cfg;
     const currentPath = process.cwd();
     plop.setHelper('ConvertVersion', (version) => {
         return version.replace(/-(?!.*-).*/, "-SNAPSHOT");
@@ -44,6 +44,7 @@ module.exports = function (plop) {
                 // by default add default files directly from apikana
                 actions.push({
                     type: 'addMany',
+                    globOptions: {dot: true},
                     destination: currentPath,
                     base: slash(path.join(__dirname, 'scaffold', 'template', plugin)),
                     templateFiles: slash(path.join(__dirname, 'scaffold', 'template', plugin, '**')),
@@ -53,9 +54,10 @@ module.exports = function (plop) {
                 // overwrite all matching if apikana-defaults contains any
                 actions.push({
                     type: 'addMany',
+                    globOptions: {dot: true},
                     destination: currentPath,
-                    base: slash(path.join(os.tmpdir(),'apikana-plugin-packages', 'apikana-defaults', 'templates', plugin)),
-                    templateFiles: slash(path.join(os.tmpdir(),'apikana-plugin-packages', 'apikana-defaults', 'templates', plugin, '**')),
+                    base: slash(path.join(os.tmpdir(),'apikana-plugin-packages', 'apikana-defaults', 'templates', 'start', plugin)),
+                    templateFiles: slash(path.join(os.tmpdir(),'apikana-plugin-packages', 'apikana-defaults', 'templates', 'start', plugin, '**')),
                     force: true
                 });
             });
