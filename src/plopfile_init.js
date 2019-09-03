@@ -20,7 +20,7 @@ module.exports = function (plop, cfg) {
         var stringified = JSON.stringify(data, null, 4);
         return stringified;
     });
-
+    
     plop.setHelper('inArray', (array, str, options) => (array.includes(str)) ? options.fn(this) : options.inverse(this));
 
     plop.setGenerator('init', {
@@ -156,6 +156,7 @@ module.exports = function (plop, cfg) {
                     actions.push({
                         type: 'addMany',
                         data: { apikanaVersion },
+                        globOptions: {dot: true},
                         destination: slash(path.join(currentPath, answers.projectName)),
                         base: slash(path.join(__dirname, 'scaffold', 'template', key)),
                         templateFiles: slash(path.join(__dirname, 'scaffold', 'template', key, '**')),
@@ -166,6 +167,7 @@ module.exports = function (plop, cfg) {
                     actions.push({
                         type: 'addMany',
                         data: { apikanaVersion },
+                        globOptions: {dot: true},
                         destination: slash(path.join(currentPath, answers.projectName)),
                         base: slash(path.join(os.tmpdir(),'apikana-plugin-packages', 'apikana-defaults', 'templates', 'init', key)),
                         templateFiles: slash(path.join(os.tmpdir(), 'apikana-plugin-packages', 'apikana-defaults', 'templates', 'init', key, '**')),
@@ -179,6 +181,14 @@ module.exports = function (plop, cfg) {
                 type: 'add',
                 path: slash(path.join(currentPath, answers.projectName, '.gitignore')),
                 template: "node_modules/\ndist/\ngen/",
+                skipIfExists: true
+            });
+
+            // create .npmignore file
+            actions.push({
+                type: 'add',
+                path: slash(path.join(currentPath, answers.projectName, '.npmignore')),
+                template: "node_modules/\ngen/",
                 skipIfExists: true
             });
 
