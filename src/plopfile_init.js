@@ -20,6 +20,10 @@ module.exports = function (plop, cfg) {
         var stringified = JSON.stringify(data, null, 4);
         return stringified;
     });
+
+    plop.setHelper('replaceStr', (match, replace, txt) => {
+        return txt.split(match).join(replace);
+    });
     
     plop.setHelper('inArray', (array, str, options) => (array.includes(str)) ? options.fn(this) : options.inverse(this));
 
