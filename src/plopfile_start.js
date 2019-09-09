@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const os = require('os');
 const path = require('path');
 const slash = require('slash');
@@ -40,6 +40,10 @@ module.exports = function (plop, cfg) {
         actions: (packageJSON) =>  {
             var actions = [];
             
+            actions.push((answers) => {
+                fs.removeSync(path.join(currentPath, 'dist'));
+            });
+
             packageJSON.customConfig.plugins.map(plugin => {
                 // by default add default files directly from apikana
                 actions.push({
