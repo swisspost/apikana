@@ -22,6 +22,9 @@ It supports also java:
 
 See it in action in [apikana-sample](https://github.com/lbovet/apikana-sample).
 
+Serialization/Deserialization of java objects:
+* The implementation needs a jackson module for serializing and deserializing the objects as described [here](https://github.com/FasterXML/jackson-modules-java8/tree/master/datetime).
+
 ## Usage
 
 ### Create a new API project
