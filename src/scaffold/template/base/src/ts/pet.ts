@@ -1,3 +1,4 @@
+import {DateOnly} from "apikana/default-types";
 import {Int} from "apikana/default-types";
 
 export interface PetList {
@@ -5,26 +6,32 @@ export interface PetList {
 }
 
 export interface Pet {
-    id: string // the id
+    /**
+     * The id.
+     */
+    id: string
 
     /**
-     * The given name
+     * The given name.
      * @pattern [A-Z][a-z]+
      *
      */
     firstName: string
 
     /**
-     * The family name
+     * The family name.
      */
     lastName: string
 
-    birthday: Date
+    /**
+     * The birthday date.
+     */
+    birthday: DateOnly
 
     /**
-     * @format integer
+     * The number of legs.
      */
-    numberOfLegs: number
+    numberOfLegs: Int
 }
 
 
