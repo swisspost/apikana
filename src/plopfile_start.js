@@ -65,16 +65,6 @@ module.exports = function (plop, cfg) {
                     force: true
                 });
             });
-            
-            // add src/samples to dist folder
-            actions.push({
-                type: 'addMany',
-                globOptions: {dot: true},
-                destination: slash(path.join(currentPath, 'dist', 'samples')),
-                base: slash(path.join(currentPath, 'src', 'samples')),
-                templateFiles: slash(path.join(currentPath, 'src', 'samples', '**')),
-                force: true
-            });
 
             return actions;
         }
