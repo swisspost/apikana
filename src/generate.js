@@ -104,14 +104,19 @@ module.exports = {
             });
         }
 
-        task('copy-samples', function() {
+        task('cleanup-dist', function() {
+            fse.removeSync('dist');
+            return emptyStream();
+        });
+
+        task('copy-samples', ['cleanup-dist'], function() {
             if(fs.existsSync(path.join(source, 'samples'))) {
                 return gulp.src('samples/**', {cwd: source}).pipe(gulp.dest('samples', {cwd: dest}));
             }
             return emptyStream();
         });
 
-        task('copy-swagger', function () {
+        task('copy-swagger', ['cleanup-dist'], function () {
             return module('swagger-ui/dist/**').pipe(gulp.dest(uiPath));
         });
 
@@ -127,7 +132,7 @@ module.exports = {
             }
         });
 
-        task('copy-package', function () {
+        task('copy-package', ['cleanup-dist'], function () {
             var source = fs.existsSync('package.json')
                 ? gulp.src('package.json')
                 : streamFromString('{}');
@@ -144,7 +149,7 @@ module.exports = {
             return src;
         }
 
-        task('copy-deps', function () {
+        task('copy-deps', ['cleanup-dist'], function () {
             return merge(
                 module(['yamljs/dist/yaml.js']).pipe(gulp.dest('patch', {cwd: uiPath})),
                 module(['object-path/index.js'])
@@ -154,7 +159,7 @@ module.exports = {
                 gulp.src('src/root/*.js', {cwd: apikanaPath}).pipe(gulp.dest(uiPath)));
         });
 
-        task('copy-lib', function () {
+        task('copy-lib', ['cleanup-dist'], function () {
             return gulp.src('lib/*.js', {cwd: apikanaPath}).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
@@ -179,7 +184,7 @@ module.exports = {
                 .pipe(gulp.dest(uiPath));
         });
 
-        task('copy-deps-unref', function () {
+        task('copy-deps-unref', ['cleanup-dist'], function () {
             return module(['typescript/lib/lib.d.ts']).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
@@ -240,7 +245,7 @@ module.exports = {
             });
         });
 
-        task('generate-constants', ['read-rest-api'], function () {
+        task('generate-constants', ['cleanup-dist', 'read-rest-api'], function () {
             if (restApi.paths == null || restApi.paths.length === 0) {
                 return emptyStream();
             }
@@ -299,18 +304,18 @@ module.exports = {
             return gulpOStream;
         });
 
-        task('copy-src', function () {
+        task('copy-src', ['cleanup-dist'], function () {
             if (!params.deploy()) {
                 return emptyStream();
             }
             return gulp.src('**/*', {cwd: source}).pipe(gulp.dest('src', {cwd: uiPath}));
         });
 
-        task('copy-ts-model', ['read-rest-api'], function () {
+        task('copy-ts-model', ['cleanup-dist', 'read-rest-api'], function () {
             return gulp.src(params.models() + '/**/*.ts', {cwd: source}).pipe(gulp.dest('model/ts', {cwd: dest}));
         });
 
-        task('unpack-models', function () {
+        task('unpack-models', ['cleanup-dist'], function () {
             return merge(
                 unpack('dist/model', 'json-schema-v3', '**/*.json'),
                 unpack('dist/model', 'json-schema-v4', '**/*.json'),
@@ -393,7 +398,7 @@ module.exports = {
         //     return true;
         // }
 
-        task('generate-tsconfig', ['read-rest-api'], function () {
+        task('generate-tsconfig', ['cleanup-dist','read-rest-api'], function () {
             if (!fs.existsSync(path.resolve(source, params.models()))) {
                 return emptyStream();
             }
