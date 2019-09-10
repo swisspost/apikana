@@ -104,6 +104,13 @@ module.exports = {
             });
         }
 
+        task('copy-samples', function() {
+            if(fs.existsSync(path.join(source, 'samples'))) {
+                return gulp.src('samples/**', {cwd: source}).pipe(gulp.dest('samples', {cwd: dest}));
+            }
+            return emptyStream();
+        });
+
         task('copy-swagger', function () {
             return module('swagger-ui/dist/**').pipe(gulp.dest(uiPath));
         });
