@@ -1,0 +1,38 @@
+swagger: "2.0"
+
+info:
+  title: {{title}}
+  description: Manage pets in your garden.
+  contact:
+    name: {{author}}
+  version: 1.0.0-rc.1
+
+host: server:8080
+basePath: /
+
+paths:
+  /{{shortName}}/v1/pets:
+    get:
+      summary: All pets
+      description: Returns all known pets.
+      tags:
+        - {{shortName}}
+      parameters:
+        - name: q
+          in: query
+          description: A full-text search query for pets.
+          type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: A collection of pets.
+          schema:
+            type: array
+            $ref: "#/definitions/PetList"
+        500:
+          description: Pets are dead.
+
+definitions:
+  $ref:
+    - ../ts/pet.ts

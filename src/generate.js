@@ -104,7 +104,19 @@ module.exports = {
             });
         }
 
-        task('copy-swagger', function () {
+        task('cleanup-dist', function() {
+            fse.removeSync('dist');
+            return emptyStream();
+        });
+
+        task('copy-samples', ['cleanup-dist'], function() {
+            if(fs.existsSync(path.join(source, 'samples'))) {
+                return gulp.src('samples/**', {cwd: source}).pipe(gulp.dest('samples', {cwd: dest}));
+            }
+            return emptyStream();
+        });
+
+        task('copy-swagger', ['cleanup-dist'], function () {
             return module('swagger-ui/dist/**').pipe(gulp.dest(uiPath));
         });
 
@@ -115,12 +127,12 @@ module.exports = {
 
             function copy(dir) {
                 return merge(
-                    gulp.src('*', {cwd: dir}).pipe(gulp.dest('style', {cwd: uiPath})),
+                    gulp.src('**/*', {cwd: dir}).pipe(gulp.dest('style', {cwd: uiPath})),
                     gulp.src('favicon*', {cwd: dir}).pipe(gulp.dest('images', {cwd: uiPath})));
             }
         });
 
-        task('copy-package', function () {
+        task('copy-package', ['cleanup-dist'], function () {
             var source = fs.existsSync('package.json')
                 ? gulp.src('package.json')
                 : streamFromString('{}');
@@ -137,7 +149,7 @@ module.exports = {
             return src;
         }
 
-        task('copy-deps', function () {
+        task('copy-deps', ['cleanup-dist'], function () {
             return merge(
                 module(['yamljs/dist/yaml.js']).pipe(gulp.dest('patch', {cwd: uiPath})),
                 module(['object-path/index.js'])
@@ -147,16 +159,16 @@ module.exports = {
                 gulp.src('src/root/*.js', {cwd: apikanaPath}).pipe(gulp.dest(uiPath)));
         });
 
-        task('copy-lib', function () {
+        task('copy-lib', ['cleanup-dist'], function () {
             return gulp.src('lib/*.js', {cwd: apikanaPath}).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
         task('inject-css', ['copy-swagger', 'copy-custom', 'copy-deps', 'copy-lib'], function () {
             return gulp.src('index.html', {cwd: uiPath})
-                .pipe(inject(gulp.src('style/*.css', {cwd: uiPath, read: false}), {
+                .pipe(inject(gulp.src('style/**/*.css', {cwd: uiPath, read: false}), {
                     relative: true,
                     starttag: "<link href='css/print.css' media='print' rel='stylesheet' type='text/css'/>",
-                    endtag: '<script '
+                    endtag: '<'
                 }))
                 .pipe(inject(gulp.src(['helper.js', 'browserify.js', 'object-path.js', 'variables.js', 'yaml.js'], {
                     cwd: uiPath + '/patch',
@@ -166,12 +178,13 @@ module.exports = {
                     starttag: "<script src='lib/swagger-oauth.js' type='text/javascript'></script>",
                     endtag: '<'
                 }))
+                .pipe(replace('&nbsp;</div>', 'Loading...</div>'))
                 .pipe(replace('url: url,', 'url:"", spec:spec, validatorUrl:null,'))
                 .pipe(replace('onComplete: function(swaggerApi, swaggerUi){', 'onComplete: function(swaggerApi, swaggerUi){ renderDocson();'))
                 .pipe(gulp.dest(uiPath));
         });
 
-        task('copy-deps-unref', function () {
+        task('copy-deps-unref', ['cleanup-dist'], function () {
             return module(['typescript/lib/lib.d.ts']).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
@@ -215,7 +228,7 @@ module.exports = {
             var collector = emptyStream();
             if (modelFiles.length === 0) {
                 if (fs.existsSync(path.resolve(source, params.models()))) {
-                    collector = gulp.src(params.models() + '/**/*.ts', {cwd: source})
+                    collector = gulp.src(params.models() + '/**/*.ts', {cwd: source, base: './ts/'})
                         .pipe(through.obj(function (file, enc, cb) {
                             modelFiles.push(file.path);
                             cb();
@@ -232,7 +245,7 @@ module.exports = {
             });
         });
 
-        task('generate-constants', ['read-rest-api'], function () {
+        task('generate-constants', ['cleanup-dist', 'read-rest-api'], function () {
             if (restApi.paths == null || restApi.paths.length === 0) {
                 return emptyStream();
             }
@@ -291,18 +304,18 @@ module.exports = {
             return gulpOStream;
         });
 
-        task('copy-src', function () {
+        task('copy-src', ['cleanup-dist'], function () {
             if (!params.deploy()) {
                 return emptyStream();
             }
             return gulp.src('**/*', {cwd: source}).pipe(gulp.dest('src', {cwd: uiPath}));
         });
 
-        task('copy-ts-model', ['read-rest-api'], function () {
+        task('copy-ts-model', ['cleanup-dist', 'read-rest-api'], function () {
             return gulp.src(params.models() + '/**/*.ts', {cwd: source}).pipe(gulp.dest('model/ts', {cwd: dest}));
         });
 
-        task('unpack-models', function () {
+        task('unpack-models', ['cleanup-dist'], function () {
             return merge(
                 unpack('dist/model', 'json-schema-v3', '**/*.json'),
                 unpack('dist/model', 'json-schema-v4', '**/*.json'),
@@ -385,7 +398,7 @@ module.exports = {
         //     return true;
         // }
 
-        task('generate-tsconfig', ['read-rest-api'], function () {
+        task('generate-tsconfig', ['cleanup-dist','read-rest-api'], function () {
             if (!fs.existsSync(path.resolve(source, params.models()))) {
                 return emptyStream();
             }
@@ -418,7 +431,7 @@ module.exports = {
 
         //TODO same problem as in generate-schema: if there are schemas with the same name from different dependencies,
         //we need structural comparision
-        task('generate-full-rest', ['read-rest-api'/*, 'overwrite-schemas'*/], function () {
+        task('generate-full-rest', ['read-rest-api', 'generate-schema'/*, 'overwrite-schemas'*/], function () {
             var completeApi = Object.assign({}, restApi);
             completeApi.definitions = {};
             delete completeApi.definitions.$ref;

@@ -29,6 +29,7 @@ $ = function (f) {
         return;
     }
     var apiUrl = getAbsoluteUrl(url);
+    var models;
 
     fetchApi(apiUrl).then(function (json) {
         spec = json;
@@ -41,7 +42,7 @@ $ = function (f) {
         }
 
         var apiBase = apiUrl.substring(0, apiUrl.lastIndexOf('/') + 1);
-        var models = modelFiles(spec, apiBase);
+        models = modelFiles(spec, apiBase);
         if (models.length > 0) {
             return generateSchema(models);
         } else {
@@ -56,13 +57,14 @@ $ = function (f) {
             if (!spec.paths || spec.paths.length === 0) {
                 $('<style>' +
                     '.docson > .box { width: 600px; }' +
-                    '.models { font-family: sans-serif; margin: 50px auto; width: 600px; }' +
+                    '.models { font-family: sans-serif; margin: 12px auto; width: 600px; }' +
                     '.models > h1 { font-size: 25px; font-weight: 700; }' +
+                    '.models > * { margin-top: 20px; }' +
                     '#swagger-ui-container { display: none; }' +
                     '</style>').appendTo('body');
                 var title = ((spec.info || {}).title) || '';
-                var desc = ((spec.info || {}).description) || 'This module contains only models.';
-                var modelDiv = $('<div class="models"><h1>' + title + '</h1><span>' + desc + '</span></div>').appendTo('#header');
+                var desc = ((spec.info || {}).description || '');
+                var modelDiv = $('<div class="models"><h1>' + title + '</h1><p>' + desc + '</p></div>').appendTo('body');
                 for (var def in schema) {
                     if (isLocalSchema(models, schema[def])) {
                         $('<div class="docson">' + def + '</div>').appendTo(modelDiv);

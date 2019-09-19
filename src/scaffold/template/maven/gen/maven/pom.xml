@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>{{ customConfig.shortName }}</name>
+    <groupId>{{ customConfig.mavenGroupId }}</groupId>
+    <artifactId>{{ customConfig.projectName }}</artifactId>
+    <version>{{ConvertVersion version }}</version>
+
+    <packaging>jar</packaging>
+    <description>{{ customConfig.title }}</description>
+
+    <properties>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+        <jackson-databind.version>2.9.9.3</jackson-databind.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jsonschema2pojo</groupId>
+                <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+                <version>1.0.1</version>
+                <configuration>
+                    <targetPackage>{{ customConfig.javaPackage }}</targetPackage>
+                    <sourceDirectory>${basedir}/../../dist/model/json-schema-v3</sourceDirectory>
+                    <includeJsr303Annotations>true</includeJsr303Annotations>
+                    <generateBuilders>true</generateBuilders>
+                    <removeOldOutput>true</removeOldOutput>
+                    <dateTimeType>java.time.ZonedDateTime</dateTimeType>
+                    <dateType>java.time.LocalDate</dateType>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <inherited>true</inherited>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <updateReleaseInfo>true</updateReleaseInfo>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson-databind.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.1.0.Final</version>
+        </dependency>
+        {{#each (ConvertDependency dependencies)}}
+        <dependency>
+            <groupId>{{groupId}}</groupId>
+            <artifactId>{{artifactId}}</artifactId>
+            <version>{{ConvertVersion version}}</version>
+        </dependency>
+        {{/each}}
+    </dependencies>
+</project>

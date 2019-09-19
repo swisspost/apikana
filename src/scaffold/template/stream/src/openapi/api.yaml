@@ -1,0 +1,29 @@
+swagger: "2.0"
+
+info:
+  title: {{title}}
+  description: Information about the pets in your garden
+  contact:
+    name: {{author}}
+  version: 1.0.0-rc.1
+
+host: server:8080
+basePath: {{mqs}}
+
+paths:
+  {{namespace}}.Pet-event:
+    get:
+      summary: What occurs on pets
+      description: Usual events in the life of a pet
+      tags:
+        - {{namespace}}
+      responses:
+        200:
+          description: The event which occured
+          schema:
+            type: array
+            $ref: "#/definitions/PetEvent"
+
+definitions:
+  $ref:
+    - ../ts/pet-event.ts

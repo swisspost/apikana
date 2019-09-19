@@ -74,15 +74,38 @@ function help() {
     log(colors.red('             --port=<number>'), '             Port of the server to be stopped. Default: 8333');
 }
 
-function generate() {
+function generate() { 
     var source = 'src';
 
     if (argc > 3 && process.argv[3].substring(0, 2) !== '--') {
         source = process.argv[3];
     }
     params.readConfigFile();
-
+    
     log('Source: ', source);
 
-    require('../src/generate').generate(path.resolve(source), params.target());
+    const nodePlop = require("node-plop");
+    const registryUrl = require('registry-url');
+    const os = require('os');
+    const currentPath = process.cwd();
+    const packageJSON = JSON.parse(fs.readFileSync(path.resolve(currentPath, './package.json')));
+
+    const PluginManager = require('live-plugin-manager').PluginManager;
+    const manager = new PluginManager({
+        npmRegistryUrl: registryUrl(),
+        pluginsPath: path.join(os.tmpdir(), 'apikana-plugin-packages')
+    });
+
+    process.stdout.write("Loading defaults... ");
+
+    manager.install('apikana-defaults').then((e) => {
+        process.stdout.write("found "+e.version+"\n");
+        var defaults = manager.require('apikana-defaults');
+        var plop = nodePlop(__dirname + '/../src/plopfile_start.js', { defaults });
+        var generator = plop.getGenerator('start');
+
+        generator.runPrompts().then(_ => generator.runActions(packageJSON).then(_ => {
+            require('../src/generate').generate(path.resolve(source), params.target());
+        }));
+    });
 }
