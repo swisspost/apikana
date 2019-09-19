@@ -43,7 +43,7 @@ module.exports = function (plop, cfg) {
             type: 'input',
             name: 'domain',
             message: 'What is your organization domain?',
-            default: defaults.domain,
+            default: (defaults && defaults.domain || ""),
             filter: changeCase.dot,
             validate: answer => answer.length > 0
         },{
@@ -77,7 +77,7 @@ module.exports = function (plop, cfg) {
             message: 'What is the API project name?',
             default: answers =>
                 (answers.shortName || answers.namespace) + '-' +
-                (defaults[answers.type] && defaults[answers.type].suffix || answers.type)
+                (defaults && defaults[answers.type] && defaults[answers.type].suffix || answers.type)
         },{
             type: 'input',
             name: 'title',
@@ -87,7 +87,7 @@ module.exports = function (plop, cfg) {
             type: 'checkbox',
             name: 'plugins',
             message: 'Which plugins do you want to activate?',
-            default: Object.keys(defaults.plugins || {}).filter(key => defaults.plugins[key].active),
+            default: Object.keys(defaults && defaults.plugins || {}).filter(key => defaults.plugins[key].active),
             choices: [
                 { name: 'Maven artifact with Java classes', value: 'maven' },
                 { name: 'C# project', value: 'dotnet' }
@@ -99,9 +99,13 @@ module.exports = function (plop, cfg) {
             when: answers => answers.plugins.includes('maven'),
             default: answers =>
                 prefix(answers).replace(new RegExp('^' + (
+                    defaults &&
+                    defaults.plugins &&
                     defaults.plugins.maven &&
                     defaults.plugins.maven.ignoreDomainPrefix || '') + '\\.', 'g'), '')+'.'+
                 answers.namespace.replace(new RegExp('^' + (
+                    defaults &&
+                    defaults.plugins &&
                     defaults.plugins.maven &&
                     defaults.plugins.maven.ignoreNamespacePrefix || '') + '\\.', 'g'), '')+'.v1'
         }, {
@@ -117,9 +121,13 @@ module.exports = function (plop, cfg) {
             when: answers => answers.plugins.includes('dotnet'),
             default: answers =>
                 dotTitle(prefix(answers)).replace(new RegExp('^' + (
+                    defaults &&
+                    defaults.plugins &&
                     defaults.plugins.dotnet &&
                     defaults.plugins.dotnet.ignoreDomainPrefix || '') + '\\.', 'g'), '')+'.'+
                 dotTitle(answers.namespace).replace(new RegExp('^' + (
+                    defaults &&
+                    defaults.plugins &&
                     defaults.plugins.dotnet &&
                     defaults.plugins.dotnet.ignoreNamespacePrefix || '') + '\\.', 'g'), '')
         },{
@@ -129,13 +137,13 @@ module.exports = function (plop, cfg) {
             when: answers => answers.plugins.includes('dotnet'),
             default: answers =>
                 answers.dotnetNamespace.split('.').join('.') + '.' +
-                changeCase.pascalCase(defaults[answers.type] && defaults[answers.type].suffix || answers.type)
+                changeCase.pascalCase(defaults && defaults[answers.type] && defaults[answers.type].suffix || answers.type)
         },{
             type: 'list',
             name: 'mqs',
             when: answers => answers.type == 'stream-api',
             message: 'On which message queue system will this API be exposed?',
-            default: defaults.stream && defaults.stream.mqs,
+            default: defaults && defaults.stream && defaults.stream.mqs,
             choices: ['ActiveMQ', 'Kafka', 'MQTT', 'RabbitMQ', 'Other']
         },{
             type: 'input',

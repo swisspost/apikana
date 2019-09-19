@@ -17,10 +17,7 @@ It basically generates formal schemas and documentation from a mixed swagger/typ
 
 It supports also java:
 
-* Use the provided parent-pom and maven-plugin (see [apikana-java](https://github.com/nidi3/apikana-java)).
 * Generate java types (thanks to [jsonschema2pojo](http://www.jsonschema2pojo.org/)).
-
-See it in action in [apikana-sample](https://github.com/lbovet/apikana-sample).
 
 Serialization/Deserialization of java objects:
 * The implementation needs a jackson module for serializing and deserializing the objects as described [here](https://github.com/FasterXML/jackson-modules-java8/tree/master/datetime).
@@ -36,7 +33,7 @@ This starts an interactive wizard that lets you define the main aspects of the A
 
 ### Use as a global tool
 
-When `apikana start src` is executed, it looks in `src/openapi` for a file named `api.yaml`.
+When `apikana start` is executed, it looks in `src/openapi` for a file named `api.yaml`.
 This is an [OpenAPI 2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) file defining the REST API.
 In the `definitions` section a `$ref` can be given which references typescript file(s) defining the data models.
 `$ref` can be a comma or newline separated string or an array thereof.
@@ -87,7 +84,7 @@ A sample configuration would look like:
     "start": "apikana start src"
   },
   "devDependencies": {
-    "apikana": "0.4.13"
+    "apikana": "0.6.0"
   }
 }
 ```
