@@ -71,6 +71,15 @@ Annotations like `@pattern` can be used to specify more precise constraints. The
 
 The `src/style` directory can contain `css` and image files which can be used to style the generated HTML document.
 
+The `gen` directory contain the generated files relative to the enabled plugins.
+This files can be overwritten by defining a `templates` directory in the root folder of the project using the following directory structure:
+`root_directory/templates/plugin_name/gen/plugin_name/filename.ext` where:
+* `root_directory` is the root directory of the project, 
+* `plugin_name` is the plugin name (for example `maven` or `dotnet`) and
+* `filename.ext` is the file to copy in the `gen` directory (for example `pom.xml` or `api.csproj`).
+
+Matching filenames will be overwritten. All others will be copied in the `gen` directory.
+
 
 ### Use as a devDependency
 
