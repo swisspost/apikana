@@ -41,7 +41,7 @@ module.exports = function (plop, cfg) {
             var actions = [];
             
             packageJSON.customConfig.plugins.map(plugin => {
-                // by default add default files directly from apikana
+                // by default add default templates from apikana itself
                 actions.push({
                     type: 'addMany',
                     globOptions: {dot: true},
@@ -51,13 +51,23 @@ module.exports = function (plop, cfg) {
                     force: true
                 });
 
-                // overwrite all matching if apikana-defaults contains any
+                // overwrite all matching files if apikana-defaults contains templates for the plugins
                 actions.push({
                     type: 'addMany',
                     globOptions: {dot: true},
                     destination: currentPath,
                     base: slash(path.join(os.tmpdir(),'apikana-plugin-packages', 'apikana-defaults', 'templates', 'start', plugin)),
                     templateFiles: slash(path.join(os.tmpdir(),'apikana-plugin-packages', 'apikana-defaults', 'templates', 'start', plugin, '**')),
+                    force: true
+                });
+
+                // overwrite all matching files if the project contains specific template for the plugins
+                actions.push({
+                    type: 'addMany',
+                    globOptions: {dot: true},
+                    destination: currentPath,
+                    base: slash(path.join(currentPath,'templates', plugin)),
+                    templateFiles: slash(path.join(currentPath, 'templates', plugin, '**')),
                     force: true
                 });
             });
