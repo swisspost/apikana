@@ -5,6 +5,8 @@
 
 # Apikana
 
+<img src="https://travis-ci.org/swisspush/apikana.svg?branch=develop"/> <img src="https://img.shields.io/npm/v/apikana"/>
+
 Integrated tools for REST API design.
 
 Apikana combines the following tools to facilitate the authoring of contract-first REST APIs:
