@@ -1,4 +1,14 @@
 function renderDocson() {
+    $('.info_title').append($('<div>')
+        .attr('id', 'simpleView')
+        .css('float', 'right')
+        .css('font-size', 'smaller')
+        .css('color', 'darkgray')
+        .css('cursor', 'pointer')
+        .css('font-weight', 'normal')
+        .text('👁')
+        .click(toggleSimpleView)
+        .attr('title','Toggle simplified view')) 
     $('.docson').each(function (index, elem) {
         docson.doc(elem, spec.definitions, $(elem).text());
     });
@@ -48,7 +58,7 @@ $ = function (f) {
         } else {
             return null;
         }
-    }).then(function(schema) {        
+    }).then(function(schema) {
         if (schema) {
             for (var def in schema) {
                 processRefs(schema[def]);
@@ -78,7 +88,7 @@ $ = function (f) {
         alert('Problem loading api: ' + err);
     });
 
-    function generateSchema(models) {        
+    function generateSchema(models) {
         return new Promise(
             function (resolve, reject) {
                 var w = new Worker("worker.js");
@@ -89,10 +99,10 @@ $ = function (f) {
                         reject(new Error("No schema generated"));
                     }
                     w.terminate();
-                };        
+                };
                 w.postMessage(models);
             }
-        )        
+        )
     }
 
     function isLocalSchema(models, schema) {
@@ -228,4 +238,60 @@ function parseUri(url) {
         search: m[7] || '',
         hash: m[8] || ''
     } : null);
+}
+
+var simpleView = null;
+
+function toggleSimpleView() {
+    if(simpleView != null) {
+        simpleView.remove();
+        simpleView = null;
+        return;
+    }
+    simpleView = document.createElement('style');
+    simpleView.innerHTML = `
+    .property-name+.signature-type > .type-keyword {
+        display: initial;
+    }
+
+    .box-header {
+        display: none;
+    }
+
+    .signature-button {
+        display: none;
+    }
+
+    .box {
+        border: 0 !important;
+        box-shadow: none !important;
+        background-color: #ebf3f9 !important
+    }
+
+    .signature-type-date, .signature-type-date-time, .signature-type-time, .signature-type-integer, .signature-type-uuid, .signature-type-utc-millisec {
+        display: none;
+    }
+
+    .type-keyword {
+        display: none;
+    }
+
+    .docson {
+        counter-reset: field-counter
+    }
+
+    .docson .property-name:before {
+        font-size: smaller;
+        margin-right: 6px;
+        font-weight: normal;
+        color: darkgray;
+        content: counter(field-counter);
+        counter-increment: field-counter;
+    }
+
+    #simpleView {
+        color: black !important;
+    }
+    `;
+    document.head.appendChild(simpleView);
 }
