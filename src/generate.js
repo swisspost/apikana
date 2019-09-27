@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var rename = require('gulp-rename');
 var inject = require('gulp-inject');
+var jeditor = require("gulp-json-editor");
 var File = require('vinyl');
 var colors = require('ansi-colors');
 var log = require('./log');
@@ -111,7 +112,12 @@ module.exports = {
 
         task('copy-samples', ['cleanup-dist'], function() {
             if(fs.existsSync(path.join(source, 'samples'))) {
-                return gulp.src('samples/**', {cwd: source}).pipe(gulp.dest('samples', {cwd: dest}));
+                gulp.src('samples/**', {cwd: source}).pipe(jeditor(json => {
+                    if('$schema' in json) {
+                        delete json['$schema'];
+                    }
+                    return json;
+                })).pipe(gulp.dest('samples', {cwd: dest}));
             }
             return emptyStream();
         });
