@@ -35,8 +35,12 @@ exports = {
         } catch (e) {
             if (e.diagnostics) {
                 throw new Error('\n' + e.diagnostics.map(function (d) {
-                    var pos = calcPos(d.file.text, d.start);
-                    return d.file.fileName + ':' + pos.line + ':' + pos.col + ' ' + d.messageText;
+                    if(d.file) {
+                        var pos = calcPos(d.file.text, d.start);
+                        return d.file.fileName + ':' + pos.line + ':' + pos.col + ' ' + d.messageText;
+                    } else {
+                        return d.messageText
+                    }
                 }).join('\n'));
             }
             throw e;

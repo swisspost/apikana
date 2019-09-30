@@ -21,7 +21,7 @@ const PathV3Generator = require('./path-v3-generator/path-v3-generator');
 const JavaGen = require('./java-gen');
 
 module.exports = {
-    generate: function (source, dest) {
+    generate: function (source, dest, done) {
         var uiPath = path.resolve(dest, 'ui');
         var apikanaPath = path.resolve(__dirname, '..');
         var privateModules = path.resolve(apikanaPath, 'node_modules');
@@ -479,7 +479,7 @@ module.exports = {
             return gulp.src([]);
         }
 
-        gulp.start();
+        gulp.start(done);
     }
 };
 
