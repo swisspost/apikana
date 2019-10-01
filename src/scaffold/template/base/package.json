@@ -6,7 +6,8 @@
     "start": "apikana start src dist",
     "stop": "apikana stop",
     "create-sample": "apikana create-sample",
-    "validate-samples": "apikana validate-samples"
+    "validate-samples": "apikana validate-samples",
+    "test": "apikana validate-samples"
   },
   "author": "{{ author }}",
   "license": "Apache-2.0",

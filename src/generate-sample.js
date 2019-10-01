@@ -12,7 +12,7 @@ var vinylSource = require('vinyl-source-stream');
 const slash = require('slash');
 
 module.exports = {
-    generateSample: function (source, dest, typeName) {
+    generateSample: function (source, dest, typeNames) {
         
         function readdir(basedir, relativeTo) {
             var res = [];
@@ -65,28 +65,20 @@ module.exports = {
             });
         }
        
-        function streamFromString(s) {
-            var src = new stream.Readable({objectMode: true});
-            src._read = function () {
-                this.push(new File({path: '.', contents: new Buffer(s)}));
-                this.push(null);
-            };
-            return src;
+        function readAllJson(pathDest) {
+            var allJson = [];
+            if(nonEmptyDir(pathDest)) {
+                allJson = readdir(pathDest, pathDest)
+            }
+            return allJson;
         }
 
         task('generate-sample', function() {
-            var samplesPath = path.join(source, 'samples');
-            var allSamples = [];
-            if(nonEmptyDir(samplesPath)) {
-                allSamples = readdir(samplesPath, samplesPath)
-            }
-
             var modelsPath = path.join(dest, 'model', 'json-schema-v4');
-            var allModels = [];
-            if(nonEmptyDir(modelsPath)) {
-                allModels = readdir(modelsPath, modelsPath);
-            }
-
+            
+            var allSamples = readAllJson(path.join(source, 'samples'));
+            var allModels = readAllJson(modelsPath);
+            
             var modelInfo = [];
             allModels.forEach(model => {
                 var modelPath = path.join(modelsPath, model)
@@ -94,24 +86,31 @@ module.exports = {
                 modelInfo.push({id: modelId, path: modelPath})
             });
 
-            if(allSamples.indexOf(`${typeName}.json`) > -1 | allSamples.indexOf(`generated-${typeName}.json`) > -1) {
-                log.warn('Sample for type ' + typeName + ' already exists!');
-                return emptyStream();
-            } else if(modelInfo.find(info => info.id === typeName) === undefined) {
-                log.error('No model found for type ' + typeName + '.');
-                return emptyStream();
-            } else {
-                log.info('Generate sample for type: ' + typeName + '');
-                var modelData = modelInfo.find(info => info.id === typeName)
-                return gulp.src(modelData.path)
-                .pipe(through.obj(function (file, enc, cb) {
-                    generateFakeData(file);
-                    cb();
-                }));
+            // if not typenames defined, then get all the type names available
+            if(typeNames.length === 0) {
+                typeNames = modelInfo.map(model => model.id);
             }
+
+            typeNames.forEach(typeName => {
+                if(allSamples.indexOf(`${typeName}.json`) > -1 | allSamples.indexOf(`generated-${typeName}.json`) > -1) {
+                    log.warn('Sample for type ' + typeName + ' already exists!');       
+                } else if(modelInfo.find(info => info.id === typeName) === undefined) {
+                    log.error('No model found for type ' + typeName + '.');    
+                } else {
+                    log.info('Generate sample for type: ' + typeName + '');
+                    var modelData = modelInfo.find(info => info.id === typeName)
+                    gulp.src(modelData.path)
+                        .pipe(through.obj(function (file, enc, cb) {
+                            generateFakeData(file, typeName);
+                            cb();
+                        }));
+                }
+            });
+            
+            return emptyStream();
         });
 
-        function generateFakeData(file) {
+        function generateFakeData(file, typeName) {
             var json = require(file.path);
 
             jsf.option({failOnInvalidTypes: true, fileOnInvalidFormat: true, fillProperties:true});

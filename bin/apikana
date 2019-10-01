@@ -31,11 +31,7 @@ if (argc === 2) {
         });
         break;
     case 'create-sample':
-        if(process.argv.length <= 2) {
-            help();
-        } else {
-            createSample(process.argv.slice(3));
-        }
+        createSample();
         break;
     case 'validate-samples':
         validateSamples();
@@ -87,12 +83,9 @@ function help() {
     log(colors.magenta('apikana validate-samples'), '                 Validates the samples usind the available types.');
 }
 
-function createSample(args) {
+function createSample() {
     params.readConfigFile();
-
-    args.forEach(typeName => {
-        require('../src/generate-sample').generateSample(path.resolve('src'), path.resolve(params.target()), typeName);
-    });
+    require('../src/generate-sample').generateSample(path.resolve('src'), path.resolve(params.target()), process.argv.slice(3));
 }
 
 function validateSamples() {
