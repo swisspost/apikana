@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "browserify src/browserify.js -t brfs -i source-map-support > lib/browserify.js",
-    "test": "node test/runner.js",
+    "test": "node --no-deprecation test/runner.js",
     "test-build": "cd test && node ../bin/apikana start --javaPackage=apikana.test --log=info",
     "test-deploy": "cd test && node ../bin/apikana start --javaPackage=apikana.test --deploy",
     "test-serve": "cd test && node ../bin/apikana-serve --port=8222",
