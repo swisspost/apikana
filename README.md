@@ -7,7 +7,7 @@
 
 <a href="https://travis-ci.org/swisspush/apikana"><img src="https://travis-ci.org/swisspush/apikana.svg?branch=develop"/></a> <a href="https://www.npmjs.com/package/apikana"><img src="https://img.shields.io/npm/v/apikana"/></a>
 
-Integrated tools for REST API design.
+Integrated tools for REST and Messaging API design.
 
 Apikana combines the following tools to facilitate the authoring of contract-first REST APIs:
 
