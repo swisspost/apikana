@@ -485,7 +485,7 @@ module.exports = {
             return gulp.src([]);
         }
 
-        gulp.start(done);
+        done ? gulp.start(done) : gulp.start();
     }
 };
 
