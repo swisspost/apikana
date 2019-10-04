@@ -197,7 +197,7 @@ module.exports = function (plop, cfg) {
             actions.push({
                 type: 'add',
                 path: slash(path.join(currentPath, answers.projectName, '.gitignore')),
-                template: "node_modules/\ndist/\ngen/",
+                template: "node_modules/\ndist/\ngen/\n.vscode/\n.idea/\n*.iml\n.settings/\n.project/",
                 skipIfExists: true
             });
 
@@ -205,7 +205,7 @@ module.exports = function (plop, cfg) {
             actions.push({
                 type: 'add',
                 path: slash(path.join(currentPath, answers.projectName, '.npmignore')),
-                template: "node_modules/\ngen/",
+                template: "node_modules/\ngen/\n*.iml",
                 skipIfExists: true
             });
 
