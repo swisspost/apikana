@@ -4,7 +4,6 @@ var colors = require('ansi-colors');
 var log = require('./log');
 var path = require('path');
 var fs = require('fs');
-var stream = require('stream');
 var through = require('through2');
 const jsf = require('json-schema-faker');
 var str = require('string-to-stream');

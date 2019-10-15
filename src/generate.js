@@ -327,7 +327,8 @@ module.exports = {
                 unpack('dist/model', 'json-schema-v4', '**/*.json'),
                 unpack('dist/ui', 'style', '**/*', true),
                 unpack('dist/model', 'ts', '**/*.ts'),
-                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath}).pipe(gulp.dest('ts/apikana', {cwd: dependencyPath}))
+                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath}).pipe(gulp.dest('ts/apikana', {cwd: dependencyPath})),
+                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath}).pipe(gulp.dest('model/ts/node_modules/apikana', {cwd: dest}))
             );
         });
 
