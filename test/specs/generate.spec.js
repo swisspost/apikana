@@ -24,6 +24,9 @@ describe('generate', () => {
 
     it('should generate dist', () => sandbox.generate()
         .then(({dir}) => fs.exists(`${dir}/dist`, res => res || fail())))
+
+    it('should copy default-types in dist', () => sandbox.generate()
+        .then(({dir}) => fs.exists(`${dir}/dist/model/ts/node_modules/apikana/default-types.ts`, res => res || fail())))
 })
 
 
