@@ -95,12 +95,12 @@ A sample configuration would look like:
     "start": "apikana start src"
   },
   "devDependencies": {
-    "apikana": "0.6.0"
+    "apikana": "0.7.0"
   }
 }
 ```
 
-Then simply run `npm start`.
+Then simply run `npm run start`.
 
 
 ## Development
