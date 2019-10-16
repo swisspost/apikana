@@ -12,7 +12,12 @@ var colors = require('ansi-colors');
 const apikanaVersion = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../package.json').toString())).version;
 
 module.exports = function (plop, cfg) {
-    const { defaults } = cfg;
+    const { defaults, logLevel } = cfg;
+
+    if(logLevel !== undefined) {
+        log.setLevel(logLevel);
+    }
+
     const currentPath  = process.cwd();
 
     plop.setHelper('json', (data) => {
@@ -192,7 +197,7 @@ module.exports = function (plop, cfg) {
             actions.push({
                 type: 'add',
                 path: slash(path.join(currentPath, answers.projectName, '.gitignore')),
-                template: "node_modules/\ndist/\ngen/",
+                template: "node_modules/\ndist/\ngen/\n.vscode/\n.idea/\n*.iml\n.settings/\n.project/",
                 skipIfExists: true
             });
 
@@ -200,7 +205,7 @@ module.exports = function (plop, cfg) {
             actions.push({
                 type: 'add',
                 path: slash(path.join(currentPath, answers.projectName, '.npmignore')),
-                template: "node_modules/\ngen/",
+                template: "node_modules/\ngen/\n*.iml",
                 skipIfExists: true
             });
 

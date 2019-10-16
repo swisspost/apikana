@@ -5,9 +5,9 @@
 
 # Apikana
 
-<img src="https://travis-ci.org/swisspush/apikana.svg?branch=develop"/> <img src="https://img.shields.io/npm/v/apikana"/>
+<a href="https://travis-ci.org/swisspush/apikana"><img src="https://travis-ci.org/swisspush/apikana.svg?branch=develop"/></a> <a href="https://www.npmjs.com/package/apikana"><img src="https://img.shields.io/npm/v/apikana"/></a>
 
-Integrated tools for REST API design.
+Integrated tools for REST and Messaging API design.
 
 Apikana combines the following tools to facilitate the authoring of contract-first REST APIs:
 
@@ -95,12 +95,12 @@ A sample configuration would look like:
     "start": "apikana start src"
   },
   "devDependencies": {
-    "apikana": "0.6.0"
+    "apikana": "0.7.0"
   }
 }
 ```
 
-Then simply run `npm start`.
+Then simply run `npm run start`.
 
 
 ## Development

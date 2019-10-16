@@ -6,7 +6,7 @@ function getTimestamp() {
 }
 
 function log() {
-    console.log.apply(console, arguments);
+    module.exports.info.apply(null, arguments)
     return this;
 }
 

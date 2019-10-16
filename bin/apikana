@@ -30,6 +30,12 @@ if (argc === 2) {
             log('Stopped');
         });
         break;
+    case 'create-sample':
+        createSample();
+        break;
+    case 'validate-samples':
+        validateSamples();
+        break;
     default:
         help();
         break;
@@ -72,6 +78,18 @@ function help() {
     log(colors.red('             --log=<level>'), '               Set log level (debug, info, warn, error). Default: info');
     log(colors.magenta('apikana stop '), colors.red('[options]'), '                  Stop a running server.');
     log(colors.red('             --port=<number>'), '             Port of the server to be stopped. Default: 8333');
+
+    log(colors.magenta('apikana create-sample '), colors.red('[typeName]'), '        Generate samples for the space separated typeNames.');
+    log(colors.magenta('apikana validate-samples'), '                 Validates the samples usind the available types.');
+}
+
+function createSample() {
+    params.readConfigFile();
+    require('../src/generate-sample').generateSample(path.resolve('src'), path.resolve(params.target()), process.argv.slice(3));
+}
+
+function validateSamples() {
+    require('../src/validate-samples').validate(path.resolve('.'));
 }
 
 function generate() { 
