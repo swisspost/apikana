@@ -95,7 +95,7 @@ A sample configuration would look like:
     "start": "apikana start src"
   },
   "devDependencies": {
-    "apikana": "0.7.0"
+    "apikana": "0.7.1"
   }
 }
 ```
