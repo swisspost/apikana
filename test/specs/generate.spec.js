@@ -28,7 +28,7 @@ describe('generate', () => {
     it('should copy default-types in dist', () => sandbox.generate()
         .then(({dir}) => fs.exists(`${dir}/dist/model/ts/node_modules/apikana/default-types.ts`, res => res || fail())))
 
-    fit('should copy version number in generated API', () => sandbox.generate()
+    it('should copy version number in generated API', () => sandbox.generate()
         .then(({dir}) => JSON.parse(fs.readFileSync(`${dir}/dist/model/openapi/api.json`).toString('utf8')))
         .then(api => expect(api.info.version).toBe('0.1.0-rc.1')))
 })
