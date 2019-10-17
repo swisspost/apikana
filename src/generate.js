@@ -195,7 +195,7 @@ module.exports = {
         });
 
         var restApi, modelFiles = [];
-        task('read-rest-api', function () {
+        task('read-rest-api', ['copy-package'], function () {
             if (restApi) {
                 return emptyStream();
             }
@@ -204,6 +204,7 @@ module.exports = {
                     var raw = file.contents.toString();
                     restApi = file.path.substring(file.path.lastIndexOf('.') + 1) === 'yaml'
                         ? yaml.parse(raw) : JSON.parse(raw);
+                    restApi.info.version = generateEnv.variables().version;
                     var ref = restApi.definitions && restApi.definitions.$ref;
                     if (ref) {
                         var refBase = path.dirname(path.resolve(source, params.api()));
