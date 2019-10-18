@@ -22,8 +22,7 @@ describe('scaffolding', () => {
             dotnetPackageId: 'Org.Acme.Garden.Pet.StreamApi',
             mqs: 'Kafka'
         })
-        .then(({dir}) => fs.exists(`${dir}/package.json`, 
-                res => res || fail())))
+        .then(({dir}) => expect(fs.existsSync(`${dir}/package.json`)).toBeTruthy()))
 })
 
 
