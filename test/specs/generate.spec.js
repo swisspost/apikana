@@ -4,9 +4,7 @@ const sandbox = require('./sandbox');
 describe('generating', () => {
 
     describe('an API', () => {
-
-        var generated = null;
-
+        var dir;
         beforeAll(() => sandbox.init()
             .then(() =>
                 sandbox.scaffold({
@@ -24,20 +22,26 @@ describe('generating', () => {
                     dotnetPackageId: 'Org.Acme.Garden.Pet.StreamApi',
                     mqs: 'Kafka'
                 })
-            .then(sandbox.generate)
-            .then(result => { generated = result })));
+            .then(sandbox.generate))
+            .then(result => { dir = result.dir }));
         afterAll(sandbox.clean);
 
         it('should generate dist', () =>
-            fs.exists(`${generation.dir}/dist`, res => res || fail()))
+            expect(fs.existsSync(`${dir}/dist`))
+                .toBeTruthy());
 
         it('should copy default-types in dist', () =>
-            fs.exists(`${generation.dir}/dist/model/ts/node_modules/apikana/default-types.ts`, res => res || fail()))
+            expect(fs.existsSync(`${dir}/dist/model/ts/node_modules/apikana/default-types.ts`))
+                .toBeTruthy());
 
-        it('should copy version number in generated API', () => sandbox.generate()
-            .then(({dir}) => JSON.parse(fs.readFileSync(`${dir}/dist/model/openapi/api.json`).toString('utf8')))
-            .then(api => expect(api.info.version).toBe('0.1.0-rc.1')))
+        describe('generated JSON API', () => {
+            var api;
+            beforeAll(() => { api = JSON.parse(fs.readFileSync(`${dir}/dist/model/openapi/api.json`).toString('utf8')) });
 
+            it('should copy version number in generated API', () =>
+                expect(api.info.version)
+                    .toBe('0.1.0-rc.1'));
+        })
     })
 })
 
