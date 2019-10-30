@@ -70,7 +70,6 @@ module.exports = function (plop, cfg) {
             type: 'list',
             name: 'shortName',
             message: 'What is the API short name?',
-            when: answers => answers.namespace.split('.').length > 1,
             choices: answers => {
                 let segments = answers.namespace.split('.');
                 var acc = [];
