@@ -1,9 +1,9 @@
 const fs = require('fs-extra');
-const sandbox = require('./sandbox');
 
 describe('generating', () => {
 
     describe('an API', () => {
+        const sandbox = require('./sandbox')();
         var dir;
         beforeAll(() => sandbox.init()
             .then(() =>

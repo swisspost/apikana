@@ -1,5 +1,5 @@
 const fs = require('fs-extra');
-const sandbox = require('./sandbox');
+const sandbox = require('./sandbox')();
 
 describe('scaffolding', () => {
 
