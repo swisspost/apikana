@@ -22,7 +22,7 @@ describe('generating', () => {
                     dotnetPackageId: 'Org.Acme.Garden.Pet.StreamApi',
                     mqs: 'Kafka'
                 })
-                    .then(sandbox.generate))
+            .then(sandbox.generate))
             .then(result => { dir = result.dir }));
         afterAll(sandbox.clean);
 
@@ -96,7 +96,7 @@ describe('generating', () => {
             afterAll(depSandbox.clean);
             afterAll(mainSandbox.clean);
 
-            fit('generates a complete API file with inlined dependencies', () => {
+            it('generates a complete API file with inlined dependencies', () => {
                 expect(JSON.parse(fs.readFileSync(`${dir}/dist/model/openapi/complete-api.json`).toString('utf8'))
                     .definitions.Pet.properties.firstName.type).toBe('string');
             })
