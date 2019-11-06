@@ -84,6 +84,12 @@ module.exports = function (plop, cfg) {
                 (defaults && defaults[answers.type] && defaults[answers.type].suffix || answers.type)
         },{
             type: 'input',
+            name: 'npmPackage',
+            message: 'What is the NPM package name?',
+            default: answers =>
+                '@'+[prefix(answers),answers.namespace.slice(0, -answers.shortName.length-1)].filter(Boolean).join('.')+'/'+answers.projectName
+        },{
+            type: 'input',
             name: 'title',
             message: 'What is the API project title?',
             default: answers => changeCase.title(answers.projectName).replace('Rest', 'REST').replace('Api', 'API')

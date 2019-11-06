@@ -1,0 +1,37 @@
+swagger: "2.0"
+
+info:
+  title: Pet REST API
+  description: Manage pets in your garden.
+  contact:
+    name: shaman
+
+host: server:8080
+basePath: /
+
+paths:
+  /pet/v1/pets:
+    get:
+      summary: All pets
+      description: Returns all known pets.
+      tags:
+        - pet
+      parameters:
+        - name: q
+          in: query
+          description: A full-text search query for pets.
+          type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: A collection of pets.
+          schema:
+            type: array
+            $ref: "#/definitions/PetList"
+        500:
+          description: Pets are dead.
+
+definitions:
+  $ref:
+    - ../ts/pet.ts

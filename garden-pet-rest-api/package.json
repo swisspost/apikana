@@ -1,0 +1,32 @@
+{
+  "name": "garden-pet-rest-api",
+  "version": "1.0.0-rc.1",
+  "description": "Garden Pet REST API",
+  "scripts": {
+    "start": "apikana start src dist"
+  },
+  "author": "shaman",
+  "license": "Apache-2.0",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "apikana": "0.6.1"
+  },
+  "customConfig": {
+    "type": "rest-api",
+    "domain": "acme.org",
+    "author": "shaman",
+    "namespace": "garden.pet",
+    "shortName": "garden-pet",
+    "projectName": "garden-pet-rest-api",
+    "title": "Garden Pet REST API",
+    "plugins": [
+        "maven",
+        "dotnet"
+    ],
+    "javaPackage": "org.acme.garden.pet.v1",
+    "mavenGroupId": "org.acme.garden",
+    "dotnetNamespace": "Org.Acme.Garden.Pet",
+    "dotnetPackageId": "Org.Acme.Garden.Pet.RestApi"
+}
+}

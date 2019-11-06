@@ -6,23 +6,34 @@ describe('scaffolding', () => {
     beforeAll(sandbox.init);
     afterAll(sandbox.clean);
 
-    it('should create package.json', () =>
-        sandbox.scaffold({
-            type: 'stream-api',
-            domain: 'acme.org',
-            author: 'coyote',
-            namespace: 'garden.pet',
-            shortName: 'garden-pet',
-            projectName: 'garden-pet-stream-api',
-            title: 'Garden Pet Stream API',
-            plugins: [ 'maven', 'dotnet' ],
-            javaPackage: 'org.acme.garden.pet.v1',
-            mavenGroupId: 'org.acme.garden',
-            dotnetNamespace: 'Org.Acme.Garden.Pet',
-            dotnetPackageId: 'Org.Acme.Garden.Pet.StreamApi',
-            mqs: 'Kafka'
-        })
-        .then(({dir}) => expect(fs.existsSync(`${dir}/package.json`)).toBeTruthy()))
+    describe('an API', () => {
+        var apiDir;
+        beforeAll(() => 
+            sandbox.scaffold({
+                type: 'stream-api',
+                domain: 'acme.org',
+                author: 'coyote',
+                namespace: 'outside.garden.pet',
+                shortName: 'garden-pet',
+                projectName: 'garden-pet-stream-api',
+                npmPackage: '@org.acme.outside/garden-pet-stream-api',
+                title: 'Garden Pet Stream API',
+                plugins: [ 'maven', 'dotnet' ],
+                javaPackage: 'org.acme.outside.garden.pet.v1',
+                mavenGroupId: 'org.acme.outside.garden',
+                dotnetNamespace: 'Org.Acme.Outside.Garden.Pet',
+                dotnetPackageId: 'Org.Acme.Outside.Garden.Pet.StreamApi',
+                mqs: 'Kafka'
+            })
+            .then(({dir}) => apiDir = dir))
+
+        it('should create package.json', () =>
+            expect(fs.existsSync(`${apiDir}/package.json`)).toBeTruthy())
+
+        it('should have the correct package name', () =>
+            expect(JSON.parse(fs.readFileSync(`${apiDir}/package.json`).toString()).name).toBe('@org.acme.outside/garden-pet-stream-api'))
+
+    })
 })
 
 

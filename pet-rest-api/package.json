@@ -1,0 +1,37 @@
+{
+  "name": "@ch.post/pet-rest-api",
+  "version": "0.1.0-rc.1",
+  "description": "Pet REST API",
+  "scripts": {
+    "start": "apikana start src dist",
+    "stop": "apikana stop",
+    "create-sample": "apikana create-sample",
+    "validate-samples": "apikana validate-samples",
+    "test": "apikana validate-samples"
+  },
+  "author": "shaman",
+  "license": "Apache-2.0",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "apikana": "0.7.1"
+  },
+  "customConfig": {
+    "type": "rest-api",
+    "domain": "post.ch",
+    "author": "shaman",
+    "namespace": "pet",
+    "shortName": "pet",
+    "projectName": "pet-rest-api",
+    "npmPackage": "@ch.post/pet-rest-api",
+    "title": "Pet REST API",
+    "plugins": [
+        "maven",
+        "dotnet"
+    ],
+    "javaPackage": "ch.post.pet.v1",
+    "mavenGroupId": "ch.post",
+    "dotnetNamespace": "Ch.Post.Pet",
+    "dotnetPackageId": "Ch.Post.Pet.RestApi"
+}
+}

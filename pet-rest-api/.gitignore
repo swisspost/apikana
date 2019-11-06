@@ -1,0 +1,8 @@
+node_modules/
+dist/
+gen/
+.vscode/
+.idea/
+*.iml
+.settings/
+.project/
