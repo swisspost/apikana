@@ -8,7 +8,7 @@ function renderDocson() {
         .css('font-weight', 'normal')
         .text('👁')
         .click(toggleSimpleView)
-        .attr('title','Toggle simplified view')) 
+        .attr('title','Toggle simplified view'))
     $('.docson').each(function (index, elem) {
         docson.doc(elem, spec.definitions, $(elem).text());
     });
@@ -125,7 +125,7 @@ $ = function (f) {
         for (var p in schema) {
             var v = schema[p];
             if (p === '$ref') {
-                schema[p] = extractTypeNameFromUrlFragment( v );
+                schema[p] = '#/'+extractTypeNameFromUrlFragment( v );
             }
             if (typeof v === 'object') {
                 processRefs(v);
