@@ -29,7 +29,7 @@ module.exports = function (plop, cfg) {
     plop.setHelper('replaceStr', (match, replace, txt) => {
         return txt.split(match).join(replace);
     });
-    
+
     plop.setHelper('inArray', (array, str, options) => (array.includes(str)) ? options.fn(this) : options.inverse(this));
 
     plop.setGenerator('init', {
@@ -87,7 +87,8 @@ module.exports = function (plop, cfg) {
             name: 'npmPackage',
             message: 'What is the NPM package name?',
             default: answers =>
-                '@'+[prefix(answers),answers.namespace.slice(0, -answers.shortName.length-1)].filter(Boolean).join('.')+'/'+answers.projectName
+                '@'+changeCase.hyphen([prefix(answers),answers.namespace.slice(0, -answers.shortName.length-1)]
+                    .filter(Boolean).join('-'))+'/'+answers.projectName
         },{
             type: 'input',
             name: 'title',
