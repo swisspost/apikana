@@ -140,14 +140,14 @@ module.exports = function (plop, cfg) {
                     defaults &&
                     defaults.plugins &&
                     defaults.plugins.dotnet &&
-                    defaults.plugins.dotnet.ignoreNamespacePrefix || '') + '\\.', 'g'), '')
+                    defaults.plugins.dotnet.ignoreNamespacePrefix || '') + '\\.', 'g'), '')+'.V1'
         },{
             type: 'input',
             name: 'dotnetPackageId',
             message: 'Which .NET PackageId do you want to use?',
             when: answers => answers.plugins.includes('dotnet'),
             default: answers =>
-                answers.dotnetNamespace.split('.').join('.') + '.' +
+                answers.dotnetNamespace.split('.').slice(0,-1).join('.') + '.' +
                 changeCase.pascalCase(defaults && defaults[answers.type] && defaults[answers.type].suffix || answers.type)
         },{
             type: 'list',
