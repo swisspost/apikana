@@ -231,7 +231,7 @@ module.exports = {
                 }));
         });
 
-        task('generate-schema', ['unpack-models', 'generate-tsconfig', 'copy-package', 'read-rest-api'], function () {
+        task('generate-schema', ['copy-ts-deps', 'generate-tsconfig', 'copy-package', 'read-rest-api'], function () {
             var collector = emptyStream();
             if (modelFiles.length === 0) {
                 if (fs.existsSync(path.resolve(source, params.models()))) {
@@ -322,14 +322,17 @@ module.exports = {
             return gulp.src(params.models() + '/**/*.ts', {cwd: source}).pipe(gulp.dest('model/ts', {cwd: dest}));
         });
 
+        task('copy-ts-deps', ['unpack-models'], function() {
+            return gulp.src(params.dependencyPath()+'/ts/**/*.ts').pipe(gulp.dest('model/ts/node_modules/', {cwd: dest}));
+        })
+
         task('unpack-models', ['cleanup-dist'], function () {
             return merge(
                 unpack('dist/model', 'json-schema-v3', '**/*.json'),
                 unpack('dist/model', 'json-schema-v4', '**/*.json'),
                 unpack('dist/ui', 'style', '**/*', true),
                 unpack('dist/model', 'ts', '**/*.ts'),
-                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath}).pipe(gulp.dest('ts/apikana', {cwd: dependencyPath})),
-                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath}).pipe(gulp.dest('model/ts/node_modules/apikana', {cwd: dest}))
+                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath}).pipe(gulp.dest('ts/apikana', {cwd: dependencyPath}))
             );
         });
 
@@ -444,7 +447,7 @@ module.exports = {
             completeApi.definitions = {};
             delete completeApi.definitions.$ref;
             var fileToType = {};
-            return gulp.src('model/json-schema-v4/**/*.json', {cwd: dest})
+            return gulp.src([ dest+'/model/json-schema-v4/**/*.json', dependencyPath+'/json-schema-v4/**/*.json'])
                 .pipe(through.obj(function (file, enc, cb) {
                     var schema = JSON.parse(file.contents.toString());
                     fileToType[path.parse(file.path).base] = schema.id;

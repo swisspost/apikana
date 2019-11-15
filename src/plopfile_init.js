@@ -29,7 +29,7 @@ module.exports = function (plop, cfg) {
     plop.setHelper('replaceStr', (match, replace, txt) => {
         return txt.split(match).join(replace);
     });
-    
+
     plop.setHelper('inArray', (array, str, options) => (array.includes(str)) ? options.fn(this) : options.inverse(this));
 
     plop.setGenerator('init', {
@@ -70,7 +70,6 @@ module.exports = function (plop, cfg) {
             type: 'list',
             name: 'shortName',
             message: 'What is the API short name?',
-            when: answers => answers.namespace.split('.').length > 1,
             choices: answers => {
                 let segments = answers.namespace.split('.');
                 var acc = [];
@@ -83,6 +82,13 @@ module.exports = function (plop, cfg) {
             default: answers =>
                 (answers.shortName || answers.namespace) + '-' +
                 (defaults && defaults[answers.type] && defaults[answers.type].suffix || answers.type)
+        },{
+            type: 'input',
+            name: 'npmPackage',
+            message: 'What is the NPM package name?',
+            default: answers =>
+                '@'+changeCase.hyphen([prefix(answers),answers.namespace.slice(0, -answers.shortName.length-1)]
+                    .filter(Boolean).join('-'))+'/'+answers.projectName
         },{
             type: 'input',
             name: 'title',
@@ -134,14 +140,14 @@ module.exports = function (plop, cfg) {
                     defaults &&
                     defaults.plugins &&
                     defaults.plugins.dotnet &&
-                    defaults.plugins.dotnet.ignoreNamespacePrefix || '') + '\\.', 'g'), '')
+                    defaults.plugins.dotnet.ignoreNamespacePrefix || '') + '\\.', 'g'), '')+'.V1'
         },{
             type: 'input',
             name: 'dotnetPackageId',
             message: 'Which .NET PackageId do you want to use?',
             when: answers => answers.plugins.includes('dotnet'),
             default: answers =>
-                answers.dotnetNamespace.split('.').join('.') + '.' +
+                answers.dotnetNamespace.split('.').slice(0,-1).join('.') + '.' +
                 changeCase.pascalCase(defaults && defaults[answers.type] && defaults[answers.type].suffix || answers.type)
         },{
             type: 'list',
