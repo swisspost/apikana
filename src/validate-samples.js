@@ -8,7 +8,7 @@ const util = require('util');
 
 module.exports = {
     validate: function (root) {
-        
+
         const logger = winston.createLogger({
             level: 'debug',
             transports: [
@@ -17,7 +17,7 @@ module.exports = {
             format: winston.format.combine(
                 winston.format.colorize(),
                 winston.format.simple()
-            )    
+            )
         });
 
         function createAjv() {
@@ -35,7 +35,7 @@ module.exports = {
             ajv._opts.defaultMeta = metaSchema.id;
 
             schemaFiles.forEach(file => {
-                logger.debug(`Adding schema file ${file}`);
+                logger.debug(`Adding schema file: ${file}`);
 
                 const fileContents = require(path.join(root, 'dist', 'model', 'json-schema-v4', file));
                 fileContents.id = file; // Otherwise, $ref won't work...
@@ -47,7 +47,7 @@ module.exports = {
 
         function compileSchema(ajv, topLevelType) {
             const schemaSubmitMailpiece = require(path.join(root, 'dist', 'model', 'json-schema-v4', topLevelType));
-            
+
             return ajv.compile(schemaSubmitMailpiece);
         }
 
@@ -79,24 +79,28 @@ module.exports = {
                 .map(file => {
                     const match = dataFilePattern.exec(file);
                     const contentJSON = require(path.join(root, 'src', 'samples', file));
-                    if(contentJSON['$schema'] == undefined) {
-                        logger.error(`No $schema property defined in sample: ${file}`);
-                        process.exit(1);
-                    }
-                    const jsonSchema = contentJSON['$schema'].replace(/^.*[\\\/]/, '');
+                    if(typeof(contentJSON)=='object') {
+                        if(contentJSON['$schema'] == undefined) {
+                            logger.error(`No $schema property defined in sample: ${file}`);
+                            process.exit(1);
+                        }
+                        const jsonSchema = contentJSON['$schema'].replace(/^.*[\\\/]/, '');
 
-                    return {
-                        fileName: match[0],
-                        rootType: jsonSchema,
-                        subType: match[3]
+                        return {
+                            fileName: match[0],
+                            rootType: jsonSchema,
+                            subType: match[3]
+                        }
+                    } else {
+                        logger.debug(`Skipping non-object sample: ${file}`);
+                        return null;
                     }
                 })
+                .filter(x => x)
                 .forEach(data => {
-                    logger.debug('Validating', data);
+                    logger.debug(`Validating ${data.fileName} against ${data.rootType}`);
                     const validate = compileSchema(ajv, data.rootType);
                     const testData = require(path.join(root, 'dist', 'samples', data.fileName));
-
-                    logger.debug('Validating data file:', data.fileName);
                     validateData(testData, validate, data.fileName, validationResult);
                 });
 
@@ -108,7 +112,7 @@ module.exports = {
             logger.info('===========================================');
             if (validationResult.filesWithError.length > 0) {
                 logger.error(`Validation errors: ${validationResult.filesWithError.length} ` +
-                    `(total sample files checked: ${validationResult.totalFiles}). Check warn output above for details.` + 
+                    `(total sample files checked: ${validationResult.totalFiles}). Check warn output above for details.` +
                     `\nFiles with error: ${validationResult.filesWithError}`
                 );
                 exitWithError = true;
@@ -151,7 +155,7 @@ module.exports = {
             fse.removeSync(path.join(root, 'dist', 'samples'));
             logger.info('Copying samples from src/samples to dist/samples.');
             return gulp.src('samples/**', {cwd:  path.join(root, 'src')}).pipe(jeditor(json => {
-                if('$schema' in json) {
+                if(typeof(json)=='object' && '$schema' in json) {
                     delete json['$schema'];
                 }
                 return json;
@@ -165,6 +169,6 @@ module.exports = {
         });
 
         gulp.start();
-    } 
+    }
 };
 

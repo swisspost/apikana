@@ -2,11 +2,14 @@ var env = require('minimist')(process.argv.slice(2));
 var colors = require('ansi-colors');
 var log = require('./log');
 var fs = require('fs');
+var path = require('path');
 var objectPath = require('object-path');
 
 log.setLevel(env.log);
 
 var models = noSlash(env.models || 'ts');
+
+var packageJson = fs.existsSync('./package.json') ? JSON.parse(fs.readFileSync('./package.json')) : {};
 
 module.exports = {
     basePath: function () {
@@ -52,7 +55,7 @@ module.exports = {
         return env.port || 8333;
     },
     javaPackage: function () {
-        return env.javaPackage;
+        return env.javaPackage || packageJson.customConfig && packageJson.customConfig.javaPackage;
     },
     dependencyPath: function () {
         return env.dependencyPath || 'node_modules/-api-dependencies';

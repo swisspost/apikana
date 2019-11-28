@@ -58,7 +58,7 @@ module.exports = {
                 //thank you MS for messing around with filenames!
                 var filename = normPath(schema.extra.filename);
                 var source = filename.toLowerCase().startsWith(normPath(deps).toLowerCase())
-                    ? (relDeps + '/json-schema-v3' + path.dirname(filename.substring(deps.length + 3)) + '/') : '';
+                    ? (relDeps + '/json-schema-v4' + path.dirname(filename.substring(deps.length + 3)) + '/') : '';
                 infos[name] = {
                     source: source,
                     object: schema.type === 'object' || schema.enum || schema.allOf
@@ -183,6 +183,9 @@ module.exports = {
                         var prop = value.required[i];
                         value.properties[prop].required = true;
                     }
+                }
+                if( value && value.$ref) {
+                    value.$ref = value.$ref.replace('/json-schema-v4/', '/json-schema-v3/');
                 }
                 // required property is undefined on objects without properties
                 if (this.key === 'required' && (Array.isArray(value) || value === undefined)) {
