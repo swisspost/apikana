@@ -9,7 +9,7 @@ log.setLevel(env.log);
 
 var models = noSlash(env.models || 'ts');
 
-var packageJson = JSON.parse(fs.readFileSync(path.resolve('./package.json') || '{}'));
+var packageJson = fs.existsSync('./package.json') ? JSON.parse(fs.readFileSync('./package.json')) : {};
 
 module.exports = {
     basePath: function () {
