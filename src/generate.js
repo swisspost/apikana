@@ -113,7 +113,7 @@ module.exports = {
         task('copy-samples', ['cleanup-dist'], function() {
             if(fs.existsSync(path.join(source, 'samples'))) {
                 gulp.src('samples/**', {cwd: source}).pipe(jeditor(json => {
-                    if('$schema' in json) {
+                    if(typeof(json)=='object' && '$schema' in json) {
                         delete json['$schema'];
                     }
                     return json;
