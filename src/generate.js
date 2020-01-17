@@ -318,8 +318,25 @@ module.exports = {
             return gulp.src('**/*', {cwd: source}).pipe(gulp.dest('src', {cwd: uiPath}));
         });
 
+        function getModelDirs(dir, folders) {
+            folders.push(dir.replace(/\\/g, '/')+'/*');
+            var files = fs.readdirSync(dir);
+            files.forEach(file => {
+                let fullPath = path.join(dir, file);
+                if (fs.lstatSync(fullPath).isDirectory()) {
+                    folders = getModelDirs(fullPath, folders);
+                }
+            });
+            return folders;
+        }
+
         task('copy-ts-model', ['cleanup-dist', 'read-rest-api'], function () {
-            return gulp.src(params.models() + '/**/*.ts', {cwd: source}).pipe(gulp.dest('model/ts', {cwd: dest}));
+            var folders = getModelDirs(path.join(source, 'ts'), []);
+            folders.forEach(folder => {
+                log.info('Copying models in:', colors.magenta(path.relative(source, folder)), 'folder to', colors.magenta('dist/model/ts/'));
+                gulp.src(folder, {base: path.join(source, 'ts')}).pipe(gulp.dest('model/ts/', {cwd: dest}));
+            });
+            return emptyStream();
         });
 
         task('copy-ts-deps', ['unpack-models'], function() {
