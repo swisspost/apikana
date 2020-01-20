@@ -320,9 +320,8 @@ module.exports = {
 
         // copy local defined models to dist directory keeping the local folder structure.
         task('copy-ts-model', ['cleanup-dist', 'read-rest-api'], function () {
-           return gulp.src([params.models() + '/**/*.ts'], {cwd: source})
-                .pipe(gulp.dest(path.join('model', 'ts'), {cwd: dest}));
-
+           return gulp.src([path.join(source, 'ts') + '/**/*.ts'], {base: source})
+                .pipe(gulp.dest('model', {cwd: dest}));
         });
 
         // copy unpacked dependencies to node_modules in dist directory so it is possible to re-use the objects.
