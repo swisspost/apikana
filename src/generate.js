@@ -327,9 +327,13 @@ module.exports = {
 
         // copy unpacked dependencies to node_modules in dist directory so it is possible to re-use the objects.
         task('copy-ts-deps', ['unpack-models'], function() {
-            return gulp.src([params.dependencyPath()+'/**/*.ts'], {base: params.dependencyPath()})
-                    .pipe(gulp.dest(path.join('model', 'ts', 'node_modules'), {cwd: dest}));
-        })
+            return merge(
+                    gulp.src([params.dependencyPath()+'/**/*.ts'], {base: params.dependencyPath()})
+                        .pipe(gulp.dest(path.join('model', 'ts', 'node_modules'), {cwd: dest})),
+                    gulp.src([params.dependencyPath()+'/**/*.ts'], {base: path.join(params.dependencyPath(), 'ts')})
+                        .pipe(gulp.dest(path.join('model', 'ts', 'node_modules'), {cwd: dest}))
+                    );
+        });
 
         // unpack dependencies under -api-dependencies/ts keeping the original folder structure.
         // NOTE: the 'ts' subdirectory is important because the front-end only understands dependencies under /ts/ dir.
