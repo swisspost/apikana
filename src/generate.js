@@ -328,25 +328,31 @@ module.exports = {
         // copy unpacked dependencies to node_modules in dist directory so it is possible to re-use the objects.
         task('copy-ts-deps', ['unpack-models'], function() {
             return gulp.src([params.dependencyPath()+'/**/*.ts'], {base: params.dependencyPath()})
-                .pipe(gulp.dest(path.join('model', 'ts', 'node_modules'), {cwd: dest}));
+                    .pipe(gulp.dest(path.join('model', 'ts', 'node_modules'), {cwd: dest}));
         })
 
-        // unpack different things into -api-dependencies/ts keeping the original folder structure.
-        // the ts subdirectory is important because the front-end only understands dependencies under /ts/ dir.
+        // unpack dependencies under -api-dependencies/ts keeping the original folder structure.
+        // NOTE: the 'ts' subdirectory is important because the front-end only understands dependencies under /ts/ dir.
+        // apikana-defaults.ts is a special case. This file has to be copied also under node_modules/apikana/ directory.
         task('unpack-models', ['cleanup-dist'], function () {
             return merge(
                 unpack('dist/model', 'json-schema-v3', '**/*.json'),
                 unpack('dist/model', 'json-schema-v4', '**/*.json'),
                 unpack('dist/ui', 'style', '**/*', true),
                 unpack('dist/model', 'ts', '**/*.ts'),
-                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath}).pipe(gulp.dest('apikana', {cwd: dependencyPath}))
+                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath})
+                    .pipe(gulp.dest(path.join('ts','apikana'), {cwd: dependencyPath})),
+                // apikana-defaults.ts is a special case. This file has to be copied also under node_modules/apikana/ directory.
+                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath})
+                    .pipe(gulp.dest('apikana', {cwd: path.join(dependencyPath, '..')}))
             );
         });
 
         // copies files keeping the original structure. -api-dependencies is ignored because is the target (paste) directory.
+        // target of all dependencies is -api-dependencies/ts directory!
         function unpack(baseDir, subDir, pattern, absolute) {
             return gulp.src(['!./**/-api-dependencies/**/*', './**/node_modules/**/' + baseDir + '/' + subDir + '/' + pattern], {base: 'node_modules'})
-                .pipe(gulp.dest(path.join(params.dependencyPath())));
+                .pipe(gulp.dest(path.join(params.dependencyPath(), 'ts')));
         }
 
         // TODO why should a dependency overwrite a local definition?
