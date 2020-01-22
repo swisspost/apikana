@@ -318,52 +318,44 @@ module.exports = {
             return gulp.src('**/*', {cwd: source}).pipe(gulp.dest('src', {cwd: uiPath}));
         });
 
-        function getModelDirs(dir, folders) {
-            folders.push(dir.replace(/\\/g, '/')+'/*');
-            var files = fs.readdirSync(dir);
-            files.forEach(file => {
-                let fullPath = path.join(dir, file);
-                if (fs.lstatSync(fullPath).isDirectory()) {
-                    folders = getModelDirs(fullPath, folders);
-                }
-            });
-            return folders;
-        }
-
+        // copy local defined models to dist directory keeping the local folder structure.
         task('copy-ts-model', ['cleanup-dist', 'read-rest-api'], function () {
-            var folders = getModelDirs(path.join(source, 'ts'), []);
-            folders.forEach(folder => {
-                log.info('Copying models in:', colors.magenta(path.relative(source, folder)), 'folder to', colors.magenta('dist/model/ts/'));
-                gulp.src(folder, {base: path.join(source, 'ts')}).pipe(gulp.dest('model/ts/', {cwd: dest}));
-            });
-            return emptyStream();
+           return gulp.src([path.join(source, 'ts') + '/**/*.ts'], {base: source})
+                .pipe(gulp.dest('model', {cwd: dest}));
         });
 
+        // copy unpacked dependencies to node_modules in dist directory so it is possible to re-use the objects.
         task('copy-ts-deps', ['unpack-models'], function() {
-            return gulp.src(params.dependencyPath()+'/ts/**/*.ts').pipe(gulp.dest('model/ts/node_modules/', {cwd: dest}));
-        })
+            return merge(
+                    gulp.src([params.dependencyPath()+'/**/*.ts'], {base: params.dependencyPath()})
+                        .pipe(gulp.dest(path.join('model', 'ts', 'node_modules'), {cwd: dest})),
+                    gulp.src([params.dependencyPath()+'/**/*.ts'], {base: path.join(params.dependencyPath(), 'ts')})
+                        .pipe(gulp.dest(path.join('model', 'ts', 'node_modules'), {cwd: dest}))
+                    );
+        });
 
+        // unpack dependencies under -api-dependencies/ts keeping the original folder structure.
+        // NOTE: the 'ts' subdirectory is important because the front-end only understands dependencies under /ts/ dir.
+        // apikana-defaults.ts is a special case. This file has to be copied also under node_modules/apikana/ directory.
         task('unpack-models', ['cleanup-dist'], function () {
             return merge(
                 unpack('dist/model', 'json-schema-v3', '**/*.json'),
                 unpack('dist/model', 'json-schema-v4', '**/*.json'),
                 unpack('dist/ui', 'style', '**/*', true),
                 unpack('dist/model', 'ts', '**/*.ts'),
-                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath}).pipe(gulp.dest('ts/apikana', {cwd: dependencyPath}))
+                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath})
+                    .pipe(gulp.dest(path.join('ts','apikana'), {cwd: dependencyPath})),
+                // apikana-defaults.ts is a special case. This file has to be copied also under node_modules/apikana/ directory.
+                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath})
+                    .pipe(gulp.dest('apikana', {cwd: path.join(dependencyPath, '..')}))
             );
         });
 
+        // copies files keeping the original structure. -api-dependencies is ignored because is the target (paste) directory.
+        // target of all dependencies is -api-dependencies/ts directory!
         function unpack(baseDir, subDir, pattern, absolute) {
-            return gulp.src('**/node_modules/*/' + baseDir + '/' + subDir + '/' + pattern)
-                .pipe(rename(function (path) {
-                    var dir = path.dirname.replace(/\\/g, '/');
-                    dir = dir.substring(dir.lastIndexOf('node_modules/') + 13);
-                    var moduleEnd = dir.indexOf('/');
-                    var pathStart = dir.indexOf(subDir);
-                    dir = absolute ? dir.substring(pathStart) : (subDir + '/' + dir.substring(0, moduleEnd));
-                    path.dirname = dir;
-                }))
-                .pipe(gulp.dest(dependencyPath));
+            return gulp.src(['!./**/-api-dependencies/**/*', './**/node_modules/**/' + baseDir + '/' + subDir + '/' + pattern], {base: 'node_modules'})
+                .pipe(gulp.dest(path.join(params.dependencyPath(), 'ts')));
         }
 
         // TODO why should a dependency overwrite a local definition?
