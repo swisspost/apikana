@@ -10,7 +10,7 @@ var refParser = require('json-schema-ref-parser');
 
 module.exports = {
     mkdirs: mkdirs,
-    generate: function (tsconfig, files, dest, dependencyPath) {
+    generate: function (tsconfig, files, modelnames, dest, dependencyPath) {
         mkdirs(dest);
         var schemas = schemaGen.generate(tsconfig, files);
         var schemaInfos = schemaInfos(schemas);
@@ -32,20 +32,6 @@ module.exports = {
                     schema.javaType = params.javaPackage() + '.' + schema.id;
                     schema.javaInterfaces = ['java.io.Serializable'];
                 }
-
-                files.forEach(rootModel => {
-                    if(path.relative(schema.extra.filename, rootModel.toLowerCase()) === '') {
-                        // all schemas which comes from a root model
-                        var filename = rootModel.replace(/^.*[\\\/]/, '');
-                        filename = filename.substring(0, filename.length-3);
-                        if(name.toLowerCase() === filename.toLowerCase().replace(/-/g, '')) {
-                            // only schemas name with matches rootmodel filename
-                            // collect all schemas name of root models while generating them.
-                            rootSchemas.push(name);
-                        }
-                    }
-                });
-
                 delete schema.extra;
 
                 // If there are no required fields, the required attribute must be undefined (NOT an empty array)
@@ -62,7 +48,7 @@ module.exports = {
 
         // after generating v3 and v4, generate complete standalone schemas.
         // loop through collected schemas name of root models and generate complete standalone schemas.
-        rootSchemas.forEach(rootSchema => {
+        modelnames.forEach(rootSchema => {
             generateCompleteStandalone(rootSchema, 'v3');
             generateCompleteStandalone(rootSchema, 'v4');
         });
