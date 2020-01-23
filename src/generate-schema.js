@@ -34,9 +34,15 @@ module.exports = {
                 }
 
                 files.forEach(rootModel => {
-                    if(normPath(schema.extra.filename.toLowerCase()) === normPath(rootModel.toLowerCase())) {
-                        // collect all schemas name of root models while generating them.
-                        rootSchemas.push(name);
+                    if(path.relative(schema.extra.filename, rootModel.toLowerCase()) === '') {
+                        // all schemas which comes from a root model
+                        var filename = rootModel.replace(/^.*[\\\/]/, '');
+                        filename = filename.substring(0, filename.length-3);
+                        if(name.toLowerCase() === filename.toLowerCase().replace(/-/g, '')) {
+                            // only schemas name with matches rootmodel filename
+                            // collect all schemas name of root models while generating them.
+                            rootSchemas.push(name);
+                        }
                     }
                 });
 
