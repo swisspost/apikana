@@ -6,7 +6,7 @@ var fse = require('fs-extra');
 var path = require('path');
 var schemaGen = require('./schema-gen');
 var params = require('./params');
-const refParser = require("json-schema-ref-parser");
+var refParser = require('json-schema-ref-parser');
 
 module.exports = {
     mkdirs: mkdirs,
