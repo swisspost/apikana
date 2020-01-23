@@ -14,7 +14,6 @@ module.exports = {
         mkdirs(dest);
         var schemas = schemaGen.generate(tsconfig, files);
         var schemaInfos = schemaInfos(schemas);
-        var rootSchemas = [];
         for (var name in schemas) {
             var info = schemaInfos[name];
             if (info.source === '') {

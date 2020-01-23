@@ -90,6 +90,10 @@ describe('generating', () => {
                     new Promise(resolve =>
                         gulp.src('dist/model/json-schema-v4/*.json', {cwd: depDir})
                             .pipe(gulp.dest('node_modules/-api-dependencies/ts/wild-pet-rest-api/dist/model/json-schema-v4', {cwd: mainDir})).on('finish', resolve)))
+                .then(() =>
+                    new Promise(resolve =>
+                        gulp.src('dist/model/json-schema-v3/*.json', {cwd: depDir})
+                            .pipe(gulp.dest('node_modules/-api-dependencies/ts/wild-pet-rest-api/dist/model/json-schema-v3', {cwd: mainDir})).on('finish', resolve)))
                 .then(mainSandbox.generate));
 
 
