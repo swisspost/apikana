@@ -77,7 +77,7 @@ describe('generating', () => {
                     }))
                 .then(result => { mainDir = result.dir })
                 .then(() => new Promise(resolve => fs.writeFile(`${mainDir}/src/ts/pet.ts`,`
-                import {Pet} from "wild-pet-rest-api/pet";
+                import {Pet} from "wild-pet-rest-api/dist/model/ts/pet";
                 export interface PetList {
                     pets: Pet[]
                 }
@@ -85,11 +85,15 @@ describe('generating', () => {
                 .then(() =>
                     new Promise(resolve =>
                         gulp.src('src/ts/**/*.ts', {cwd: depDir})
-                            .pipe(gulp.dest('node_modules/-api-dependencies/ts/wild-pet-rest-api', {cwd: mainDir})).on('finish', resolve)))
+                            .pipe(gulp.dest('node_modules/-api-dependencies/ts/wild-pet-rest-api/dist/model/ts', {cwd: mainDir})).on('finish', resolve)))
                 .then(() =>
                     new Promise(resolve =>
                         gulp.src('dist/model/json-schema-v4/*.json', {cwd: depDir})
-                            .pipe(gulp.dest('node_modules/-api-dependencies/json-schema-v4/wild-pet-rest-api', {cwd: mainDir})).on('finish', resolve)))
+                            .pipe(gulp.dest('node_modules/-api-dependencies/ts/wild-pet-rest-api/dist/model/json-schema-v4', {cwd: mainDir})).on('finish', resolve)))
+                .then(() =>
+                    new Promise(resolve =>
+                        gulp.src('dist/model/json-schema-v3/*.json', {cwd: depDir})
+                            .pipe(gulp.dest('node_modules/-api-dependencies/ts/wild-pet-rest-api/dist/model/json-schema-v3', {cwd: mainDir})).on('finish', resolve)))
                 .then(mainSandbox.generate));
 
 

@@ -6,10 +6,11 @@ var fse = require('fs-extra');
 var path = require('path');
 var schemaGen = require('./schema-gen');
 var params = require('./params');
+var refParser = require('json-schema-ref-parser');
 
 module.exports = {
     mkdirs: mkdirs,
-    generate: function (tsconfig, files, dest, dependencyPath) {
+    generate: function (tsconfig, files, modelnames, dest, dependencyPath) {
         mkdirs(dest);
         var schemas = schemaGen.generate(tsconfig, files);
         var schemaInfos = schemaInfos(schemas);
@@ -42,6 +43,28 @@ module.exports = {
                 convertToV3(schema, v3);
                 fs.writeFileSync(schemaFile(name, 'v3'), JSON.stringify(schema, null, 2));
             }
+        }
+
+        // after generating v3 and v4, generate complete standalone schemas.
+        // loop through collected schemas name of root models and generate complete standalone schemas.
+        modelnames.forEach(rootSchema => {
+            generateCompleteStandalone(rootSchema, 'v3');
+            generateCompleteStandalone(rootSchema, 'v4');
+        });
+
+        /**
+         * Generates a single standalone complete schema for the rootSchema passed.
+         *
+         */
+        function generateCompleteStandalone(rootSchema, version) {
+            var pathToJson = schemaFile(rootSchema, version);
+            refParser.dereference(pathToJson, (err, schema) => {
+                if(err) {
+                    log.error(err);
+                 } else {
+                    fs.writeFileSync(schemaFile(rootSchema, version+'-full'), JSON.stringify(schema, null, 2));
+                 }
+            });
         }
 
         function extendsWithoutOwnProperties(schema) {
@@ -198,7 +221,9 @@ module.exports = {
 
 function mkdirs(dest) {
     fse.mkdirsSync(schemaDir(dest, 'v3'));
+    fse.mkdirsSync(schemaDir(dest, 'v3-full'));
     fse.mkdirsSync(schemaDir(dest, 'v4'));
+    fse.mkdirsSync(schemaDir(dest, 'v4-full'));
 }
 
 function schemaDir(dest, version) {

@@ -1,6 +1,6 @@
 {
   "name": "apikana",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "description": "Integrated tools for REST API design - ｱﾋﾟ",
   "main": "index.js",
   "bin": {
@@ -50,6 +50,7 @@
     "gulp-rename": "1.2.2",
     "gulp-replace": "0.5.4",
     "json-schema-faker": "0.5.0-rc19",
+    "json-schema-ref-parser": "6.1.0",
     "live-plugin-manager": "0.13.2",
     "merge-stream": "1.0.1",
     "node-http-server": "6.2.1",

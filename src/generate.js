@@ -20,6 +20,7 @@ const Stream = require('stream');
 const StreamUtils = require('./util/stream-utils');
 const PathV3Generator = require('./path-v3-generator/path-v3-generator');
 const JavaGen = require('./java-gen');
+const {JSONPath} = require('jsonpath-plus');
 
 module.exports = {
     generate: function (source, dest, done) {
@@ -195,6 +196,7 @@ module.exports = {
         });
 
         var restApi, modelFiles = [];
+        var modelNames = [];
         task('read-rest-api', ['copy-package'], function () {
             if (restApi) {
                 return emptyStream();
@@ -224,6 +226,9 @@ module.exports = {
                             }
                         }
                     }
+                    JSONPath({path:'$.paths..schema.$ref', json: restApi, callback: (data) => {
+                        modelNames.push(data.replace('#/definitions/', ''));
+                    }});
                     if (modelFiles.length > 0) {
                         params.models(path.dirname(modelFiles[0]));
                     }
@@ -248,7 +253,7 @@ module.exports = {
             }
             return collector.on('finish', function () {
                 var tsconfig = path.resolve(source, params.models(), 'tsconfig.json');
-                require('./generate-schema').generate(tsconfig, modelFiles, dest, params.dependencyPath());
+                require('./generate-schema').generate(tsconfig, modelFiles, modelNames, dest, params.dependencyPath());
             });
         });
 
