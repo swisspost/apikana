@@ -14,7 +14,8 @@
   "dependencies": {
   },
   "devDependencies": {
-    "apikana": "{{ apikanaVersion }}"
+    "apikana": "{{ apikanaVersion }}",
+    "apikana-defaults": "{{ version }}"
   },
   "customConfig": {{{ json @root }}}
 }
