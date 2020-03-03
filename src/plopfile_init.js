@@ -178,7 +178,7 @@ module.exports = function (plop, cfg) {
                     // by default add default files directly from apikana
                     actions.push({
                         type: 'addMany',
-                        data: { apikanaVersion },
+                        data: { apikanaVersion, version: defaults && defaults.version },
                         globOptions: {dot: true},
                         destination: slash(path.join(currentPath, answers.projectName)),
                         base: slash(path.join(__dirname, 'scaffold', 'template', key)),
@@ -189,7 +189,7 @@ module.exports = function (plop, cfg) {
                     // overwrite all matching if apikana-defaults contains any
                     actions.push({
                         type: 'addMany',
-                        data: { apikanaVersion },
+                        data: { apikanaVersion, version: defaults && defaults.version },
                         globOptions: {dot: true},
                         destination: slash(path.join(currentPath, answers.projectName)),
                         base: slash(path.join(os.tmpdir(),'apikana-plugin-packages', 'apikana-defaults', 'templates', 'init', key)),
