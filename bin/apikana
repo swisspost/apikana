@@ -125,7 +125,9 @@ function generate() {
     var defaultsVersion = packageJSON.devDependencies['apikana-defaults'];
 
     if (defaultsVersion) {
-        process.stdout.write("Using defaults:  " + defaultsVersion + "\n");
+        if(defaultsVersion != "0.0.0") {
+            process.stdout.write("Using defaults " + defaultsVersion + "\n");
+        }
         var defaultsDir = path.join(process.cwd(), 'node_modules', 'apikana-defaults');
         var defaults = require(defaultsDir);
         defaults.dir = defaultsDir
@@ -135,14 +137,14 @@ function generate() {
         manager.install('apikana-defaults').then((e) => {
             process.stdout.write("found "+e.version+"\n");
             var defaults = manager.require('apikana-defaults');
-            var defaultsDir = path.join(os.tmpdir(), 'apikana-plugin-packages', 'apikana-defaults');            
+            var defaultsDir = path.join(os.tmpdir(), 'apikana-plugin-packages', 'apikana-defaults');
             defaults.dir = defaultsDir;
             var version = JSON.parse(fs.readFileSync(path.join(defaultsDir, 'package.json'))).version;
             if(version != "0.0.0") {
-                log(colors.yellow(`WARNING: The build is unpredictable because of an implicit dependency.`));
-                log(colors.yellow(`         It may break anytime when a new version of the dependency is available in the registry.`));
-                log(colors.yellow(`         To fix this, freeze the dependency in your API project:`));
-                log(colors.yellow(`           npm install apikana-defaults@${version} --save-dev`));
+                log(colors.yellow(`WARNING: | The build is unpredictable because of an implicit dependency.`));
+                log(colors.yellow(`         | It may break anytime when a new version of the dependency is available in the registry.`));
+                log(colors.yellow(`         | To fix this, freeze the dependency in your API project:`));
+                log(colors.yellow(`         |  npm install apikana-defaults@${version} --save-dev`));
             }
             run(defaults);
         });
