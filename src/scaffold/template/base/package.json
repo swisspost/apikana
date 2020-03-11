@@ -17,5 +17,5 @@
     "apikana": "{{ apikanaVersion }}",
     "apikana-defaults": "{{ version }}"
   },
-  "customConfig": {{{ json @root }}}
+  "customConfig": {{{ json customConfig }}}
 }
