@@ -11,5 +11,5 @@ log("        "+gray("K")+white("AN")+"           "+gray("K")+white("AN")+"      
 log("        "+white("ANA")+"           "+gray("A")+white("NA")+"                         ");
 log("       "+gray("A")+white("NA")+"            "+gray("N")+white("AA")+"                         ");
 log("     "+gray("K")+white("AN")+gray("A")+"              "+white("API")+gray("KANAAPI")+"                 ");
-log("    "+gray("K")+white("A")+gray("N")+"                 "+gray("IKANAAPIKA")+"        "+red('apikana '+packge.version));
+log("    "+gray("K")+white("A")+gray("N")+"                 "+gray("IKANAAPIKA")+"        "+colors.bold(red('apikana '+packge.version)));
 log();

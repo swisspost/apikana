@@ -5,6 +5,8 @@ const slash = require('slash');
 
 module.exports = function (plop, cfg) {
     const { defaults } = cfg;
+    const defaultsDir = defaults && defaults.dir || path.join(os.tmpdir(), 'apikana-plugin-packages', 'apikana-defaults')
+
     const currentPath = process.cwd();
     plop.setHelper('ConvertVersion', (version) => {
         return version.replace(/-(?!.*-).*/, "-SNAPSHOT");
@@ -56,8 +58,8 @@ module.exports = function (plop, cfg) {
                     type: 'addMany',
                     globOptions: {dot: true},
                     destination: currentPath,
-                    base: slash(path.join(os.tmpdir(),'apikana-plugin-packages', 'apikana-defaults', 'templates', 'start', plugin)),
-                    templateFiles: slash(path.join(os.tmpdir(),'apikana-plugin-packages', 'apikana-defaults', 'templates', 'start', plugin, '**')),
+                    base: slash(path.join(defaultsDir, 'templates', 'start', plugin)),
+                    templateFiles: slash(path.join(defaultsDir, 'templates', 'start', plugin, '**')),
                     force: true
                 });
 

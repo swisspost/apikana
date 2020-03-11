@@ -12,7 +12,7 @@ const slash = require('slash');
 
 module.exports = {
     generateSample: function (source, dest, typeNames) {
-        
+
         function readdir(basedir, relativeTo) {
             var res = [];
             readdir(basedir, res);
@@ -63,7 +63,7 @@ module.exports = {
                     });
             });
         }
-       
+
         function readAllJson(pathDest) {
             var allJson = [];
             if(nonEmptyDir(pathDest)) {
@@ -74,27 +74,30 @@ module.exports = {
 
         task('generate-sample', function() {
             var modelsPath = path.join(dest, 'model', 'json-schema-v4');
-            
+
             var allSamples = readAllJson(path.join(source, 'samples'));
             var allModels = readAllJson(modelsPath);
-            
+
             var modelInfo = [];
             allModels.forEach(model => {
-                var modelPath = path.join(modelsPath, model)
-                var modelId = require(modelPath).id;
-                modelInfo.push({id: modelId, path: modelPath})
+                var modelPath = path.join(modelsPath, model);
+                let modelDetail = require(modelPath);
+                // do not generate samples for enum types
+                if(!modelDetail.enum){
+                    modelInfo.push({id: modelDetail.id, path: modelPath});
+                }
             });
 
-            // if not typenames defined, then get all the type names available
+            // if no typename defined, then get all the type names available
             if(typeNames.length === 0) {
                 typeNames = modelInfo.map(model => model.id);
             }
 
             typeNames.forEach(typeName => {
                 if(allSamples.indexOf(`${typeName}.json`) > -1 | allSamples.indexOf(`generated-${typeName}.json`) > -1) {
-                    log.warn('Sample for type ' + typeName + ' already exists!');       
+                    log.warn('Sample for type ' + typeName + ' already exists!');
                 } else if(modelInfo.find(info => info.id === typeName) === undefined) {
-                    log.error('No model found for type ' + typeName + '.');    
+                    log.error('No model found for type ' + typeName + '.');
                 } else {
                     log.info('Generate sample for type: ' + typeName + '');
                     var modelData = modelInfo.find(info => info.id === typeName)
@@ -105,7 +108,7 @@ module.exports = {
                         }));
                 }
             });
-            
+
             return emptyStream();
         });
 
