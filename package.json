@@ -39,6 +39,9 @@
     "url": "https://github.com/swisspush/apikana/issues"
   },
   "homepage": "https://github.com/swisspush/apikana#readme",
+  "engines": {
+    "node": "<11.0.0"
+  },
   "dependencies": {
     "ajv": "6.10.2",
     "ansi-colors": "1.0.1",

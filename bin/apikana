@@ -10,12 +10,17 @@ var argc = process.argv.length;
 
 require('../src/logo');
 
+if(!process.version.startsWith('v10')) {
+    log(colors.bold(colors.red('Expected node version v10.x but current version is ' + process.version)));
+    process.exit(1);
+}
+
 if (argc === 2) {
     help();
 } else {
     if (params.minVersion() && compareVersions(params.minVersion(), packge.version) > 0) {
-        log(colors.red('Expected minimum version'), params.minVersion(), colors.red('but current version is'), packge.version);
-        log(colors.red('Please update the global apikana installation:'), 'npm install -g apikana');
+        log(colors.gray('Expected minimum version'), params.minVersion(), colors.gray('but current version is'), packge.version);
+        log(colors.gray('Please update the global apikana installation:'), 'npm install -g apikana');
         process.exit(1);
     }
     switch (process.argv[2]) {
@@ -43,44 +48,46 @@ if (argc === 2) {
 }
 
 function help() {
-    log(colors.magenta('apikana help'), '                             Show this help.');
-    log(colors.magenta('apikana init'), '                             Initialize a new API project.');
-    log(colors.magenta('apikana start'), colors.blue('[source]'), colors.red('[options]'), 'Generate JSON schemas and HTML documentation from the API.');
-    log(colors.blue('               source'), '                    Directory containing the APIs and models. Default: src');
-    log(colors.red('             --api=<file>'), '                The main api file (yaml or json). Default: openapi/api.yaml');
-    log(colors.red('             --models=<path>'), '             The directory containing the models, if no api file is given. Default: ts');
-    log(colors.red('             --style=<path>'), '              The directory containing css files for the swagger GUI. Default: style');
-    log(colors.red('             --config=<file>'), '             Read additional options from a file in JSON format.');
-    log(colors.red('             --javaPackage=<name>'), '        Java package to use.');
-    log(colors.red('             --pathPrefix=<prefix>'), '       The common prefix for api paths to be used in generated *Paths files. Default: none');
-    log(colors.red('             --basePath=<path>'), '           Override basePath specified in api file');
-    log(colors.red('             --generate1stGenPaths=<boolean>'),'\n' +
-                       '                                          Enable/disable generator for 1st generation path constants.\n' +
-                       '                                          Since: v0.5.1\n' +
-                       '                                          Default: true (enabled)');
-    log(colors.red('             --generate2ndGenPaths=<boolean>'),'\n' +
-                       '                                          Enable/disable generator for 2nd generation path constants.\n' +
-                       '                                          Since: v0.5.1\n' +
-                       '                                          Default: true (enabled)');
-    log(colors.red('             --generate3rdGenPaths=<boolean>'),'\n' +
-                       '                                          Enable/disable generator for 3rd generation path constants. This feature is\n' +
-                       '                                          experimental! Therefore You\'ve to expect breaking changes when using it. May\n' +
-                       '                                          this feature will become more stable in future and may the default will switch\n' +
-                       '                                          to \'enabled\'.\n' +
-                       '                                          Since: v0.5.0\n' +
-                       '                                          Default: false (disabled)');
-    log(colors.red('             --deploy=<boolean>'), '          If the sources should be copied into the target directory. Default: false');
-    log(colors.red('             --dependencyPath=<path>'), '     Directory containing API dependencies. Default: node_modules/-api-dependencies');
-    log(colors.red('             --port=<number>'), '             Port to serve the HTML documentation. Default: 8333');
-    log(colors.red('             --serve=<boolean>'), '           If the HTML documentation should be served over HTTP. Default: true');
-    log(colors.red('             --openBrowser=<boolean>'), '     If the browser should be opened at first start. Default: true');
-    log(colors.red('             --minVersion=<version>'), '      Fail if the current apikana version is lower than expected.');
-    log(colors.red('             --log=<level>'), '               Set log level (debug, info, warn, error). Default: info');
-    log(colors.magenta('apikana stop '), colors.red('[options]'), '                  Stop a running server.');
-    log(colors.red('             --port=<number>'), '             Port of the server to be stopped. Default: 8333');
+    log(colors.bold('apikana help'), '                             Show this help.');
+    log(colors.bold('apikana init'), '                             Initialize a new API project.');
+    log(colors.bold('apikana start'), ' [source] [options]         Generate JSON schemas and HTML documentation from the API.');
+    log('               source', '                    Directory containing the APIs and models. Default: src');
+    log(colors.gray('             --api=<file>'), '                The main api file (yaml or json). Default: openapi/api.yaml');
+    log(colors.gray('             --models=<path>'), '             The directory containing the models, if no api file is given.\n' +
+                    '                                                     Default: ts');
+    log(colors.gray('             --style=<path>'), '              The directory containing css files for the swagger GUI.\n' +
+                    '                                                     Default: style');
+    log(colors.gray('             --config=<file>'), '             Read additional options from a file in JSON format.');
+    log(colors.gray('             --javaPackage=<name>'), '        Java package to use.');
+    log(colors.gray('             --pathPrefix=<prefix>'), '       The common prefix for api paths to be used in generated *Paths files.\n'+
+                    '                                                     Default: none');
+    log(colors.gray('             --basePath=<path>'), '           Override basePath specified in api file');
+    log(colors.gray('             --generate1stGenPaths=<boolean>'),'\n' +
+                    '                                                     Enable/disable generator for 1st generation path constants.\n' +
+                    '                                                     Since: v0.5.1\n' +
+                    '                                                     Default: true (enabled)');
+    log(colors.gray('             --generate2ndGenPaths=<boolean>'),'\n' +
+                    '                                                     Enable/disable generator for 2nd generation path constants.\n' +
+                    '                                                     Since: v0.5.1\n' +
+                    '                                                     Default: true (enabled)');
+    log(colors.gray('             --generate3rdGenPaths=<boolean>'),'\n' +
+                    '                                                     Enable/disable generator for 3rd generation path constants.\n' +
+                    '                                                     Since: v0.5.0\n' +
+                    '                                                     Default: false (disabled)');
+    log(colors.gray('             --deploy=<boolean>'), '          If the sources should be copied into the target directory. \n'+
+                    '                                                     Default: false');
+    log(colors.gray('             --dependencyPath=<path>'), '     Directory containing API dependencies.\n'+
+                    '                                                     Default: node_modules/-api-dependencies');
+    log(colors.gray('             --port=<number>'), '             Port to serve the HTML documentation. Default: 8333');
+    log(colors.gray('             --serve=<boolean>'), '           If the HTML documentation should be served over HTTP. Default: true');
+    log(colors.gray('             --openBrowser=<boolean>'), '     If the browser should be opened at first start. Default: true');
+    log(colors.gray('             --minVersion=<version>'), '      Fail if the current apikana version is lower than expected.');
+    log(colors.gray('             --log=<level>'), '               Set log level (debug, info, warn, error). Default: info');
+    log(colors.bold('apikana stop '), colors.gray('[options]'), '                  Stop a running server.');
+    log(colors.gray('             --port=<number>'), '             Port of the server to be stopped. Default: 8333');
 
-    log(colors.magenta('apikana create-sample '), colors.red('[typeName]'), '        Generate samples for the space separated typeNames.');
-    log(colors.magenta('apikana validate-samples'), '                 Validates the samples usind the available types.');
+    log(colors.bold('apikana create-sample '), colors.gray('[typeName]'), '        Generate samples for the space separated typeNames.');
+    log(colors.bold('apikana validate-samples'), '                 Validates the samples usind the available types.');
 }
 
 function createSample() {
@@ -141,10 +148,10 @@ function generate() {
             defaults.dir = defaultsDir;
             var version = JSON.parse(fs.readFileSync(path.join(defaultsDir, 'package.json'))).version;
             if(version != "0.0.0") {
-                log(colors.yellow(`WARNING: | The build is unpredictable because of an implicit dependency.`));
-                log(colors.yellow(`         | It may break anytime when a new version of the dependency is available in the registry.`));
-                log(colors.yellow(`         | To fix this, freeze the dependency in your API project:`));
-                log(colors.yellow(`         |  npm install apikana-defaults@${version} --save-dev`));
+                log(colors.bold(`WARNING: | The build is unpredictable because of an implicit dependency.`));
+                log(colors.bold(`         | It may break anytime when a new version of the dependency is available in the registry.`));
+                log(colors.bold(`         | To fix this, freeze the dependency in your API project:`));
+                log(colors.bold(`         |  npm install apikana-defaults@${version} --save-dev`));
             }
             run(defaults);
         });
