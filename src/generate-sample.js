@@ -82,8 +82,8 @@ module.exports = {
             allModels.forEach(model => {
                 var modelPath = path.join(modelsPath, model);
                 let modelDetail = require(modelPath);
-                // do not generate samples for enum types
-                if(!modelDetail.enum){
+                // generate samples only for objects.
+                if(modelDetail.type === 'object'){
                     modelInfo.push({id: modelDetail.id, path: modelPath});
                 }
             });
@@ -115,7 +115,7 @@ module.exports = {
         function generateFakeData(file, typeName) {
             var json = require(file.path);
 
-            jsf.option({failOnInvalidTypes: true, fileOnInvalidFormat: true, fillProperties:true});
+            jsf.option({alwaysFakeOptionals: true, failOnInvalidTypes: true, failOnInvalidFormat: true, fillProperties:true});
 
             jsf.resolve(json, file.base).then(sample => {
                 sample['$schema'] = slash(path.relative(path.join(source, 'samples'), file.path));
