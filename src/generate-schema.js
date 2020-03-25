@@ -31,6 +31,9 @@ module.exports = {
                     schema.javaType = params.javaPackage() + '.' + schema.id;
                     schema.javaInterfaces = ['java.io.Serializable'];
                 }
+                if (params.dotnetNamespace()) {
+                    schema.dotnetNamespace = params.dotnetNamespace();
+                }
                 delete schema.extra;
 
                 // If there are no required fields, the required attribute must be undefined (NOT an empty array)

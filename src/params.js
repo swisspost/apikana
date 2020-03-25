@@ -57,6 +57,10 @@ module.exports = {
     javaPackage: function () {
         return env.javaPackage || packageJson.customConfig && packageJson.customConfig.javaPackage;
     },
+    dotnetNamespace: function () {
+        return env.dotnetNamespace || packageJson.customConfig && packageJson.customConfig.dotnetNamespace;
+    },
+
     dependencyPath: function () {
         return env.dependencyPath || 'node_modules/-api-dependencies';
     },
