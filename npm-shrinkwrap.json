@@ -1,6 +1,6 @@
 {
   "name": "apikana",
-  "version": "0.7.5",
+  "version": "0.7.7",
   "lockfileVersion": 1,
   "requires": true,
   "dependencies": {
@@ -2629,38 +2629,21 @@
       }
     },
     "json-schema-faker": {
-      "version": "0.5.0-rc19",
-      "integrity": "sha1-GF2AkFxA/ak79Exh8J6p2Iemv2k=",
+      "version": "0.5.0-rc23",
+      "integrity": "sha1-9s+rOQ5Cmx9XrIMZlIBDnbYJYvo=",
       "requires": {
         "json-schema-ref-parser": "^6.1.0",
         "jsonpath-plus": "^1.0.0",
         "randexp": "^0.5.3"
-      },
-      "dependencies": {
-        "json-schema-ref-parser": {
-          "version": "6.1.0",
-          "integrity": "sha1-MK80rqtb7gQx2oBdrA6yG1dL9j0=",
-          "requires": {
-            "call-me-maybe": "^1.0.1",
-            "js-yaml": "^3.12.1",
-            "ono": "^4.0.11"
-          }
-        },
-        "ono": {
-          "version": "4.0.11",
-          "integrity": "sha1-x/Qgmz45bopE70O5ztx/XXkdIh0=",
-          "requires": {
-            "format-util": "^1.0.3"
-          }
-        }
       }
     },
     "json-schema-ref-parser": {
       "version": "6.1.0",
+      "integrity": "sha1-MK80rqtb7gQx2oBdrA6yG1dL9j0=",
       "requires": {
         "call-me-maybe": "^1.0.1",
-        "js-yaml": "^3.13.1",
-        "ono": "^6.0.0"
+        "js-yaml": "^3.12.1",
+        "ono": "^4.0.11"
       }
     },
     "json-schema-traverse": {
@@ -4047,7 +4030,8 @@
     },
     "shonkwrap": {
       "version": "1.3.0",
-      "integrity": "sha1-sqp2AoU8y6F3HbqJ85vvxuLURRc="
+      "integrity": "sha1-sqp2AoU8y6F3HbqJ85vvxuLURRc=",
+      "dev": true
     },
     "sigmund": {
       "version": "1.0.1",

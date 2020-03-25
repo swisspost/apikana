@@ -163,7 +163,8 @@ module.exports = function (plop, cfg) {
             when: answers => answers.mqs == 'Other',
         }],
         actions: (answers) => {
-
+            answers.customConfig = Object.assign({}, answers);
+            delete answers.customConfig.npmPackage;
             var actions = [];
 
             var summary = Object.entries({
