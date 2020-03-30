@@ -467,7 +467,11 @@ module.exports = {
                     fileToType[path.parse(file.path).base] = schema.id;
                     Object.assign(completeApi.definitions, schema.definitions);
                     delete schema.definitions;
+                    delete schema.additionalProperties;
                     delete schema.$schema;
+                    delete schema.javaType;
+                    delete schema.javaInterfaces;
+                    delete schema.dotnetNamespace;
                     completeApi.definitions[schema.id] = schema;
                     cb();
                 }))
@@ -483,8 +487,31 @@ module.exports = {
                     fs.writeFileSync(path.resolve(out, 'api.yaml'), yaml.stringify(restApi, 6, 2));
                     fs.writeFileSync(path.resolve(out, 'complete-api.json'), JSON.stringify(completeApi, null, 2));
                     fs.writeFileSync(path.resolve(out, 'complete-api.yaml'), yaml.stringify(completeApi, 6, 2));
+
+                    modelNames.forEach(modelName => {
+                        var fullSchema = Object.assign({}, completeApi.definitions[modelName]);
+                        fullSchema.$schema = 'http://json-schema.org/draft-04/schema#',
+                        fullSchema.definitions = resolveDefinitions(fullSchema.properties, completeApi.definitions)
+                        var fileName = modelName.replace(/([^^])([A-Z]+)/g, '$1-$2').toLowerCase() + '.json';
+                        var outputDir = path.resolve(dest, 'model/json-schema-v4-full')
+                        fse.mkdirsSync(outputDir);
+                        fs.writeFileSync(path.resolve(outputDir, fileName), JSON.stringify(fullSchema, 6, 2));
+                    });
                 });
         });
+
+        // Traverse the reference tree to keep only the needed definitions for the root schema
+        function resolveDefinitions(root, allDefinitions) {
+            var result = {};
+            traverse.forEach(root, function (value) {
+                if (this.key === '$ref') {
+                    var type = value.split('/').pop();
+                    result[type] = allDefinitions[type];
+                    Object.assign(result, resolveDefinitions(allDefinitions[type], allDefinitions));
+                }
+            });
+            return result;
+        }
 
         task('serve', ['inject-css'], function () {
             if (!params.serve()) {
