@@ -467,7 +467,6 @@ module.exports = {
                     fileToType[path.parse(file.path).base] = schema.id;
                     Object.assign(completeApi.definitions, schema.definitions);
                     delete schema.definitions;
-                    delete schema.additionalProperties;
                     delete schema.$schema;
                     delete schema.javaType;
                     delete schema.javaInterfaces;
