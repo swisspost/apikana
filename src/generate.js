@@ -489,12 +489,14 @@ module.exports = {
 
                     modelNames.forEach(modelName => {
                         var fullSchema = Object.assign({}, completeApi.definitions[modelName]);
-                        fullSchema.$schema = 'http://json-schema.org/draft-04/schema#',
-                        fullSchema.definitions = resolveDefinitions(fullSchema.properties, completeApi.definitions)
-                        var fileName = modelName.replace(/([^^])([A-Z]+)/g, '$1-$2').toLowerCase() + '.json';
-                        var outputDir = path.resolve(dest, 'model/json-schema-v4-full')
-                        fse.mkdirsSync(outputDir);
-                        fs.writeFileSync(path.resolve(outputDir, fileName), JSON.stringify(fullSchema, 6, 2));
+                        if(fullSchema.type == "object") {
+                            fullSchema.$schema = 'http://json-schema.org/draft-04/schema#',
+                            fullSchema.definitions = resolveDefinitions(fullSchema.properties, completeApi.definitions)
+                            var fileName = modelName.replace(/([^^])([A-Z]+)/g, '$1-$2').toLowerCase() + '.json';
+                            var outputDir = path.resolve(dest, 'model/json-schema-v4-full')
+                            fse.mkdirsSync(outputDir);
+                            fs.writeFileSync(path.resolve(outputDir, fileName), JSON.stringify(fullSchema, 6, 2));
+                        }
                     });
                 });
         });
