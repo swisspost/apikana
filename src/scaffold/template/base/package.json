@@ -1,6 +1,7 @@
 {
   "name": "{{ npmPackage }}",
   "version": "0.1.0-rc.1",
+  "majorVersion": "1",
   "description": "{{ title }}",
   "scripts": {
     "start": "apikana start src dist",
