@@ -1,6 +1,6 @@
 {
   "name": "apikana",
-  "version": "0.7.9",
+  "version": "0.8.0"
   "description": "Integrated tools for REST API design - ｱﾋﾟ",
   "main": "index.js",
   "bin": {
