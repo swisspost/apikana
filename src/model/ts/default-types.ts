@@ -7,7 +7,7 @@ export type Int=number // @type integer
 /**
  * <a href="https://swagger.io/docs/specification/data-models/data-types/#numbers">Number @type integer</a> as signed 64-bit long integer.
  */
-export type Long=number // @type integer @minimum -9223372036854775000 @maximum 9223372036854775000 @format long
+export type Long=number // @type integer @minimum -9223372036854775000 @maximum 9223372036854775000 @format int64
 
 /**
  * <a href="https://swagger.io/docs/specification/data-models/data-types/#string">String @format date-time</a>,
