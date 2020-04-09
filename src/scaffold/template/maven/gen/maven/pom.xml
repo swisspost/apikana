@@ -58,9 +58,11 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.2.0</version>
                 <configuration>
-                    <includes>{{pathCase customConfig.javaPackage }}/**</includes>
+                    <includes>
+                        <include>{{pathCase customConfig.javaPackage }}/**</include>
+                    </includes>
                 </configuration>
-            </plugin> 
+            </plugin>
             <plugin>
                 <inherited>true</inherited>
                 <groupId>org.apache.maven.plugins</groupId>

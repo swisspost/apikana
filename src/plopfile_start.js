@@ -11,7 +11,7 @@ module.exports = function (plop, cfg) {
     plop.setHelper('ConvertVersion', (version) => {
         return version.replace(/-(?!.*-).*/, "-SNAPSHOT");
     });
-    
+
     plop.setHelper('ConvertDependency', (dependencies) => {
         var result = [];
 
@@ -19,9 +19,9 @@ module.exports = function (plop, cfg) {
             const packageRoot = path.resolve(currentPath, 'node_modules', key);
             if(fs.existsSync(packageRoot)) {
                 const packageJSON = JSON.parse(fs.readFileSync(path.resolve(packageRoot, './package.json').toString()));
-                
+
                 if(packageJSON.hasOwnProperty('customConfig')) {
-                    
+
                     result.push({
                         groupId: packageJSON.customConfig.mavenGroupId,
                         artifactId: packageJSON.customConfig.projectName,
@@ -36,12 +36,22 @@ module.exports = function (plop, cfg) {
         return result;
     });
 
+    function getMajorVersion(version) {
+        let majorVersion = version.split(".", 1)[0];
+        if (majorVersion === "0") {
+            majorVersion = "1";
+        }
+        return majorVersion;
+    }
+
     plop.setGenerator('start', {
         description: '',
         prompts: [],
         actions: (packageJSON) =>  {
             var actions = [];
-            
+
+            packageJSON.customConfig.majorVersion = getMajorVersion(packageJSON.version);
+
             packageJSON.customConfig.plugins.map(plugin => {
                 // by default add default templates from apikana itself
                 actions.push({

@@ -15,6 +15,10 @@ module.exports = {
         var schemaInfos = schemaInfos(schemas);
         for (var name in schemas) {
             var info = schemaInfos[name];
+            if(!name.match(/^[A-Z_].*/)) {
+                log.error("Naming Check Error: Type name not capitalized "+name)
+                process.exit(1);
+            }
             if (info.source === '') {
                 log.info('Found definition', colors.magenta(name));
                 var schema = schemas[name];
