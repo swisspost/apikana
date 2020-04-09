@@ -36,11 +36,21 @@ module.exports = function (plop, cfg) {
         return result;
     });
 
+    function getMajorVersion(version) {
+        let majorVersion = version.split(".", 1)[0];
+        if (majorVersion === "0") {
+            majorVersion = "1";
+        }
+        return majorVersion;
+    }
+
     plop.setGenerator('start', {
         description: '',
         prompts: [],
         actions: (packageJSON) =>  {
             var actions = [];
+
+            packageJSON.customConfig.majorVersion = getMajorVersion(packageJSON.version);
 
             packageJSON.customConfig.plugins.map(plugin => {
                 // by default add default templates from apikana itself
