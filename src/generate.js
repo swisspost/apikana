@@ -21,7 +21,7 @@ const StreamUtils = require('./util/stream-utils');
 const PathV3Generator = require('./path-v3-generator/path-v3-generator');
 const JavaGen = require('./java-gen');
 const {JSONPath} = require('jsonpath-plus');
-const jsonSchemaAvro = require('jsonschema-avro')
+const jsonSchemaAvro = require('./generate-avro')
 
 module.exports = {
     generate: function (source, dest, done) {
