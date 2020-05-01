@@ -280,7 +280,7 @@ jsonSchemaAvro._convertCombinationOfProperty = (name, contents) => {
 
 jsonSchemaAvro._optionalizeType = (parent, required) => {
     if(!required) {
-        Object.assign(parent, {default: null, type: [ "null", parent.type ] });
+        Object.assign(parent, {default: null, type: [ "null" ].concat(parent.type) });
     }
 }
 
@@ -384,7 +384,7 @@ jsonSchemaAvro._convertEnumProperty = (name, contents, doc, required) => {
         if (valid) {
             var enumName = `${name}${jsonSchemaAvro._enumSuffix}`;
             if(enums[enumName] && sameArray(contents.enum, enums[enumName])) {
-                enumProp.type = enumName, required;
+                enumProp.type = enumName;
             } else {
                 if(enums[enumName]) {
                     var num = enumName.replace(/[^\d.]/g, ''); 
@@ -406,6 +406,9 @@ jsonSchemaAvro._convertEnumProperty = (name, contents, doc, required) => {
         } else {
             enumProp.type = "string"
         }
+    }
+    if(enumProp.type != "string") {
+        enumProp.type = [ enumProp.type, 'string' ]
     }
     jsonSchemaAvro._optionalizeType(enumProp, required)
     if (contents.hasOwnProperty('default')) {
