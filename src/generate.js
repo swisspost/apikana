@@ -21,6 +21,7 @@ const StreamUtils = require('./util/stream-utils');
 const PathV3Generator = require('./path-v3-generator/path-v3-generator');
 const JavaGen = require('./java-gen');
 const {JSONPath} = require('jsonpath-plus');
+const jsonSchemaAvro = require('jsonschema-avro')
 
 module.exports = {
     generate: function (source, dest, done) {
@@ -492,10 +493,14 @@ module.exports = {
                         if(fullSchema.type == "object") {
                             fullSchema.$schema = 'http://json-schema.org/draft-04/schema#',
                             fullSchema.definitions = resolveDefinitions(fullSchema.properties, completeApi.definitions)
-                            var fileName = modelName.replace(/([^^])([A-Z]+)/g, '$1-$2').toLowerCase() + '.json';
-                            var outputDir = path.resolve(dest, 'model/json-schema-v4-full')
-                            fse.mkdirsSync(outputDir);
-                            fs.writeFileSync(path.resolve(outputDir, fileName), JSON.stringify(fullSchema, 6, 2));
+                            var fileName = modelName.replace(/([^^])([A-Z]+)/g, '$1-$2').toLowerCase();
+                            var jsonSchemaOutputDir = path.resolve(dest, 'model/json-schema-v4-full')
+                            fse.mkdirsSync(jsonSchemaOutputDir);
+                            fs.writeFileSync(path.resolve(jsonSchemaOutputDir, fileName + '.json'), JSON.stringify(fullSchema, 6, 2));
+                            var avroOutputDir = path.resolve(dest, 'model/avro-full')
+                            fse.mkdirsSync(avroOutputDir);
+                            jsonSchemaAvro.convert(fullSchema).then(avroSchema =>
+                                fs.writeFileSync(path.resolve(avroOutputDir, fileName + '.avsc'), JSON.stringify(avroSchema, 6, 2)));
                         }
                     });
                 });
