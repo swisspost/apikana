@@ -342,7 +342,7 @@ jsonSchemaAvro._getItems = (name, contents) => {
             }
         }
     }
-    return jsonSchemaAvro._convertProperty(name, contents.items)
+    return jsonSchemaAvro._convertProperty(name, contents.items, true)
 }
 
 jsonSchemaAvro._convertArrayProperty = (name, contents, required) => {
@@ -419,7 +419,6 @@ jsonSchemaAvro._convertProperty = (name, value, required = false) => {
     if (value.hasOwnProperty('default')) {
         prop.default = value.default
     } else if (!required) {
-        //console.log('not required and has no default')
         prop.default = null
         types.push('null')
     }
