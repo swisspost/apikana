@@ -278,19 +278,21 @@ jsonSchemaAvro._convertCombinationOfProperty = (name, contents) => {
     });
 }
 
-jsonSchemaAvro._generateType = (type, required) => {
-    return required ? type : [ "null", type ]
+jsonSchemaAvro._optionalizeType = (parent, required) => {
+    if(!required) {
+        Object.assign(parent, {default: null, type: [ "null", parent.type ] });
+    }
 }
 
 jsonSchemaAvro._convertComplexProperty = (name, contents, required) => {
     const recordName = `${name}${jsonSchemaAvro._recordSuffix}`;
+    var complexProperty;
     if (jsonSchemaAvro._globalTypesCache.get(contents.properties)) {
-        const complexProperty = {
+        complexProperty = {
             name: name,
             doc: contents.description || '',
-            type: jsonSchemaAvro._generateType(jsonSchemaAvro._globalTypesCache.get(contents.properties).type, required)
+            type: jsonSchemaAvro._globalTypesCache.get(contents.properties).type, required
         };
-        return complexProperty;
     } else {
         const dereferencedType = jsonSchemaAvro._getDereferencedType(contents);
         const recordType = {
@@ -303,14 +305,14 @@ jsonSchemaAvro._convertComplexProperty = (name, contents, required) => {
             recordType.doc = dereferencedType.doc;
         }
         jsonSchemaAvro._globalTypesCache.set(contents.properties, dereferencedType);
-        const complexProperty = {
+        complexProperty = {
             name: name,
             doc: contents.description || '',
-            type: jsonSchemaAvro._generateType(recordType, required)
+            type: recordType
         };
-
-        return complexProperty
     }
+    jsonSchemaAvro._optionalizeType(complexProperty, required);
+    return complexProperty;
 }
 
 jsonSchemaAvro._getItems = (name, contents) => {
@@ -346,14 +348,16 @@ jsonSchemaAvro._getItems = (name, contents) => {
 }
 
 jsonSchemaAvro._convertArrayProperty = (name, contents, required) => {
-    return {
+    var result = {
         name: name,
         doc: contents.description || '',
-        type: jsonSchemaAvro._generateType({
+        type: {
             type: 'array',
             items: jsonSchemaAvro._getItems(name, contents)
-        }, required)
+        }
     }
+    jsonSchemaAvro._optionalizeType(result, required);
+    return result;
 }
 
 var enums = {};
@@ -371,16 +375,16 @@ jsonSchemaAvro._convertEnumProperty = (name, contents, doc, required) => {
 
     if (contents.hasOwnProperty('$ref')) {
         if (valid) {
-            enumProp.type = jsonSchemaAvro._generateType('enum', required);
+            enumProp.type = 'enum';
             enumProp.symbols = contents.enum;
         } else {
-            enumProp.type = jsonSchemaAvro._generateType('string', required);
+            enumProp.type = 'string';
         }
     } else {
         if (valid) {
             var enumName = `${name}${jsonSchemaAvro._enumSuffix}`;
             if(enums[enumName] && sameArray(contents.enum, enums[enumName])) {
-                enumProp.type = jsonSchemaAvro._generateType(enumName, required);
+                enumProp.type = enumName, required;
             } else {
                 if(enums[enumName]) {
                     var num = enumName.replace(/[^\d.]/g, ''); 
@@ -392,17 +396,18 @@ jsonSchemaAvro._convertEnumProperty = (name, contents, doc, required) => {
                         enumName = enumName+"_1";
                     }
                 }
-                enumProp.type = jsonSchemaAvro._generateType({
+                enumProp.type = {
                     type: 'enum',
                     name: enumName,
                     symbols: contents.enum
-                }, required)
+                }
                 enums[enumName] = contents.enum;
             }
         } else {
-            enumProp.type = jsonSchemaAvro._generateType("string", required)
+            enumProp.type = "string"
         }
     }
+    jsonSchemaAvro._optionalizeType(enumProp, required)
     if (contents.hasOwnProperty('default')) {
         enumProp.default = contents.default
     }
