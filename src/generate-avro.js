@@ -356,6 +356,12 @@ jsonSchemaAvro._convertArrayProperty = (name, contents, required) => {
     }
 }
 
+var enums = {};
+
+function sameArray(a1,a2) {
+    return a1.join(" ") == a2.join(" ");
+}
+
 jsonSchemaAvro._convertEnumProperty = (name, contents, doc, required) => {
     const valid = contents.enum.every((symbol) => reSymbol.test(symbol))
     const enumProp = {
@@ -372,11 +378,29 @@ jsonSchemaAvro._convertEnumProperty = (name, contents, doc, required) => {
         }
     } else {
         if (valid) {
-            enumProp.type = jsonSchemaAvro._generateType(valid ? {
-                type: 'enum',
-                name: `${name}${jsonSchemaAvro._enumSuffix}`,
-                symbols: contents.enum
-            } : 'string', required);
+            var enumName = `${name}${jsonSchemaAvro._enumSuffix}`;
+            if(enums[enumName] && sameArray(contents.enum, enums[enumName])) {
+                enumProp.type = jsonSchemaAvro._generateType(enumName, required);
+            } else {
+                if(enums[enumName]) {
+                    var num = enumName.replace(/[^\d.]/g, ''); 
+                    num = num + 1;
+                    if(num > 1) {
+                        var reg = new RegExp(num);
+                        enumName = enumName.replace(reg, newVal); 
+                    } else {
+                        enumName = enumName+"_1";
+                    }
+                }
+                enumProp.type = jsonSchemaAvro._generateType({
+                    type: 'enum',
+                    name: enumName,
+                    symbols: contents.enum
+                }, required)
+                enums[enumName] = contents.enum;
+            }
+        } else {
+            enumProp.type = jsonSchemaAvro._generateType("string", required)
         }
     }
     if (contents.hasOwnProperty('default')) {
