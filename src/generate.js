@@ -89,21 +89,33 @@ module.exports = {
                 deps = [];
             }
             gulp.task(name, deps, function () {
-                var start = Date.now();
                 var first;
-                // log('start', colors.green(name));
-                return func()
-                    .on('readable', function () {
-                        if (!first) {
-                            first = Date.now();
-                        }
-                    })
-                    .on('finish', function () {
-                        log.info('Done', colors.green(name), 'in', first ? (Date.now() - first) / 1000 : '?', 's');
-                    })
-                    .on('error', function (err) {
-                        log.error('Error in', colors.green(name), colors.red(err));
-                    });
+                var result = func();
+                if(result.on) {
+                    result
+                        .on('readable', function () {
+                            if (!first) {
+                                first = Date.now();
+                            }
+                        })
+                        .on('finish', function () {
+                            log.info('Done', colors.green(name), 'in', first ? (Date.now() - first) / 1000 : '?', 's');
+                        })
+                        .on('error', function (err) {
+                            log.error('Error in', colors.green(name), colors.red(err));
+                        });
+                }
+                if(result.then) {
+                    first = Date.now();
+                    return result.then(
+                        function () {
+                            log.info('Done', colors.green(name), 'in', first ? (Date.now() - first) / 1000 : '?', 's');
+                        },
+                        function (err) {
+                            log.error('Error in', colors.green(name), colors.red(err));
+                        });                    
+                }
+                return result;
             });
         }
 
@@ -455,13 +467,16 @@ module.exports = {
                 .pipe(gulp.dest(''));
         });
 
+        var completeApi;
+        var fileToType;
+
         //TODO same problem as in generate-schema: if there are schemas with the same name from different dependencies,
         //we need structural comparision
-        task('generate-full-rest', ['read-rest-api', 'generate-schema'/*, 'overwrite-schemas'*/], function () {
-            var completeApi = Object.assign({}, restApi);
+        task('prepare-complete-api', ['read-rest-api', 'generate-schema'/*, 'overwrite-schemas'*/], function () {
+            completeApi = Object.assign({}, restApi);
             completeApi.definitions = {};
             delete completeApi.definitions.$ref;
-            var fileToType = {};
+            fileToType = {};
             return gulp.src([ dest+'/model/json-schema-v4/**/*.json', dependencyPath+'/**/json-schema-v4/**/*.json'])
                 .pipe(through.obj(function (file, enc, cb) {
                     var schema = JSON.parse(file.contents.toString());
@@ -475,35 +490,38 @@ module.exports = {
                     completeApi.definitions[schema.id] = schema;
                     cb();
                 }))
-                .on('finish', function () {
-                    traverse.forEach(completeApi, function (value) {
-                        if (this.key === '$ref' && fileToType[value]) {
-                            this.update('#/definitions/' + fileToType[value]);
-                        }
-                    });
-                    var out = path.resolve(dest, 'model/openapi');
-                    fse.mkdirsSync(out);
-                    fs.writeFileSync(path.resolve(out, 'api.json'), JSON.stringify(restApi, null, 2));
-                    fs.writeFileSync(path.resolve(out, 'api.yaml'), yaml.stringify(restApi, 6, 2));
-                    fs.writeFileSync(path.resolve(out, 'complete-api.json'), JSON.stringify(completeApi, null, 2));
-                    fs.writeFileSync(path.resolve(out, 'complete-api.yaml'), yaml.stringify(completeApi, 6, 2));
+        });
 
-                    modelNames.forEach(modelName => {
-                        var fullSchema = Object.assign({}, completeApi.definitions[modelName]);
-                        if(fullSchema.type == "object") {
-                            fullSchema.$schema = 'http://json-schema.org/draft-04/schema#',
-                            fullSchema.definitions = resolveDefinitions(fullSchema.properties, completeApi.definitions)
-                            var fileName = modelName.replace(/([^^])([A-Z]+)/g, '$1-$2').toLowerCase();
-                            var jsonSchemaOutputDir = path.resolve(dest, 'model/json-schema-v4-full')
-                            fse.mkdirsSync(jsonSchemaOutputDir);
-                            fs.writeFileSync(path.resolve(jsonSchemaOutputDir, fileName + '.json'), JSON.stringify(fullSchema, 6, 2));
-                            var avroOutputDir = path.resolve(dest, 'model/avro-full')
-                            fse.mkdirsSync(avroOutputDir);
-                            jsonSchemaAvro.convert(fullSchema).then(avroSchema =>
-                                fs.writeFileSync(path.resolve(avroOutputDir, fileName + '.avsc'), JSON.stringify(avroSchema, 6, 2)));
-                        }
-                    });
+        task('generate-full-rest', ['prepare-complete-api'], function () {
+            traverse.forEach(completeApi, function (value) {
+                if (this.key === '$ref' && fileToType[value]) {
+                    this.update('#/definitions/' + fileToType[value]);
+                }
+            });
+            var out = path.resolve(dest, 'model/openapi');
+            fse.mkdirsSync(out);
+            fs.writeFileSync(path.resolve(out, 'api.json'), JSON.stringify(restApi, null, 2));
+            fs.writeFileSync(path.resolve(out, 'api.yaml'), yaml.stringify(restApi, 6, 2));
+            fs.writeFileSync(path.resolve(out, 'complete-api.json'), JSON.stringify(completeApi, null, 2));
+            fs.writeFileSync(path.resolve(out, 'complete-api.yaml'), yaml.stringify(completeApi, 6, 2));
+
+            var promises = modelNames
+                .map(modelName => ({ modelName, schema: Object.assign({}, completeApi.definitions[modelName])}))
+                .filter(model => model.schema.type == "object")
+                .map(model => {
+                    var fullSchema = model.schema;
+                    fullSchema.$schema = 'http://json-schema.org/draft-04/schema#',
+                    fullSchema.definitions = resolveDefinitions(fullSchema.properties, completeApi.definitions)
+                    var fileName = model.modelName.replace(/([^^])([A-Z]+)/g, '$1-$2').toLowerCase();
+                    var jsonSchemaOutputDir = path.resolve(dest, 'model/json-schema-v4-full')
+                    fse.mkdirsSync(jsonSchemaOutputDir);
+                    fs.writeFileSync(path.resolve(jsonSchemaOutputDir, fileName + '.json'), JSON.stringify(fullSchema, 6, 2));
+                    var avroOutputDir = path.resolve(dest, 'model/avro-full')
+                    fse.mkdirsSync(avroOutputDir);
+                    return jsonSchemaAvro.convert(fullSchema).then(avroSchema =>
+                        fs.writeFileSync(path.resolve(avroOutputDir, fileName + '.avsc'), JSON.stringify(avroSchema, 6, 2)));
                 });
+            return Promise.all(promises);
         });
 
         // Traverse the reference tree to keep only the needed definitions for the root schema
