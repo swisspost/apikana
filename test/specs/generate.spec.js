@@ -43,7 +43,7 @@ describe('generating', () => {
                     .toBe('0.1.0-rc.1'));
         })
 
-        describe('an API with a dependency', () => {
+        describe('with a dependency', () => {
             const gulp = require('gulp');
             const depSandbox = require('./sandbox')();
             const mainSandbox = require('./sandbox')();
@@ -78,7 +78,7 @@ describe('generating', () => {
                 .then(result => { mainDir = result.dir })
                 .then(() => new Promise(resolve => fs.writeFile(`${mainDir}/src/ts/pet.ts`,`
                 import {Pet} from "wild-pet-rest-api/dist/model/ts/pet";
-                export interface PetList {
+                export interface PetFamily {
                     pets: Pet[]
                 }
                 `, () => resolve())))
@@ -101,7 +101,7 @@ describe('generating', () => {
             afterAll(mainSandbox.clean);
 
             it('generates a complete API file with inlined dependencies', () => {
-                expect(JSON.parse(fs.readFileSync(`${dir}/dist/model/openapi/complete-api.json`).toString('utf8'))
+                expect(JSON.parse(fs.readFileSync(`${mainDir}/dist/model/openapi/complete-api.json`).toString('utf8'))
                     .definitions.Pet.properties.firstName.type).toBe('string');
             })
         })
