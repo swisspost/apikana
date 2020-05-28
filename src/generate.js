@@ -1,4 +1,5 @@
 var gulp = require('gulp');
+var gutil = require('gulp-util');
 var rename = require('gulp-rename');
 var inject = require('gulp-inject');
 var jeditor = require("gulp-json-editor");
@@ -360,7 +361,12 @@ module.exports = {
                 unpack('dist/model', 'json-schema-v3', '**/*.json'),
                 unpack('dist/model', 'json-schema-v4', '**/*.json'),
                 unpack('dist/ui', 'style', '**/*', true),
-                unpack('dist/model', 'ts', '**/*.ts')
+                unpack('dist/model', 'ts', '**/*.ts'),
+                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath})
+                    .pipe(gulp.dest(path.join('ts','apikana'), {cwd: dependencyPath})),
+                // apikana-defaults.ts is a special case. This file has to be copied also under node_modules/apikana/ directory.
+                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath})
+                    .pipe(gulp.dest('apikana', {cwd: path.join(dependencyPath, '..')}))
             );
         });
 
@@ -477,7 +483,7 @@ module.exports = {
                     var schema = JSON.parse(file.contents.toString());
                     if(completeApi.definitions[schema.id]) {
                         // same symbol is defined multiple times. This is forbidden.
-                        cb(new Error(schema.id + ' is defiend multiple times!'));
+                        cb(new gutil.PluginError('apikana', schema.id + ' symbol is defiend multiple times.'));
                     }
                     fileToType[path.parse(file.path).base] = schema.id;
                     Object.assign(completeApi.definitions, schema.definitions);
