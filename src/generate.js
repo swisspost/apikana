@@ -113,7 +113,7 @@ module.exports = {
                         },
                         function (err) {
                             log.error('Error in', colors.green(name), colors.red(err));
-                        });                    
+                        });
                 }
                 return result;
             });
@@ -169,7 +169,7 @@ module.exports = {
             return src;
         }
 
-        task('copy-deps', ['cleanup-dist'], function () {
+        task('copy-swagger-deps', ['cleanup-dist'], function () {
             return merge(
                 module(['yamljs/dist/yaml.js']).pipe(gulp.dest('patch', {cwd: uiPath})),
                 module(['object-path/index.js'])
@@ -183,7 +183,7 @@ module.exports = {
             return gulp.src('lib/*.js', {cwd: apikanaPath}).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
-        task('inject-css', ['copy-swagger', 'copy-custom', 'copy-deps', 'copy-lib'], function () {
+        task('inject-css', ['copy-swagger', 'copy-custom', 'copy-swagger-deps', 'copy-lib'], function () {
             return gulp.src('index.html', {cwd: uiPath})
                 .pipe(inject(gulp.src('style/**/*.css', {cwd: uiPath, read: false}), {
                     relative: true,
@@ -204,7 +204,7 @@ module.exports = {
                 .pipe(gulp.dest(uiPath));
         });
 
-        task('copy-deps-unref', ['cleanup-dist'], function () {
+        task('copy-swagger-deps-unref', ['cleanup-dist'], function () {
             return module(['typescript/lib/lib.d.ts']).pipe(gulp.dest('patch', {cwd: uiPath}));
         });
 
@@ -360,12 +360,7 @@ module.exports = {
                 unpack('dist/model', 'json-schema-v3', '**/*.json'),
                 unpack('dist/model', 'json-schema-v4', '**/*.json'),
                 unpack('dist/ui', 'style', '**/*', true),
-                unpack('dist/model', 'ts', '**/*.ts'),
-                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath})
-                    .pipe(gulp.dest(path.join('ts','apikana'), {cwd: dependencyPath})),
-                // apikana-defaults.ts is a special case. This file has to be copied also under node_modules/apikana/ directory.
-                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath})
-                    .pipe(gulp.dest('apikana', {cwd: path.join(dependencyPath, '..')}))
+                unpack('dist/model', 'ts', '**/*.ts')
             );
         });
 
@@ -480,6 +475,10 @@ module.exports = {
             return gulp.src([ dest+'/model/json-schema-v4/**/*.json', dependencyPath+'/**/json-schema-v4/**/*.json'])
                 .pipe(through.obj(function (file, enc, cb) {
                     var schema = JSON.parse(file.contents.toString());
+                    if(completeApi.definitions[schema.id]) {
+                        // same symbol is defined multiple times. This is forbidden.
+                        cb(new Error(schema.id + ' is defiend multiple times!'));
+                    }
                     fileToType[path.parse(file.path).base] = schema.id;
                     Object.assign(completeApi.definitions, schema.definitions);
                     delete schema.definitions;
