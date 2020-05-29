@@ -113,7 +113,7 @@ module.exports = {
                         },
                         function (err) {
                             log.error('Error in', colors.green(name), colors.red(err));
-                        });                    
+                        });
                 }
                 return result;
             });
@@ -494,8 +494,9 @@ module.exports = {
 
         task('generate-full-rest', ['prepare-complete-api'], function () {
             traverse.forEach(completeApi, function (value) {
-                if (this.key === '$ref' && fileToType[value]) {
-                    this.update('#/definitions/' + fileToType[value]);
+                if (this.key === '$ref' && !value.startsWith("#/definitions")) {
+                    var type = fileToType[path.parse(value).base];
+                    this.update('#/definitions/' + type);
                 }
             });
             var out = path.resolve(dest, 'model/openapi');
@@ -558,4 +559,3 @@ module.exports = {
         done ? gulp.start(done) : gulp.start();
     }
 };
-
