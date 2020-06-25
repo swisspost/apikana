@@ -39,7 +39,7 @@ module.exports = function() {
         'null': 'null',
         'boolean': 'boolean',
         'integer': 'int',
-        'number': 'float'
+        'number': 'double'
     }
 
     const reSymbol = /^[A-Za-z_][A-Za-z0-9_]*$/;
