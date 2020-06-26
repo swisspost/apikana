@@ -42,6 +42,10 @@ module.exports = {
                 ajv.addSchema(fileContents);
             });
 
+            const validateLong = n => n >= -9223372036854775000 && n <= 9223372036854775000;
+            ajv.addFormat('long', validateLong, ['integer']);
+            ajv.addFormat('int64', validateLong, ['integer']);
+
             return ajv;
         }
 
@@ -171,4 +175,3 @@ module.exports = {
         gulp.start();
     }
 };
-
