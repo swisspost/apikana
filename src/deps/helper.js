@@ -64,7 +64,7 @@ $ = function (f) {
                 processRefs(schema[def]);
                 spec.definitions[def] = schema[def];
             }
-            if (!spec.paths || spec.paths.length === 0) {
+            if (!spec.paths || spec.paths.length === 0 || spec.paths.main) {
                 $('<style>' +
                     '.docson > .box { width: 600px; }' +
                     '.models { font-family: sans-serif; margin: 12px auto; width: 600px; }' +
@@ -75,8 +75,9 @@ $ = function (f) {
                 var title = ((spec.info || {}).title) || '';
                 var desc = ((spec.info || {}).description || '');
                 var modelDiv = $('<div class="models"><h1>' + title + '</h1><p>' + desc + '</p></div>').appendTo('body');
+                const mainTypes = spec.paths ? spec.paths.main.map(path => path.schema.$ref.replace('#/definitions/','')) : [];
                 for (var def in schema) {
-                    if (isLocalSchema(models, schema[def])) {
+                    if (isLocalSchema(models, schema[def]) && (!spec.paths.main || mainTypes.indexOf(def) != -1)) {
                         $('<div class="docson">' + def + '</div>').appendTo(modelDiv);
                     }
                 }
