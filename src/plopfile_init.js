@@ -64,12 +64,18 @@ module.exports = function (plop, cfg) {
             validate: answer => {
                 if(answer.length == 0) return "Please give a name"
                 if(answer.endsWith('api')) return "Please give the name without suffix"
+                if(defaults.namespace &&
+                    defaults.namespace.prefixes &&
+                    defaults.namespace.prefixes.values &&
+                    defaults.namespace.prefixes.values.filter(prefix => answer.startsWith(prefix)).length == 0) {
+                    return defaults.namespace.prefixes.message || 'Namespace not following conventions';
+                }
                 return true
             }
         },{
             type: 'list',
             name: 'shortName',
-            message: 'What is the API short name?',
+            message: 'What is the API short name? Choose the most speaking but concise variant.',
             choices: answers => {
                 let segments = answers.namespace.split('.');
                 var acc = [];
