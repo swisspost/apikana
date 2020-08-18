@@ -210,7 +210,7 @@ module.exports = function (plop, cfg) {
             actions.push({
                 type: 'add',
                 path: slash(path.join(currentPath, answers.projectName, '.gitignore')),
-                template: "node_modules/\ndist/\ngen/\n.vscode/\n.idea/\n*.iml\n.settings/\n.project/",
+                template: "node_modules/\ndist/\n/gen/\n.vscode/\n.idea/\n*.iml\n.settings/\n.project/",
                 skipIfExists: true
             });
 
