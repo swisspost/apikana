@@ -6,6 +6,7 @@ var colors = require('ansi-colors');
 var params = require('../src/params');
 var compareVersions = require('compare-versions');
 var packge = require('../package.json');
+var yaml = require('yamljs');
 var argc = process.argv.length;
 
 require('../src/logo');
@@ -114,6 +115,7 @@ function generate() {
     const os = require('os');
     const currentPath = process.cwd();
     const packageJSON = JSON.parse(fs.readFileSync(path.resolve(currentPath, './package.json')));
+    const openapi = yaml.parse(fs.readFileSync(path.resolve(currentPath, './src/openapi/api.yaml')).toString());
 
     const PluginManager = require('live-plugin-manager').PluginManager;
     const manager = new PluginManager({
@@ -124,7 +126,8 @@ function generate() {
     function run(defaults) {
         var plop = nodePlop(__dirname + '/../src/plopfile_start.js', { defaults });
         var generator = plop.getGenerator('start');
-        generator.runActions(packageJSON).then(_ => {
+        const model = Object.assign({}, packageJSON, { api: openapi });
+        generator.runActions(model).then(_ => {
             require('../src/generate').generate(path.resolve(source), params.target());
         });
     }

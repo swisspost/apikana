@@ -107,7 +107,8 @@ module.exports = function (plop, cfg) {
             default: Object.keys(defaults && defaults.plugins || {}).filter(key => defaults.plugins[key].active),
             choices: [
                 { name: 'Maven artifact with Java classes', value: 'maven' },
-                { name: 'C# project', value: 'dotnet' }
+                { name: 'C# project', value: 'dotnet' },
+                { name: 'Generate README', value: 'readme' }
             ]
         },{
             type: 'input',
@@ -210,7 +211,7 @@ module.exports = function (plop, cfg) {
             actions.push({
                 type: 'add',
                 path: slash(path.join(currentPath, answers.projectName, '.gitignore')),
-                template: "node_modules/\ndist/\ngen/\n.vscode/\n.idea/\n*.iml\n.settings/\n.project/",
+                template: "node_modules/\ndist/\n/gen/\n.vscode/\n.idea/\n*.iml\n.settings/\n.project/",
                 skipIfExists: true
             });
 
