@@ -107,7 +107,8 @@ module.exports = function (plop, cfg) {
             default: Object.keys(defaults && defaults.plugins || {}).filter(key => defaults.plugins[key].active),
             choices: [
                 { name: 'Maven artifact with Java classes', value: 'maven' },
-                { name: 'C# project', value: 'dotnet' }
+                { name: 'C# project', value: 'dotnet' },
+                { name: 'Generate README', value: 'readme' }
             ]
         },{
             type: 'input',
