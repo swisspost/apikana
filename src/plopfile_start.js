@@ -36,6 +36,20 @@ module.exports = function (plop, cfg) {
         return result;
     });
 
+    plop.setHelper('ifEquals', function(arg1, arg2, options) {
+        return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+    });
+
+    plop.setHelper("ifContains", function(array, value, options){
+            var aArray = array.split(",");
+
+            for (var i = 0; i < aArray.length; i++) {
+                if (value.indexOf(aArray[i]) > -1) {
+                    return (value.indexOf(aArray[i]) > -1) ? options.fn( this ) : "";
+                }
+            }
+    });
+
     function getMajorVersion(version) {
         let majorVersion = version.split(".", 1)[0];
         if (majorVersion === "0") {
