@@ -12,6 +12,11 @@ module.exports = function (plop, cfg) {
         return version.replace(/-(?!.*-).*/, "-SNAPSHOT");
     });
 
+    plop.setHelper('urlEncode', function(options) {
+        return decodeURIComponent(options.fn(this))
+            .replace(/@/g, '%40'); // Some markdown interpreters do not like them
+    });
+
     plop.setHelper('ConvertDependency', (dependencies) => {
         var result = [];
 
