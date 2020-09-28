@@ -373,6 +373,7 @@ module.exports = {
         // target of all dependencies is -api-dependencies/ts directory!
         function unpack(baseDir, subDir, pattern, absolute) {
             return gulp.src(['!./**/-api-dependencies/**/*', './**/node_modules/**/' + baseDir + '/' + subDir + '/' + pattern], {base: 'node_modules'})
+                .pipe(replace('node_modules/-api-dependencies/ts', '../..')) // So that transitive dependencies work when generating code
                 .pipe(gulp.dest(path.join(params.dependencyPath(), 'ts')));
         }
 
