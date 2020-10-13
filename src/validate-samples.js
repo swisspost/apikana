@@ -172,6 +172,10 @@ module.exports = {
             return gulp.src([]);
         });
 
-        gulp.start();
+        if(fse.existsSync(path.join(root, 'src', 'samples'))) {
+            gulp.start();
+        } else {
+            logger.warn('No src/samples directory. Consider running `npm run create-sample`.');
+        }
     }
 };
