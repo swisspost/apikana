@@ -499,6 +499,9 @@ module.exports = {
                     var type = fileToType[path.parse(value).base];
                     this.update('#/definitions/' + type);
                 }
+                if(this.key === 'id' && this.parent.key === value) {
+                    this.delete(this.key);
+                }
             });
             var out = path.resolve(dest, 'model/openapi');
             fse.mkdirsSync(out);
