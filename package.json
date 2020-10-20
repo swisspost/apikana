@@ -56,7 +56,7 @@
     "live-plugin-manager": "0.13.2",
     "merge-stream": "1.0.1",
     "node-http-server": "6.2.1",
-    "object-path": "0.11.3",
+    "object-path": "0.11.5",
     "opn": "4.0.2",
     "plop": "2.3.0",
     "registry-url": "5.1.0",
