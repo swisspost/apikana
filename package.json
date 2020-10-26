@@ -52,7 +52,7 @@
     "gulp-json-editor": "2.5.3",
     "gulp-rename": "1.2.2",
     "gulp-replace": "0.5.4",
-    "json-schema-faker": "0.5.0-rc23",
+    "json-schema-faker": "^0.5.0-rcv.29",
     "live-plugin-manager": "0.13.2",
     "merge-stream": "1.0.1",
     "node-http-server": "6.2.1",
