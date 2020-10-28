@@ -499,16 +499,7 @@ module.exports = {
                     var type = fileToType[path.parse(value).base];
                     this.update('#/definitions/' + type);
                 }
-                if(this.key === 'id' && this.parent.key === value) {
-                    this.delete(this.key);
-                }
             });
-            var out = path.resolve(dest, 'model/openapi');
-            fse.mkdirsSync(out);
-            fs.writeFileSync(path.resolve(out, 'api.json'), JSON.stringify(restApi, null, 2));
-            fs.writeFileSync(path.resolve(out, 'api.yaml'), yaml.stringify(restApi, 6, 2));
-            fs.writeFileSync(path.resolve(out, 'complete-api.json'), JSON.stringify(completeApi, null, 2));
-            fs.writeFileSync(path.resolve(out, 'complete-api.yaml'), yaml.stringify(completeApi, 6, 2));
 
             var promises = modelNames
                 .map(modelName => ({ modelName, schema: Object.assign({}, completeApi.definitions[modelName])}))
@@ -526,7 +517,21 @@ module.exports = {
                     return jsonSchemaAvro().convert(fullSchema).then(avroSchema =>
                         fs.writeFileSync(path.resolve(avroOutputDir, fileName + '.avsc'), JSON.stringify(avroSchema, 6, 2)));
                 });
-            return Promise.all(promises);
+
+            return Promise.all(promises).then( () => {
+                traverse.forEach(completeApi, function (value) {
+                    if(this.key === 'id' && this.parent.key === value) {
+                        this.delete(this.key);
+                    }
+                });
+
+                var out = path.resolve(dest, 'model/openapi');
+                fse.mkdirsSync(out);
+                fs.writeFileSync(path.resolve(out, 'api.json'), JSON.stringify(restApi, null, 2));
+                fs.writeFileSync(path.resolve(out, 'api.yaml'), yaml.stringify(restApi, 6, 2));
+                fs.writeFileSync(path.resolve(out, 'complete-api.json'), JSON.stringify(completeApi, null, 2));
+                fs.writeFileSync(path.resolve(out, 'complete-api.yaml'), yaml.stringify(completeApi, 6, 2));
+            });
         });
 
         // Traverse the reference tree to keep only the needed definitions for the root schema
