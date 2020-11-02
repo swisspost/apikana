@@ -7,7 +7,8 @@
     "stop": "apikana stop",
     "create-sample": "apikana create-sample",
     "validate-samples": "apikana validate-samples",
-    "test": "apikana validate-samples"
+    "test": "apikana validate-samples",
+    "prepare": "npm test"
   },
   "author": "{{ author }}",
   "license": "Apache-2.0",
