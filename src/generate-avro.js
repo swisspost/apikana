@@ -375,40 +375,32 @@ module.exports = function() {
             doc: doc || contents.description || '',
         };
 
-        if (contents.hasOwnProperty('$ref')) {
-            if (valid) {
-                enumProp.type = 'enum';
-                enumProp.symbols = contents.enum;
+        if (valid) {
+            var enumName = contents.id || `${name}${jsonSchemaAvro._enumSuffix}`;
+            if(enums[enumName] && sameArray(contents.enum, enums[enumName])) {
+                enumProp.type = enumName;
             } else {
-                enumProp.type = 'string';
+                if(enums[enumName]) {
+                    var num = enumName.replace(/[^\d.]/g, '');
+                    num = num + 1;
+                    if(num > 1) {
+                        var reg = new RegExp(num);
+                        enumName = enumName.replace(reg, newVal);
+                    } else {
+                        enumName = enumName+"_1";
+                    }
+                }
+                enumProp.type = {
+                    type: 'enum',
+                    name: enumName,
+                    symbols: contents.enum
+                }
+                enums[enumName] = contents.enum;
             }
         } else {
-            if (valid) {
-                var enumName = `${name}${jsonSchemaAvro._enumSuffix}`;
-                if(enums[enumName] && sameArray(contents.enum, enums[enumName])) {
-                    enumProp.type = enumName;
-                } else {
-                    if(enums[enumName]) {
-                        var num = enumName.replace(/[^\d.]/g, '');
-                        num = num + 1;
-                        if(num > 1) {
-                            var reg = new RegExp(num);
-                            enumName = enumName.replace(reg, newVal);
-                        } else {
-                            enumName = enumName+"_1";
-                        }
-                    }
-                    enumProp.type = {
-                        type: 'enum',
-                        name: enumName,
-                        symbols: contents.enum
-                    }
-                    enums[enumName] = contents.enum;
-                }
-            } else {
-                enumProp.type = "string"
-            }
+            enumProp.type = "string"
         }
+
         if(enumProp.type != "string") {
             enumProp.type = [ enumProp.type, 'string' ]
         }
