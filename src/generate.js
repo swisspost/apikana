@@ -514,7 +514,8 @@ module.exports = {
                     fs.writeFileSync(path.resolve(jsonSchemaOutputDir, fileName + '.json'), JSON.stringify(fullSchema, 6, 2));
                     var avroOutputDir = path.resolve(dest, 'model/avro-full')
                     fse.mkdirsSync(avroOutputDir);
-                    return jsonSchemaAvro().convert(fullSchema).then(avroSchema =>
+                    var avroConfig = generateEnv.variables().customConfig.avro;
+                    return jsonSchemaAvro().convert(fullSchema, undefined, undefined, undefined, avroConfig).then(avroSchema =>
                         fs.writeFileSync(path.resolve(avroOutputDir, fileName + '.avsc'), JSON.stringify(avroSchema, 6, 2)));
                 });
 
