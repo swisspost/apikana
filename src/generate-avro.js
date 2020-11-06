@@ -80,7 +80,7 @@ module.exports = function() {
         return new_obj
     };
 
-    jsonSchemaAvro.convert = async (schema, recordSuffix, splitIdForMain, enumSuffix) => {
+    jsonSchemaAvro.convert = async (schema, recordSuffix, splitIdForMain, enumSuffix, config) => {
         if (!schema) {
             throw new Error('No schema given')
         }
@@ -93,6 +93,7 @@ module.exports = function() {
             enumSuffix = '_enum';
         }
 
+        jsonSchemaAvro._config = config || {};
         jsonSchemaAvro._splitIdForMain = splitIdForMain;
         jsonSchemaAvro._enumSuffix = enumSuffix;
         jsonSchemaAvro._globalTypesCache = new Map();
@@ -200,7 +201,7 @@ module.exports = function() {
                 return jsonSchemaAvro._convertArrayProperty(item, schema[item], jsonSchemaAvro._isRequired(required, item))
             }
             else if (jsonSchemaAvro._hasEnum(schema[item])) {
-                return jsonSchemaAvro._convertEnumProperty(item, schema[item], jsonSchemaAvro._isRequired(required, item))
+                return jsonSchemaAvro._convertEnumProperty(item, schema[item], schema[item].description, jsonSchemaAvro._isRequired(required, item))
             }
             else if (jsonSchemaAvro._isCombinationOf(schema[item])) {
                 return jsonSchemaAvro._convertCombinationOfProperty(item, schema[item])
@@ -375,7 +376,7 @@ module.exports = function() {
             doc: doc || contents.description || '',
         };
 
-        if (valid) {
+        if ( !jsonSchemaAvro._config.enumAsString && valid) {
             var enumName = contents.id || `${name}${jsonSchemaAvro._enumSuffix}`;
             if(enums[enumName] && sameArray(contents.enum, enums[enumName])) {
                 enumProp.type = enumName;

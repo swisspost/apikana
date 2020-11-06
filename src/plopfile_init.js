@@ -172,6 +172,7 @@ module.exports = function (plop, cfg) {
         actions: (answers) => {
             answers.customConfig = Object.assign({}, answers);
             delete answers.customConfig.npmPackage;
+            answers.customConfig.avro = { enumAsString: true }
             var actions = [];
 
             var summary = Object.entries({

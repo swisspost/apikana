@@ -5,3 +5,4 @@ node_modules/
 *.tgz
 test/dist/
 generated-logo.js
+/default-types.ts
