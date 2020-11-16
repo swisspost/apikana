@@ -115,7 +115,13 @@ function generate() {
     const os = require('os');
     const currentPath = process.cwd();
     const packageJSON = JSON.parse(fs.readFileSync(path.resolve(currentPath, './package.json')));
-    const openapi = yaml.parse(fs.readFileSync(path.resolve(currentPath, './src/openapi/api.yaml')).toString());
+
+    let openapi;
+    if (params.api()) {
+        openapi = yaml.parse(fs.readFileSync(path.resolve(source, './' + params.api())).toString());
+    } else {
+        openapi = yaml.parse(fs.readFileSync(path.resolve(currentPath, './src/openapi/api.yaml')).toString());
+    }
 
     const PluginManager = require('live-plugin-manager').PluginManager;
     const manager = new PluginManager({
