@@ -117,7 +117,7 @@ module.exports = {
 
             jsf.option({alwaysFakeOptionals: true, failOnInvalidTypes: true, failOnInvalidFormat: true, fillProperties:true});
 
-            jsf.resolve(json, file.base).then(sample => {
+            jsf.resolve(json, path.dirname(file.path)).then(sample => {
                 sample['$schema'] = slash(path.relative(path.join(source, 'samples'), file.path));
                 var data = JSON.stringify(sample, undefined, 2);
                 str(data).pipe(vinylSource('generated-'+typeName+'.json')).pipe(gulp.dest('samples', {cwd: source}));
@@ -131,4 +131,3 @@ module.exports = {
         gulp.start();
     }
 };
-
