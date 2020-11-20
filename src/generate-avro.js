@@ -290,7 +290,21 @@ module.exports = function() {
     jsonSchemaAvro._convertComplexProperty = (name, contents, required) => {
         const recordName = `${name}${jsonSchemaAvro._recordSuffix}`;
         var complexProperty;
-        if (jsonSchemaAvro._globalTypesCache.get(contents.properties)) {
+
+        if(contents.additionalProperties) {
+            complexProperty = {
+                name: name,
+                doc: contents.description || '',
+                type: {
+                    type: 'map',
+                    values: contents.additionalProperties.type !== 'array' &&
+                    contents.additionalProperties.type !== 'object' ?
+                        typeMapping[contents.additionalProperties.type] :
+                        jsonSchemaAvro._convertProperty(undefined, contents.additionalProperties),
+                    default: {}
+                }
+            }
+        } else if (jsonSchemaAvro._globalTypesCache.get(contents.properties)) {
             complexProperty = {
                 name: name,
                 doc: contents.description || '',
