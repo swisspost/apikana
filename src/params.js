@@ -11,6 +11,8 @@ var models = noSlash(env.models || 'ts');
 
 var packageJson = fs.existsSync('./package.json') ? JSON.parse(fs.readFileSync('./package.json')) : {};
 
+const defaultDependencyPath = 'node_modules/-api-dependencies';
+
 module.exports = {
     basePath: function () {
         return env.basePath;
@@ -60,9 +62,13 @@ module.exports = {
     dotnetNamespace: function () {
         return env.dotnetNamespace || packageJson.customConfig && packageJson.customConfig.dotnetNamespace;
     },
-
+    isCustomDependencyPath : function() {
+        console.log(env.dependencyPath)
+        console.log(env.dependencyPath == defaultDependencyPath)
+        return env.dependencyPath && !(env.dependencyPath == defaultDependencyPath);
+    },
     dependencyPath: function () {
-        return env.dependencyPath || 'node_modules/-api-dependencies';
+        return env.dependencyPath || defaultDependencyPath;
     },
     pathPrefix: function () {
         var pp = env.pathPrefix;

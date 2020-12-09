@@ -64,8 +64,11 @@ module.exports = {
                 var schema = schemas[name];
                 //thank you MS for messing around with filenames!
                 var filename = normPath(schema.extra.filename);
-                var source = filename.toLowerCase().startsWith(normPath(deps).toLowerCase())
-                    ? (relDeps + '/ts/' + path.dirname(filename.substring(filename.lastIndexOf('-api-dependencies/ts/') + 21, filename.lastIndexOf('/ts')+3)) + '/json-schema-v4/') : '';
+                var relativeDir = params.isCustomDependencyPath() ?
+                    (relDeps + '/json-schema-v4' + path.dirname(filename.substring(deps.length + 3)) + '/') :
+                    (relDeps + '/ts/' + path.dirname(filename.substring(filename.lastIndexOf('-api-dependencies/ts/') + 21, filename.lastIndexOf('/ts')+3)) + '/json-schema-v4/');
+                relativeDir =
+                var source = filename.toLowerCase().startsWith(normPath(deps).toLowerCase()) ? relativeDir : '';
                 infos[name] = {
                     source: source,
                     object: schema.type === 'object' || schema.enum || schema.allOf
