@@ -67,7 +67,6 @@ module.exports = {
                 var relativeDir = params.isCustomDependencyPath() ?
                     (relDeps + '/json-schema-v4' + path.dirname(filename.substring(deps.length + 3)) + '/') :
                     (relDeps + '/ts/' + path.dirname(filename.substring(filename.lastIndexOf('-api-dependencies/ts/') + 21, filename.lastIndexOf('/ts')+3)) + '/json-schema-v4/');
-                relativeDir =
                 var source = filename.toLowerCase().startsWith(normPath(deps).toLowerCase()) ? relativeDir : '';
                 infos[name] = {
                     source: source,

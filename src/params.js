@@ -63,8 +63,6 @@ module.exports = {
         return env.dotnetNamespace || packageJson.customConfig && packageJson.customConfig.dotnetNamespace;
     },
     isCustomDependencyPath : function() {
-        console.log(env.dependencyPath)
-        console.log(env.dependencyPath == defaultDependencyPath)
         return env.dependencyPath && !(env.dependencyPath == defaultDependencyPath);
     },
     dependencyPath: function () {
