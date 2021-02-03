@@ -1,5 +1,5 @@
-import {DateOnly} from "apikana/default-types";
-import {Int} from "apikana/default-types";
+import { DateOnly } from 'apikana/default-types'
+import { Int } from 'apikana/default-types'
 
 export interface PetList {
     pets: Pet[]
@@ -33,5 +33,3 @@ export interface Pet {
      */
     numberOfLegs: Int
 }
-
-
