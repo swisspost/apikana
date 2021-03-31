@@ -60,6 +60,16 @@
                 "leadingUnderscore": "require"
             },
             {
+                "selector": "memberLike",
+                "modifiers": [
+                    "public"
+                ],
+                "format": [
+                    "camelCase"
+                ],
+                "leadingUnderscore": "allow"
+            },
+            {
                 "selector": "enumMember",
                 "format": [
                     "UPPER_CASE"
