@@ -1,5 +1,5 @@
-import {DateTime} from "apikana/default-types";
-import {Pet} from './pet';
+import { DateTime } from 'apikana/default-types'
+import { Pet } from './pet'
 
 export interface PetEvent {
     /**
@@ -31,5 +31,3 @@ export interface PetEvent {
         location: string
     }
 }
-
-
