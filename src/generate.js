@@ -501,6 +501,9 @@ module.exports = {
                 }
             });
 
+            var cleanRestApi = obj = JSON.parse(JSON.stringify(restApi));
+            var cleanCompleteApi = obj = JSON.parse(JSON.stringify(completeApi));
+
             var promises = modelNames
                 .map(modelName => ({ modelName, schema: Object.assign({}, completeApi.definitions[modelName])}))
                 .filter(model => model.schema.type == "object")
@@ -520,7 +523,7 @@ module.exports = {
                 });
 
             return Promise.all(promises).then( () => {
-                traverse.forEach(completeApi, function (value) {
+                traverse.forEach(cleanCompleteApi, function (value) {
                     if(this.key === 'id' && this.parent.key === value) {
                         this.delete(this.key);
                     }
@@ -528,10 +531,10 @@ module.exports = {
 
                 var out = path.resolve(dest, 'model/openapi');
                 fse.mkdirsSync(out);
-                fs.writeFileSync(path.resolve(out, 'api.json'), JSON.stringify(restApi, null, 2));
-                fs.writeFileSync(path.resolve(out, 'api.yaml'), yaml.stringify(restApi, 6, 2));
-                fs.writeFileSync(path.resolve(out, 'complete-api.json'), JSON.stringify(completeApi, null, 2));
-                fs.writeFileSync(path.resolve(out, 'complete-api.yaml'), yaml.stringify(completeApi, 6, 2));
+                fs.writeFileSync(path.resolve(out, 'api.json'), JSON.stringify(cleanRestApi, null, 2));
+                fs.writeFileSync(path.resolve(out, 'api.yaml'), yaml.stringify(cleanRestApi, 6, 2));
+                fs.writeFileSync(path.resolve(out, 'complete-api.json'), JSON.stringify(cleanCompleteApi, null, 2));
+                fs.writeFileSync(path.resolve(out, 'complete-api.yaml'), yaml.stringify(cleanCompleteApi, 6, 2));
             });
         });
 
