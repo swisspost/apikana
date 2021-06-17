@@ -10,7 +10,7 @@
     "test": "eslint src --ext .ts && apikana validate-samples",
     "lint": "eslint src --ext .ts",
     "lint-fix": "eslint src --ext .ts --fix",
-    "prepare": "npm test"
+    "prepublishOnly": "npm test"
   },
   "author": "{{ author }}",
   "license": "Apache-2.0",
