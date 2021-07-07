@@ -338,8 +338,26 @@ module.exports = {
 
         // copy local defined models to dist directory keeping the local folder structure.
         task('copy-ts-model', ['cleanup-dist', 'read-rest-api'], function () {
-           return gulp.src([path.join(source, 'ts') + '/**/*.ts'], {base: source})
-                .pipe(gulp.dest('model', {cwd: dest}));
+            task('copy-ts-model', ['cleanup-dist', 'read-rest-api'], function () {
+                // SDCISA-4685 respect application argument 'models' to copy local ts
+                let sourcePaths;
+                let sourceOptions;
+                let destination;
+                if (params.models() && fs.existsSync(params.models())) {
+                    log.debug('Copying ts models from (arg) ', colors.magenta(params.models()));
+                    sourcePaths = [params.models() + '/**/*.ts'];
+                    sourceOptions = {cwd: source};
+                    destination = gulp.dest(path.join('model', 'ts'), {cwd: dest});
+                } else {
+                    log.debug('Copying ts models from (default) ', colors.magenta(path.join(source, 'ts')));
+                    sourcePaths = [path.join(source, 'ts') + '/**/*.ts'];
+                    sourceOptions = {base: source}
+                    destination = gulp.dest('model', {cwd: dest});
+                }
+
+                return gulp.src(sourcePaths, sourceOptions)
+                    .pipe(destination);
+            });
         });
 
         // copy unpacked dependencies to node_modules in dist directory so it is possible to re-use the objects.
