@@ -126,12 +126,23 @@ module.exports = function (plop, cfg) {
                     defaults.plugins &&
                     defaults.plugins.maven &&
                     defaults.plugins.maven.ignoreNamespacePrefix || '') + '\\.', 'g'), '')+'.v1'
-        }, {
+        },{
             type: 'input',
             name: 'mavenGroupId',
             message: 'Which Maven groupId do you want to use?',
             when: answers => answers.plugins.includes('maven'),
             default: (answers) => answers.javaPackage.split('.').slice(0,-2).join('.')
+        },{
+            type: 'list',
+            name: 'snapshotVersion',
+            message: 'Do you want to create Maven SNAPSHOT Versions?',
+            when: answers => answers.plugins.includes('maven'),
+            default: 'RC_ONLY',
+            choices: [
+                { name: 'For RC releases only', value: 'RC_ONLY' },
+                { name: 'For all non-final versions (behaviour of Apikana <= v0.9.22)', value: 'ALL_NON_FINAL' },
+                { name: 'Never', value: 'NEVER' }
+            ]
         },{
             type: 'input',
             name: 'dotnetNamespace',
