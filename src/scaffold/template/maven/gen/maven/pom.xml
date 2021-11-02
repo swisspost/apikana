@@ -5,7 +5,7 @@
     <name>{{ customConfig.shortName }}</name>
     <groupId>{{ customConfig.mavenGroupId }}</groupId>
     <artifactId>{{ customConfig.projectName }}</artifactId>
-    <version>{{ConvertVersion version }}</version>
+    <version>{{ConvertVersion version customConfig.snapshotVersion }}</version>
 
     <packaging>jar</packaging>
     <description>{{ customConfig.title }}</description>

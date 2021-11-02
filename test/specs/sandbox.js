@@ -31,6 +31,16 @@ module.exports = () => {
                 resolve();
             })),
         /**
+         * Sets the version in the package.json file
+         */
+        setVersion: (version) => new Promise((resolve, reject) => {
+            process.chdir(apiDir);
+            const packageJSON = JSON.parse(fs.readFileSync(`./package.json`));
+            packageJSON.version = version;
+            fs.writeFileSync('./package.json', JSON.stringify(packageJSON));
+            resolve();
+        }),
+        /**
          * Removes the temp dir
          */
         clean: () => new Promise((resolve, reject) => {

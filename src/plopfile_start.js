@@ -8,8 +8,15 @@ module.exports = function (plop, cfg) {
     const defaultsDir = defaults && defaults.dir || path.join(os.tmpdir(), 'apikana-plugin-packages', 'apikana-defaults')
 
     const currentPath = process.cwd();
-    plop.setHelper('ConvertVersion', (version) => {
-        return version.replace(/-(?!.*-).*/, "-SNAPSHOT");
+    plop.setHelper('ConvertVersion', (version, snapshotVersion) => {
+        switch (snapshotVersion) {
+            case 'NEVER':
+                return version;
+            case 'ALL_NON_FINAL':
+                return version.replace(/-(?!.*-).*/, "-SNAPSHOT");
+            default:
+                return version.replace(/-rc\.[0-9]+$/, "-SNAPSHOT");
+        }
     });
 
     plop.setHelper('urlEncode', function(options) {
