@@ -2,14 +2,17 @@ const fs = require('fs-extra');
 
 [
     ['1.0.0', 'NEVER', '1.0.0'],
-    ['1.0.0', 'RC_ONLY', '1.0.0'],
-    ['1.0.0', 'ALL_NON_FINAL', '1.0.0'],
     ['1.0.0-rc.1', 'NEVER', '1.0.0-rc.1'],
-    ['1.0.0-rc.1', 'RC_ONLY', '1.0.0-SNAPSHOT'],
-    ['1.0.0-rc.1', 'ALL_NON_FINAL', '1.0.0-SNAPSHOT'],
     ['1.0.0-feature-test.1', 'NEVER', '1.0.0-feature-test.1'],
+    ['1.0.0', 'RC_ONLY', '1.0.0'],
+    ['1.0.0-rc.1', 'RC_ONLY', '1.0.0-SNAPSHOT'],
     ['1.0.0-feature-test.1', 'RC_ONLY', '1.0.0-feature-test.1'],
-    ['1.0.0-feature-test.1', 'ALL_NON_FINAL', '1.0.0-feature-SNAPSHOT']
+    ['1.0.0', 'ALL_NON_FINAL', '1.0.0'],
+    ['1.0.0-rc.1', 'ALL_NON_FINAL', '1.0.0-SNAPSHOT'],
+    ['1.0.0-feature-test.1', 'ALL_NON_FINAL', '1.0.0-feature-SNAPSHOT'],
+    ['1.0.0', null, '1.0.0'],
+    ['1.0.0-rc.1', null, '1.0.0-SNAPSHOT'],
+    ['1.0.0-feature-test.1', null, '1.0.0-feature-test.1']
 ].forEach(([version, snapshotVersion, expectedMvnVersion]) => {
     describe('an Api with version', () => {
         const sandbox = require('./sandbox')();
@@ -17,19 +20,19 @@ const fs = require('fs-extra');
         beforeAll(() => sandbox.init()
             .then(() => sandbox.scaffold({
                 type: 'stream-api',
-                    domain: 'acme.org',
-                    author: 'coyote',
-                    namespace: 'garden.pet',
-                    shortName: 'garden-pet',
-                    projectName: 'garden-pet-stream-api',
-                    title: 'Garden Pet Stream API',
-                    plugins: ['maven', 'dotnet'],
-                    javaPackage: 'org.acme.garden.pet.v1',
-                    mavenGroupId: 'org.acme.garden',
-                    snapshotVersion: snapshotVersion,
-                    dotnetNamespace: 'Org.Acme.Garden.Pet',
-                    dotnetPackageId: 'Org.Acme.Garden.Pet.StreamApi',
-                    mqs: 'Kafka'
+                domain: 'acme.org',
+                author: 'coyote',
+                namespace: 'garden.pet',
+                shortName: 'garden-pet',
+                projectName: 'garden-pet-stream-api',
+                title: 'Garden Pet Stream API',
+                plugins: ['maven', 'dotnet'],
+                javaPackage: 'org.acme.garden.pet.v1',
+                mavenGroupId: 'org.acme.garden',
+                snapshotVersion: snapshotVersion,
+                dotnetNamespace: 'Org.Acme.Garden.Pet',
+                dotnetPackageId: 'Org.Acme.Garden.Pet.StreamApi',
+                mqs: 'Kafka'
             })
             .then(() => sandbox.setVersion(version)
             .then(sandbox.generate)))
@@ -41,6 +44,37 @@ const fs = require('fs-extra');
             return expect(pom)
                 .toContain(`<version>${expectedMvnVersion}</version>`)
         });
+    });
+});
+
+describe('an Api with version', () => {
+    const sandbox = require('./sandbox')();
+    var dir;
+    beforeAll(() => sandbox.init()
+        .then(() => sandbox.scaffold({
+            type: 'stream-api',
+            domain: 'acme.org',
+            author: 'coyote',
+            namespace: 'garden.pet',
+            shortName: 'garden-pet',
+            projectName: 'garden-pet-stream-api',
+            title: 'Garden Pet Stream API',
+            plugins: ['maven', 'dotnet'],
+            javaPackage: 'org.acme.garden.pet.v1',
+            mavenGroupId: 'org.acme.garden', // snapshotVersion undefined
+            dotnetNamespace: 'Org.Acme.Garden.Pet',
+            dotnetPackageId: 'Org.Acme.Garden.Pet.StreamApi',
+            mqs: 'Kafka'
+        })
+        .then(() => sandbox.setVersion('0.1.0-feature-sample.13')
+        .then(sandbox.generate)))
+        .then(result => { dir = result.dir }));
+    afterAll(sandbox.clean);
+
+    it(`should set snapshot version in pom.xml when default setting is used`, () => {
+        var pom = fs.readFileSync(`${dir}/gen/maven/pom.xml`).toString('utf8');
+        return expect(pom)
+            .toContain(`<version>0.1.0-feature-sample.13</version>`)
     });
 });
 
