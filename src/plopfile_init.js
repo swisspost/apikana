@@ -126,7 +126,7 @@ module.exports = function (plop, cfg) {
                     defaults.plugins &&
                     defaults.plugins.maven &&
                     defaults.plugins.maven.ignoreNamespacePrefix || '') + '\\.', 'g'), '')+'.v1'
-        }, {
+        },{
             type: 'input',
             name: 'mavenGroupId',
             message: 'Which Maven groupId do you want to use?',

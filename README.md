@@ -82,6 +82,21 @@ This files can be overwritten by defining a `templates` directory in the root fo
 
 Matching filenames will be overwritten. All others will be copied in the `gen` directory.
 
+> **A note on Java code generation**
+>
+> By default Apikana generates Maven SNAPSHOT version for release candidates (version number of the stream api looks like `1.0.0-rc.3`). Due to a bug in Apikana < 0.9.23 it also considered versions like `1.0.0-feature-test.13` as release candidates. This old buggy behavior can be restored by configuring a setting in the generated stream api `package.json` file:
+> ```json
+> // File package.json
+> {
+>   // ...
+>   "customConfig": {
+>     // ...
+>     "snapshotVersion": "ALL_NON_FINAL"
+>     // ...
+>   }
+> }
+> ```
+
 
 ### Use as a devDependency
 
