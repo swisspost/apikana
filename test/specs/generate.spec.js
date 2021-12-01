@@ -108,6 +108,22 @@ describe('generating', () => {
             expect(fs.existsSync(`${dir}/dist`))
                 .toBeTruthy());
 
+        it('should generate dist v4', () =>
+            expect(fs.existsSync(`${dir}/dist/model/json-schema-v4`))
+                .toBeTruthy());
+
+        it('should generate dist v3', () =>
+            expect(fs.existsSync(`${dir}/dist/model/json-schema-v3`))
+                .toBeTruthy());
+
+        it('should generate dist v7', () =>
+            expect(fs.existsSync(`${dir}/dist/model/json-schema-v7`))
+                .toBeTruthy());
+
+        it('dist v7 should not be empty', () =>
+            expect(fs.emptyDirSync(`${dir}/dist/model/json-schema-v7`))
+                .toBeFalsy());
+
         it('should generate pom.xml', () =>
             expect(fs.existsSync(`${dir}/gen/maven/pom.xml`))
                 .toBeTruthy());
@@ -178,6 +194,10 @@ describe('generating', () => {
                     new Promise(resolve =>
                         gulp.src('src/ts/**/*.ts', {cwd: depDir})
                             .pipe(gulp.dest('node_modules/-api-dependencies/ts/wild-pet-rest-api/dist/model/ts', {cwd: mainDir})).on('finish', resolve)))
+                .then(() =>
+                    new Promise(resolve =>
+                        gulp.src('dist/model/json-schema-v7/*.json', {cwd: depDir})
+                            .pipe(gulp.dest('node_modules/-api-dependencies/ts/wild-pet-rest-api/dist/model/json-schema-v7', {cwd: mainDir})).on('finish', resolve)))
                 .then(() =>
                     new Promise(resolve =>
                         gulp.src('dist/model/json-schema-v4/*.json', {cwd: depDir})

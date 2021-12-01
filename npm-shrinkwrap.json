@@ -1,6 +1,6 @@
 {
   "name": "apikana",
-  "version": "0.9.23",
+  "version": "0.9.24",
   "lockfileVersion": 1,
   "requires": true,
   "dependencies": {
@@ -2993,6 +2993,37 @@
         "randexp": "^0.5.3"
       }
     },
+    "json-schema-migrate": {
+      "version": "2.0.0",
+      "resolved": false,
+      "integrity": "sha1-M171IYzTL8yWwd3OZscbpYYiRJY=",
+      "requires": {
+        "ajv": "^8.0.0"
+      },
+      "dependencies": {
+        "ajv": {
+          "version": "8.8.2",
+          "resolved": false,
+          "integrity": "sha1-AbT+8gB6KL918Lf8AJ9iZ53kq7s=",
+          "requires": {
+            "fast-deep-equal": "^3.1.1",
+            "json-schema-traverse": "^1.0.0",
+            "require-from-string": "^2.0.2",
+            "uri-js": "^4.2.2"
+          }
+        },
+        "fast-deep-equal": {
+          "version": "3.1.3",
+          "resolved": false,
+          "integrity": "sha1-On1WtVnWy8PrUSMlJE5hmmXGxSU="
+        },
+        "json-schema-traverse": {
+          "version": "1.0.0",
+          "resolved": false,
+          "integrity": "sha1-rnvLNlard6c7pcSb9lTzjmtoYOI="
+        }
+      }
+    },
     "json-schema-ref-parser": {
       "version": "6.1.0",
       "resolved": false,
@@ -4415,6 +4446,11 @@
           }
         }
       }
+    },
+    "require-from-string": {
+      "version": "2.0.2",
+      "resolved": false,
+      "integrity": "sha1-iaf92TgmEmcxjq/hT5wy5ZjDaQk="
     },
     "resolve": {
       "version": "1.11.0",
