@@ -6,6 +6,7 @@ var fse = require('fs-extra');
 var path = require('path');
 var schemaGen = require('./schema-gen');
 var params = require('./params');
+var migrator = require("json-schema-migrate");
 
 module.exports = {
     mkdirs: mkdirs,
@@ -48,6 +49,7 @@ module.exports = {
                 fs.writeFileSync(schemaFile(name, 'v4'), JSON.stringify(schema, null, 2));
                 convertToV3(schema, v3);
                 fs.writeFileSync(schemaFile(name, 'v3'), JSON.stringify(schema, null, 2));
+                fs.writeFileSync(schemaFile(name, 'v7'), JSON.stringify(migrator.draft7(schema), null, 2));
             }
         }
 
@@ -208,6 +210,7 @@ module.exports = {
 function mkdirs(dest) {
     fse.mkdirsSync(schemaDir(dest, 'v3'));
     fse.mkdirsSync(schemaDir(dest, 'v4'));
+    fse.mkdirsSync(schemaDir(dest, 'v7'));
 }
 
 function schemaDir(dest, version) {

@@ -22,6 +22,7 @@ const PathV3Generator = require('./path-v3-generator/path-v3-generator');
 const JavaGen = require('./java-gen');
 const {JSONPath} = require('jsonpath-plus');
 const jsonSchemaAvro = require('./generate-avro');
+const migrate = require("json-schema-migrate");
 
 module.exports = {
     generate: function (source, dest, done) {
@@ -544,6 +545,9 @@ module.exports = {
                         this.delete(this.key);
                     }
                 });
+
+                // Migrate the complete api to json schema draft version 7
+                migrate.draft7(cleanCompleteApi);
 
                 var out = path.resolve(dest, 'model/openapi');
                 fse.mkdirsSync(out);
