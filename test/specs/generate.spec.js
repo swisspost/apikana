@@ -142,6 +142,57 @@ describe('generating', () => {
             expect(fs.existsSync(`${dir}/dist/model/ts/node_modules/apikana/default-types.ts`))
                 .toBeTruthy());
 
+
+        it('generated schema json v4 files should have correct schema defined', () => {
+            var fileNames = fs.readdirSync(`${dir}/dist/model/json-schema-v4`);
+                for(var i = 0; i < fileNames.length; i++){
+                    var json = JSON.parse(fs.readFileSync(`${dir}/dist/model/json-schema-v4/${fileNames[i]}`).toString('utf8'))
+
+                    expect(json.$schema)
+                        .toBe("http://json-schema.org/draft-04/schema#");
+                    expect(json.id)
+                        .toEqual(jasmine.anything());
+                }
+        });
+
+        it('generated schema json v3 files should have correct schema defined', () => {
+            var fileNames = fs.readdirSync(`${dir}/dist/model/json-schema-v3`);
+                for(var i = 0; i < fileNames.length; i++){
+                    var json = JSON.parse(fs.readFileSync(`${dir}/dist/model/json-schema-v3/${fileNames[i]}`).toString('utf8'))
+
+                    expect(json.$schema)
+                        .toBe("http://json-schema.org/draft-03/schema#");
+                    expect(json.id)
+                        .toEqual(jasmine.anything());
+                }
+        });
+
+        it('generated schema json v7 files should have correct schema defined', () => {
+            var fileNames = fs.readdirSync(`${dir}/dist/model/json-schema-v7`);
+                for(var i = 0; i < fileNames.length; i++){
+                    var json = JSON.parse(fs.readFileSync(`${dir}/dist/model/json-schema-v7/${fileNames[i]}`).toString('utf8'))
+
+                    expect(json.$schema)
+                        .toBe("http://json-schema.org/draft-07/schema");
+                    expect(json.$id) // id property gets migrated with draft migration: id -> $id.
+                        .toEqual(jasmine.anything());
+                }
+        });
+
+        it('generated schema full json v7 file should have correct schema defined', () => {
+            var fileNames = fs.readdirSync(`${dir}/dist/model/json-schema-v7-full`);
+                for(var i = 0; i < fileNames.length; i++){
+                    var json = JSON.parse(fs.readFileSync(`${dir}/dist/model/json-schema-v7-full/${fileNames[i]}`).toString('utf8'))
+
+                    expect(json.$schema)
+                        .toBe("http://json-schema.org/draft-07/schema");
+                    expect(json.$id)
+                        .toEqual(jasmine.anything());
+                    expect(json.definitions.Pet.properties.firstName.type)
+                        .toBe('string');
+                }
+        });
+
         describe('generated JSON API', () => {
             var api;
             beforeAll(() => { api = JSON.parse(fs.readFileSync(`${dir}/dist/model/openapi/api.json`).toString('utf8')) });

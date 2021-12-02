@@ -46,10 +46,14 @@ module.exports = {
                     delete schema.required;
                 }
 
+                // Copy the schema to be able to cleanly migrate it to a newer draft version.
+                var schemaCopy = Object.assign({}, schema);
+
                 fs.writeFileSync(schemaFile(name, 'v4'), JSON.stringify(schema, null, 2));
                 convertToV3(schema, v3);
                 fs.writeFileSync(schemaFile(name, 'v3'), JSON.stringify(schema, null, 2));
-                fs.writeFileSync(schemaFile(name, 'v7'), JSON.stringify(migrator.draft7(schema), null, 2));
+                migrator.draft7(schemaCopy);
+                fs.writeFileSync(schemaFile(name, 'v7'), JSON.stringify(schemaCopy, null, 2));
             }
         }
 
