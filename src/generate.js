@@ -529,9 +529,7 @@ module.exports = {
                     fullSchema.$schema = 'http://json-schema.org/draft-04/schema#',
                     fullSchema.definitions = resolveDefinitions(fullSchema.properties, completeApi.definitions)
                     var fileName = model.modelName.replace(/([^^])([A-Z]+)/g, '$1-$2').toLowerCase();
-                    var jsonSchemaOutputDir = path.resolve(dest, 'model/json-schema-v4-full')
-                    fse.mkdirsSync(jsonSchemaOutputDir);
-                    fs.writeFileSync(path.resolve(jsonSchemaOutputDir, fileName + '.json'), JSON.stringify(fullSchema, 6, 2));
+                    writeFullSchemaFiles(dest, fileName, fullSchema);
                     var avroOutputDir = path.resolve(dest, 'model/avro-full')
                     fse.mkdirsSync(avroOutputDir);
                     var avroConfig = generateEnv.variables().customConfig.avro;
@@ -557,6 +555,19 @@ module.exports = {
                 fs.writeFileSync(path.resolve(out, 'complete-api.yaml'), yaml.stringify(cleanCompleteApi, 6, 2));
             });
         });
+
+        function writeFullSchemaFiles(destination, fileName, schema){
+
+            var fullSchema = Object.assign({}, schema);
+
+            var jsonSchemaOutputDirV4 = path.resolve(destination, 'model/json-schema-v4-full')
+            var jsonSchemaOutputDirV7 = path.resolve(destination, 'model/json-schema-v7-full')
+            fse.mkdirsSync(jsonSchemaOutputDirV4);
+            fse.mkdirsSync(jsonSchemaOutputDirV7);
+            fs.writeFileSync(path.resolve(jsonSchemaOutputDirV4, fileName + '.json'), JSON.stringify(fullSchema, 6, 2));
+            migrate.draft7(fullSchema)
+            fs.writeFileSync(path.resolve(jsonSchemaOutputDirV7, fileName + '.json'), JSON.stringify(fullSchema, 6, 2));
+        }
 
         // Traverse the reference tree to keep only the needed definitions for the root schema
         function resolveDefinitions(root, allDefinitions) {
