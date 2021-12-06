@@ -116,12 +116,12 @@ describe('generating', () => {
             expect(fs.existsSync(`${dir}/dist/model/json-schema-v3`))
                 .toBeTruthy());
 
-        it('should generate dist v7', () =>
-            expect(fs.existsSync(`${dir}/dist/model/json-schema-v7`))
+        it('should generate dist latest', () =>
+            expect(fs.existsSync(`${dir}/dist/model/json-schema-latest`))
                 .toBeTruthy());
 
-        it('dist v7 should not be empty', () =>
-            expect(fs.emptyDirSync(`${dir}/dist/model/json-schema-v7`))
+        it('dist latest should not be empty', () =>
+            expect(fs.emptyDirSync(`${dir}/dist/model/json-schema-latest`))
                 .toBeFalsy());
 
         it('should generate pom.xml', () =>
@@ -167,25 +167,25 @@ describe('generating', () => {
                 }
         });
 
-        it('generated schema json v7 files should have correct schema defined', () => {
-            var fileNames = fs.readdirSync(`${dir}/dist/model/json-schema-v7`);
+        it('generated schema json latest files should have correct schema defined', () => {
+            var fileNames = fs.readdirSync(`${dir}/dist/model/json-schema-latest`);
                 for(var i = 0; i < fileNames.length; i++){
-                    var json = JSON.parse(fs.readFileSync(`${dir}/dist/model/json-schema-v7/${fileNames[i]}`).toString('utf8'))
+                    var json = JSON.parse(fs.readFileSync(`${dir}/dist/model/json-schema-latest/${fileNames[i]}`).toString('utf8'))
 
                     expect(json.$schema)
-                        .toBe("http://json-schema.org/draft-07/schema");
+                        .toBe("http://json-schema.org/draft-07/schema"); // Adjust this test condition to the current latest draft version
                     expect(json.$id) // id property gets migrated with draft migration: id -> $id.
                         .toEqual(jasmine.anything());
                 }
         });
 
-        it('generated schema full json v7 file should have correct schema defined', () => {
-            var fileNames = fs.readdirSync(`${dir}/dist/model/json-schema-v7-full`);
+        it('generated schema full json latest file should have correct schema defined', () => {
+            var fileNames = fs.readdirSync(`${dir}/dist/model/json-schema-latest-full`);
                 for(var i = 0; i < fileNames.length; i++){
-                    var json = JSON.parse(fs.readFileSync(`${dir}/dist/model/json-schema-v7-full/${fileNames[i]}`).toString('utf8'))
+                    var json = JSON.parse(fs.readFileSync(`${dir}/dist/model/json-schema-latest-full/${fileNames[i]}`).toString('utf8'))
 
                     expect(json.$schema)
-                        .toBe("http://json-schema.org/draft-07/schema");
+                        .toBe("http://json-schema.org/draft-07/schema"); // Adjust this test condition to the current latest draft version
                     expect(json.$id)
                         .toEqual(jasmine.anything());
                     expect(json.definitions.Pet.properties.firstName.type)
@@ -247,8 +247,8 @@ describe('generating', () => {
                             .pipe(gulp.dest('node_modules/-api-dependencies/ts/wild-pet-rest-api/dist/model/ts', {cwd: mainDir})).on('finish', resolve)))
                 .then(() =>
                     new Promise(resolve =>
-                        gulp.src('dist/model/json-schema-v7/*.json', {cwd: depDir})
-                            .pipe(gulp.dest('node_modules/-api-dependencies/ts/wild-pet-rest-api/dist/model/json-schema-v7', {cwd: mainDir})).on('finish', resolve)))
+                        gulp.src('dist/model/json-schema-latest/*.json', {cwd: depDir})
+                            .pipe(gulp.dest('node_modules/-api-dependencies/ts/wild-pet-rest-api/dist/model/json-schema-latest', {cwd: mainDir})).on('finish', resolve)))
                 .then(() =>
                     new Promise(resolve =>
                         gulp.src('dist/model/json-schema-v4/*.json', {cwd: depDir})

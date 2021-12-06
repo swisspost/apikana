@@ -561,12 +561,12 @@ module.exports = {
             var fullSchema = Object.assign({}, schema);
 
             var jsonSchemaOutputDirV4 = path.resolve(destination, 'model/json-schema-v4-full')
-            var jsonSchemaOutputDirV7 = path.resolve(destination, 'model/json-schema-v7-full')
+            var jsonSchemaOutputDirLatest = path.resolve(destination, 'model/json-schema-latest-full')
             fse.mkdirsSync(jsonSchemaOutputDirV4);
-            fse.mkdirsSync(jsonSchemaOutputDirV7);
+            fse.mkdirsSync(jsonSchemaOutputDirLatest);
             fs.writeFileSync(path.resolve(jsonSchemaOutputDirV4, fileName + '.json'), JSON.stringify(fullSchema, 6, 2));
             migrate.draft7(fullSchema)
-            fs.writeFileSync(path.resolve(jsonSchemaOutputDirV7, fileName + '.json'), JSON.stringify(fullSchema, 6, 2));
+            fs.writeFileSync(path.resolve(jsonSchemaOutputDirLatest, fileName + '.json'), JSON.stringify(fullSchema, 6, 2));
         }
 
         // Traverse the reference tree to keep only the needed definitions for the root schema
