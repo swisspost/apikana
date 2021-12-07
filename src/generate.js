@@ -22,7 +22,7 @@ const PathV3Generator = require('./path-v3-generator/path-v3-generator');
 const JavaGen = require('./java-gen');
 const {JSONPath} = require('jsonpath-plus');
 const jsonSchemaAvro = require('./generate-avro');
-const migrate = require("json-schema-migrate");
+const migrate = require("./schema-migrate");
 
 module.exports = {
     generate: function (source, dest, done) {
@@ -529,9 +529,7 @@ module.exports = {
                     fullSchema.$schema = 'http://json-schema.org/draft-04/schema#',
                     fullSchema.definitions = resolveDefinitions(fullSchema.properties, completeApi.definitions)
                     var fileName = model.modelName.replace(/([^^])([A-Z]+)/g, '$1-$2').toLowerCase();
-                    var jsonSchemaOutputDir = path.resolve(dest, 'model/json-schema-v4-full')
-                    fse.mkdirsSync(jsonSchemaOutputDir);
-                    fs.writeFileSync(path.resolve(jsonSchemaOutputDir, fileName + '.json'), JSON.stringify(fullSchema, 6, 2));
+                    writeFullSchemaFiles(dest, fileName, fullSchema);
                     var avroOutputDir = path.resolve(dest, 'model/avro-full')
                     fse.mkdirsSync(avroOutputDir);
                     var avroConfig = generateEnv.variables().customConfig.avro;
@@ -547,16 +545,28 @@ module.exports = {
                 });
 
                 // Migrate the complete api to json schema draft version 7
-                migrate.draft7(cleanCompleteApi);
+                var latestSchema = migrate.migrateSchemaToLatestVersion(cleanCompleteApi);
 
                 var out = path.resolve(dest, 'model/openapi');
                 fse.mkdirsSync(out);
                 fs.writeFileSync(path.resolve(out, 'api.json'), JSON.stringify(cleanRestApi, null, 2));
                 fs.writeFileSync(path.resolve(out, 'api.yaml'), yaml.stringify(cleanRestApi, 6, 2));
-                fs.writeFileSync(path.resolve(out, 'complete-api.json'), JSON.stringify(cleanCompleteApi, null, 2));
+                fs.writeFileSync(path.resolve(out, 'complete-api.json'), JSON.stringify(latestSchema, null, 2));
                 fs.writeFileSync(path.resolve(out, 'complete-api.yaml'), yaml.stringify(cleanCompleteApi, 6, 2));
             });
         });
+
+        function writeFullSchemaFiles(destination, fileName, schema){
+
+            var latestSchema = migrate.migrateSchemaToLatestVersion(schema);
+
+            var jsonSchemaOutputDirV4 = path.resolve(destination, 'model/json-schema-v4-full')
+            var jsonSchemaOutputDirLatest = path.resolve(destination, 'model/json-schema-latest-full')
+            fse.mkdirsSync(jsonSchemaOutputDirV4);
+            fse.mkdirsSync(jsonSchemaOutputDirLatest);
+            fs.writeFileSync(path.resolve(jsonSchemaOutputDirV4, fileName + '.json'), JSON.stringify(schema, 6, 2));
+            fs.writeFileSync(path.resolve(jsonSchemaOutputDirLatest, fileName + '.json'), JSON.stringify(latestSchema, 6, 2));
+        }
 
         // Traverse the reference tree to keep only the needed definitions for the root schema
         function resolveDefinitions(root, allDefinitions) {
