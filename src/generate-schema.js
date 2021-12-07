@@ -6,7 +6,7 @@ var fse = require('fs-extra');
 var path = require('path');
 var schemaGen = require('./schema-gen');
 var params = require('./params');
-var migrator = require("json-schema-migrate");
+var migrator = require("./schema-migrate");
 
 module.exports = {
     mkdirs: mkdirs,
@@ -47,13 +47,12 @@ module.exports = {
                 }
 
                 // Copy the schema to be able to cleanly migrate it to a newer draft version.
-                var schemaCopy = Object.assign({}, schema);
+                var latestSchema = migrator.migrateSchemaToLatestVersion(schema);
 
                 fs.writeFileSync(schemaFile(name, 'v4'), JSON.stringify(schema, null, 2));
                 convertToV3(schema, v3);
                 fs.writeFileSync(schemaFile(name, 'v3'), JSON.stringify(schema, null, 2));
-                migrator.draft7(schemaCopy);
-                fs.writeFileSync(schemaFile(name, 'v7'), JSON.stringify(schemaCopy, null, 2));
+                fs.writeFileSync(schemaFile(name, 'latest'), JSON.stringify(latestSchema, null, 2));
             }
         }
 
@@ -214,7 +213,7 @@ module.exports = {
 function mkdirs(dest) {
     fse.mkdirsSync(schemaDir(dest, 'v3'));
     fse.mkdirsSync(schemaDir(dest, 'v4'));
-    fse.mkdirsSync(schemaDir(dest, 'v7'));
+    fse.mkdirsSync(schemaDir(dest, 'latest'));
 }
 
 function schemaDir(dest, version) {
