@@ -9,7 +9,7 @@ export interface Pet {
     /**
      * The id.
      */
-    id: string
+    petId: string
 
     /**
      * The given name.

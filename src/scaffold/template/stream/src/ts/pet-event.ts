@@ -10,24 +10,28 @@ export interface PetEvent {
     /**
      * Event field set for an adoption.
      */
-    adopted: {
-        pet: Pet
-
-        /**
-         * Who adopted the pet.
-         */
-        owner: string
-    }
+    adopted: AdoptedEvent
 
     /**
      * Event field set when a pet was lost.
      */
-    lost: {
-        pet: Pet
+    lost: LostEvent
+}
 
-        /**
-         * Where the pet has been seen the last time.
-         */
-        location: string
-    }
+export interface AdoptedEvent {
+    pet: Pet
+
+    /**
+     * Who adopted the pet.
+     */
+    owner: string
+}
+
+export interface LostEvent {
+    pet: Pet
+
+    /**
+     * Where the pet has been seen the last time.
+     */
+    location: string
 }

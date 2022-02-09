@@ -10,7 +10,7 @@ host: server:8080
 basePath: /
 
 paths:
-  /{{shortName}}/v1/pets:
+  /{{pathCase namespace}}/v1/pets:
     get:
       summary: All pets
       description: Returns all known pets.
@@ -27,7 +27,6 @@ paths:
         200:
           description: A collection of pets.
           schema:
-            type: array
             $ref: "#/definitions/PetList"
         500:
           description: Pets are dead.
