@@ -10,7 +10,7 @@ host: server:8080
 basePath: /
 
 paths:
-  /{{shortName}}/v1/pets:
+  /{{pathCase namespace}}/v1/pets:
     get:
       summary: All pets
       description: Returns all known pets.
