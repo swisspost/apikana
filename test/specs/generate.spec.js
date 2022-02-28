@@ -175,7 +175,7 @@ describe('generating', () => {
                     expect(json.$schema)
                         .toBe("http://json-schema.org/draft-07/schema"); // Adjust this test condition to the current latest draft version
                     expect(json.$id) // id property gets migrated with draft migration: id -> $id.
-                        .toEqual(jasmine.anything());
+                        .toMatch("^#.*");
                 }
         });
 
@@ -187,7 +187,7 @@ describe('generating', () => {
                     expect(json.$schema)
                         .toBe("http://json-schema.org/draft-07/schema"); // Adjust this test condition to the current latest draft version
                     expect(json.$id)
-                        .toEqual(jasmine.anything());
+                        .toMatch("^#.*");
                     expect(json.definitions.Pet.properties.firstName.type)
                         .toBe('string');
                 }
