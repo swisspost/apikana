@@ -59,7 +59,7 @@ module.exports = function (plop, cfg) {
         },{
             type: 'input',
             name: 'namespace',
-            message: 'What is the full API name (including namespace)?',
+            message: 'What is the full API namespace?',
             filter: answer => changeCase.dot(changeCase.dot(changeCase.lower(answer))),
             validate: answer => {
                 if(answer.length == 0) return "Please give a name"
