@@ -544,20 +544,18 @@ module.exports = {
                     }
                 });
 
-                // Migrate the complete api to json schema draft version 7
-                var latestSchema = migrate.migrateSchemaToLatestVersion(cleanCompleteApi);
-
                 var out = path.resolve(dest, 'model/openapi');
                 fse.mkdirsSync(out);
                 fs.writeFileSync(path.resolve(out, 'api.json'), JSON.stringify(cleanRestApi, null, 2));
                 fs.writeFileSync(path.resolve(out, 'api.yaml'), yaml.stringify(cleanRestApi, 6, 2));
-                fs.writeFileSync(path.resolve(out, 'complete-api.json'), JSON.stringify(latestSchema, null, 2));
+                fs.writeFileSync(path.resolve(out, 'complete-api.json'), JSON.stringify(cleanCompleteApi, null, 2));
                 fs.writeFileSync(path.resolve(out, 'complete-api.yaml'), yaml.stringify(cleanCompleteApi, 6, 2));
             });
         });
 
         function writeFullSchemaFiles(destination, fileName, schema){
 
+            // Migrate the complete api to json schema draft version 7
             var latestSchema = migrate.migrateSchemaToLatestVersion(schema);
 
             var jsonSchemaOutputDirV4 = path.resolve(destination, 'model/json-schema-v4-full')
