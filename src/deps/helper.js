@@ -56,6 +56,9 @@ $ = function (f) {
         if (models.length > 0) {
             return generateSchema(models);
         } else {
+            for (var def in spec.definitions) {
+                processRefs(spec.definitions[def]);
+            }
             return null;
         }
     }).then(function(schema) {
