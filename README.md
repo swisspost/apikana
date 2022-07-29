@@ -33,6 +33,8 @@ Run `apikana init`.
 
 This starts an interactive wizard that lets you define the main aspects of the API project.
 
+Then enter the project directory and run `npm install` to install all the required dependencies.
+
 ### Use as a global tool
 
 When `apikana start` is executed, it looks in `src/openapi` for a file named `api.yaml`.

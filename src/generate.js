@@ -534,7 +534,8 @@ module.exports = {
                     fse.mkdirsSync(avroOutputDir);
                     var avroConfig = generateEnv.variables().customConfig.avro;
                     return jsonSchemaAvro().convert(fullSchema, undefined, undefined, undefined, avroConfig).then(avroSchema =>
-                        fs.writeFileSync(path.resolve(avroOutputDir, fileName + '.avsc'), JSON.stringify(avroSchema, 6, 2)));
+                        fs.writeFileSync(path.resolve(avroOutputDir, fileName + '.avsc'), JSON.stringify(avroSchema, 6, 2)),
+                        e => log.warn("Warning: could not generate avro schema: " + e));
                 });
 
             return Promise.all(promises).then( () => {
@@ -567,13 +568,15 @@ module.exports = {
         }
 
         // Traverse the reference tree to keep only the needed definitions for the root schema
-        function resolveDefinitions(root, allDefinitions) {
-            var result = {};
+        function resolveDefinitions(root, allDefinitions, result) {
+            result = result || {};
             traverse.forEach(root, function (value) {
                 if (this.key === '$ref') {
                     var type = value.split('/').pop();
-                    result[type] = allDefinitions[type];
-                    Object.assign(result, resolveDefinitions(allDefinitions[type], allDefinitions));
+                    if (!result[type]) {
+                        result[type] = allDefinitions[type];
+                        resolveDefinitions(allDefinitions[type], allDefinitions, result);
+                    }
                 }
             });
             return result;
