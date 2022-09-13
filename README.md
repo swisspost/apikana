@@ -1,11 +1,11 @@
-<p align='right'>A <a href="http://www.swisspush.org">swisspush</a> project <a href="http://www.swisspush.org" border=0><img align="top"  src='https://1.gravatar.com/avatar/cf7292487846085732baf808def5685a?s=32'></a></p>
+<p align='right'>A <a href="https://developer.post.ch/">swisspost</a> project <a href="https://developer.post.ch/" border=0><img align="top"  src='https://avatars.githubusercontent.com/u/92710854?s=32&v=4'></a></p>
 <p align="center">
   <img src="https://cloud.githubusercontent.com/assets/692124/21751899/37cc152c-d5cf-11e6-97ac-a5811f48c070.png"/>
 </p>
 
 # Apikana
 
-<a href="https://travis-ci.org/swisspush/apikana"><img src="https://travis-ci.org/swisspush/apikana.svg?branch=develop"/></a> <a href="https://www.npmjs.com/package/apikana"><img src="https://img.shields.io/npm/v/apikana"/></a>
+[![Build project](https://github.com/swisspost/apikana/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/swisspost/apikana/actions/workflows/build.yml) <a href="https://www.npmjs.com/package/apikana"><img src="https://img.shields.io/npm/v/apikana"/></a>
 
 Integrated tools for REST and Messaging API design.
 
