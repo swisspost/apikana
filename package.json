@@ -19,6 +19,17 @@
     "type": "git",
     "url": "git+https://github.com/swisspush/apikana.git"
   },
+  "release": {
+    "branches": [
+      "master",
+      { "name": "develop", "channel": "next" }
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/npm",
+      "@semantic-release/git"
+    ]
+  },
   "keywords": [
     "REST",
     "API",
@@ -75,12 +86,13 @@
     "yamljs": "0.2.8"
   },
   "devDependencies": {
-    "shonkwrap": "^1.3.0",
     "brfs": "1.4.3",
     "browserify": "13.0.0",
     "crlf": "1.1.0",
     "docson": "1.0.2",
     "jasmine": "3.3.0",
-    "java-parser": "0.0.2"
+    "java-parser": "0.0.2",
+    "semantic-release": "^19.0.5",
+    "shonkwrap": "^1.3.0"
   }
 }
