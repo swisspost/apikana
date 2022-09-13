@@ -1,7 +1,6 @@
 name: Build project
 on:
   pull_request:
-  push:
 
 env:
   DEBUG: 1 # Use DEBUG mode to ensure more accurate tests.
