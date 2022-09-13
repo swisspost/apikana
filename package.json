@@ -21,7 +21,8 @@
   },
   "release": {
     "branches": [
-      "master"
+      "master",
+      { "name": "develop", "channel": "next" }
     ],
     "plugins": [
       "@semantic-release/commit-analyzer",
