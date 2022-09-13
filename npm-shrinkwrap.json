@@ -45,6 +45,8 @@
         "apikana-serve": "bin/apikana-serve"
       },
       "devDependencies": {
+        "@semantic-release/git": "^10.0.1",
+        "@semantic-release/npm": "^9.0.1",
         "brfs": "1.4.3",
         "browserify": "13.0.0",
         "crlf": "1.1.0",
@@ -515,6 +517,140 @@
       "license": "MIT",
       "engines": {
         "node": ">=14.17"
+      }
+    },
+    "node_modules/@semantic-release/git": {
+      "version": "10.0.1",
+      "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/@semantic-release/git/-/git-10.0.1.tgz",
+      "integrity": "sha512-eWrx5KguUcU2wUPaO6sfvZI0wPafUKAMNC18aXY4EnNcrZL86dEmpNVnC9uMpGZkmZJ9EfCVJBQx4pV4EMGT1w==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@semantic-release/error": "^3.0.0",
+        "aggregate-error": "^3.0.0",
+        "debug": "^4.0.0",
+        "dir-glob": "^3.0.0",
+        "execa": "^5.0.0",
+        "lodash": "^4.17.4",
+        "micromatch": "^4.0.0",
+        "p-reduce": "^2.0.0"
+      },
+      "engines": {
+        "node": ">=14.17"
+      },
+      "peerDependencies": {
+        "semantic-release": ">=18.0.0"
+      }
+    },
+    "node_modules/@semantic-release/git/node_modules/braces": {
+      "version": "3.0.2",
+      "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/braces/-/braces-3.0.2.tgz",
+      "integrity": "sha512-b8um+L1RzM3WDSzvhm6gIz1yfTbBt6YTlcEKAvsmqCZZFw46z626lVj9j1yEPW33H5H+lBQpZMP1k8l+78Ha0A==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "fill-range": "^7.0.1"
+      },
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/@semantic-release/git/node_modules/debug": {
+      "version": "4.3.4",
+      "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/debug/-/debug-4.3.4.tgz",
+      "integrity": "sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "ms": "2.1.2"
+      },
+      "engines": {
+        "node": ">=6.0"
+      },
+      "peerDependenciesMeta": {
+        "supports-color": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@semantic-release/git/node_modules/dir-glob": {
+      "version": "3.0.1",
+      "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/dir-glob/-/dir-glob-3.0.1.tgz",
+      "integrity": "sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "path-type": "^4.0.0"
+      },
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/@semantic-release/git/node_modules/fill-range": {
+      "version": "7.0.1",
+      "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/fill-range/-/fill-range-7.0.1.tgz",
+      "integrity": "sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "to-regex-range": "^5.0.1"
+      },
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/@semantic-release/git/node_modules/is-number": {
+      "version": "7.0.0",
+      "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/is-number/-/is-number-7.0.0.tgz",
+      "integrity": "sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.12.0"
+      }
+    },
+    "node_modules/@semantic-release/git/node_modules/micromatch": {
+      "version": "4.0.5",
+      "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/micromatch/-/micromatch-4.0.5.tgz",
+      "integrity": "sha512-DMy+ERcEW2q8Z2Po+WNXuw3c5YaUSFjAO5GsJqfEl7UjvtIuFKO6ZrKvcItdy98dwFI2N1tg3zNIdKaQT+aNdA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "braces": "^3.0.2",
+        "picomatch": "^2.3.1"
+      },
+      "engines": {
+        "node": ">=8.6"
+      }
+    },
+    "node_modules/@semantic-release/git/node_modules/ms": {
+      "version": "2.1.2",
+      "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/ms/-/ms-2.1.2.tgz",
+      "integrity": "sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/@semantic-release/git/node_modules/path-type": {
+      "version": "4.0.0",
+      "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/path-type/-/path-type-4.0.0.tgz",
+      "integrity": "sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/@semantic-release/git/node_modules/to-regex-range": {
+      "version": "5.0.1",
+      "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/to-regex-range/-/to-regex-range-5.0.1.tgz",
+      "integrity": "sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "is-number": "^7.0.0"
+      },
+      "engines": {
+        "node": ">=8.0"
       }
     },
     "node_modules/@semantic-release/github": {
@@ -7019,7 +7155,6 @@
     },
     "node_modules/npm/node_modules/@colors/colors": {
       "version": "1.5.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "optional": true,
@@ -7029,19 +7164,16 @@
     },
     "node_modules/npm/node_modules/@gar/promisify": {
       "version": "1.1.3",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/@isaacs/string-locale-compare": {
       "version": "1.1.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/@npmcli/arborist": {
       "version": "5.6.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7091,7 +7223,6 @@
     },
     "node_modules/npm/node_modules/@npmcli/ci-detect": {
       "version": "2.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "engines": {
@@ -7100,7 +7231,6 @@
     },
     "node_modules/npm/node_modules/@npmcli/config": {
       "version": "4.2.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7119,7 +7249,6 @@
     },
     "node_modules/npm/node_modules/@npmcli/disparity-colors": {
       "version": "2.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7131,7 +7260,6 @@
     },
     "node_modules/npm/node_modules/@npmcli/fs": {
       "version": "2.1.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7144,7 +7272,6 @@
     },
     "node_modules/npm/node_modules/@npmcli/git": {
       "version": "3.0.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7164,7 +7291,6 @@
     },
     "node_modules/npm/node_modules/@npmcli/installed-package-contents": {
       "version": "1.0.7",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7180,7 +7306,6 @@
     },
     "node_modules/npm/node_modules/@npmcli/installed-package-contents/node_modules/npm-bundled": {
       "version": "1.1.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7189,7 +7314,6 @@
     },
     "node_modules/npm/node_modules/@npmcli/map-workspaces": {
       "version": "2.0.4",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7204,7 +7328,6 @@
     },
     "node_modules/npm/node_modules/@npmcli/metavuln-calculator": {
       "version": "3.1.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7219,7 +7342,6 @@
     },
     "node_modules/npm/node_modules/@npmcli/move-file": {
       "version": "2.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7232,13 +7354,11 @@
     },
     "node_modules/npm/node_modules/@npmcli/name-from-folder": {
       "version": "1.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/@npmcli/node-gyp": {
       "version": "2.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "engines": {
@@ -7247,7 +7367,6 @@
     },
     "node_modules/npm/node_modules/@npmcli/package-json": {
       "version": "2.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7259,7 +7378,6 @@
     },
     "node_modules/npm/node_modules/@npmcli/promise-spawn": {
       "version": "3.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7271,7 +7389,6 @@
     },
     "node_modules/npm/node_modules/@npmcli/query": {
       "version": "1.2.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7285,7 +7402,6 @@
     },
     "node_modules/npm/node_modules/@npmcli/run-script": {
       "version": "4.2.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7301,7 +7417,6 @@
     },
     "node_modules/npm/node_modules/@tootallnate/once": {
       "version": "2.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "engines": {
@@ -7310,13 +7425,11 @@
     },
     "node_modules/npm/node_modules/abbrev": {
       "version": "1.1.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/agent-base": {
       "version": "6.0.2",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7328,7 +7441,6 @@
     },
     "node_modules/npm/node_modules/agentkeepalive": {
       "version": "4.2.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7342,7 +7454,6 @@
     },
     "node_modules/npm/node_modules/aggregate-error": {
       "version": "3.1.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7355,7 +7466,6 @@
     },
     "node_modules/npm/node_modules/ansi-regex": {
       "version": "5.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "engines": {
@@ -7364,7 +7474,6 @@
     },
     "node_modules/npm/node_modules/ansi-styles": {
       "version": "4.3.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7379,19 +7488,16 @@
     },
     "node_modules/npm/node_modules/aproba": {
       "version": "2.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/archy": {
       "version": "1.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/are-we-there-yet": {
       "version": "3.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7404,19 +7510,16 @@
     },
     "node_modules/npm/node_modules/asap": {
       "version": "2.0.6",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/balanced-match": {
       "version": "1.0.2",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/bin-links": {
       "version": "3.0.3",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7433,7 +7536,6 @@
     },
     "node_modules/npm/node_modules/bin-links/node_modules/npm-normalize-package-bin": {
       "version": "2.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "engines": {
@@ -7442,7 +7544,6 @@
     },
     "node_modules/npm/node_modules/binary-extensions": {
       "version": "2.2.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "engines": {
@@ -7451,7 +7552,6 @@
     },
     "node_modules/npm/node_modules/brace-expansion": {
       "version": "2.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7460,7 +7560,6 @@
     },
     "node_modules/npm/node_modules/builtins": {
       "version": "5.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7469,7 +7568,6 @@
     },
     "node_modules/npm/node_modules/cacache": {
       "version": "16.1.3",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7498,7 +7596,6 @@
     },
     "node_modules/npm/node_modules/chalk": {
       "version": "4.1.2",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7514,7 +7611,6 @@
     },
     "node_modules/npm/node_modules/chownr": {
       "version": "2.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "engines": {
@@ -7523,7 +7619,6 @@
     },
     "node_modules/npm/node_modules/cidr-regex": {
       "version": "3.1.1",
-      "dev": true,
       "inBundle": true,
       "license": "BSD-2-Clause",
       "dependencies": {
@@ -7535,7 +7630,6 @@
     },
     "node_modules/npm/node_modules/clean-stack": {
       "version": "2.2.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "engines": {
@@ -7544,7 +7638,6 @@
     },
     "node_modules/npm/node_modules/cli-columns": {
       "version": "4.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7557,7 +7650,6 @@
     },
     "node_modules/npm/node_modules/cli-table3": {
       "version": "0.6.2",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7572,7 +7664,6 @@
     },
     "node_modules/npm/node_modules/clone": {
       "version": "1.0.4",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "engines": {
@@ -7581,7 +7672,6 @@
     },
     "node_modules/npm/node_modules/cmd-shim": {
       "version": "5.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7593,7 +7683,6 @@
     },
     "node_modules/npm/node_modules/color-convert": {
       "version": "2.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7605,13 +7694,11 @@
     },
     "node_modules/npm/node_modules/color-name": {
       "version": "1.1.4",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/color-support": {
       "version": "1.1.3",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "bin": {
@@ -7620,7 +7707,6 @@
     },
     "node_modules/npm/node_modules/columnify": {
       "version": "1.6.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7633,25 +7719,21 @@
     },
     "node_modules/npm/node_modules/common-ancestor-path": {
       "version": "1.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/concat-map": {
       "version": "0.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/console-control-strings": {
       "version": "1.1.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/cssesc": {
       "version": "3.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "bin": {
@@ -7663,7 +7745,6 @@
     },
     "node_modules/npm/node_modules/debug": {
       "version": "4.3.4",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7680,13 +7761,11 @@
     },
     "node_modules/npm/node_modules/debug/node_modules/ms": {
       "version": "2.1.2",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/debuglog": {
       "version": "1.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "engines": {
@@ -7695,7 +7774,6 @@
     },
     "node_modules/npm/node_modules/defaults": {
       "version": "1.0.3",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7704,13 +7782,11 @@
     },
     "node_modules/npm/node_modules/delegates": {
       "version": "1.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/depd": {
       "version": "1.1.2",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "engines": {
@@ -7719,7 +7795,6 @@
     },
     "node_modules/npm/node_modules/dezalgo": {
       "version": "1.0.4",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7729,7 +7804,6 @@
     },
     "node_modules/npm/node_modules/diff": {
       "version": "5.1.0",
-      "dev": true,
       "inBundle": true,
       "license": "BSD-3-Clause",
       "engines": {
@@ -7738,13 +7812,11 @@
     },
     "node_modules/npm/node_modules/emoji-regex": {
       "version": "8.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/encoding": {
       "version": "0.1.13",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "optional": true,
@@ -7754,7 +7826,6 @@
     },
     "node_modules/npm/node_modules/env-paths": {
       "version": "2.2.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "engines": {
@@ -7763,19 +7834,16 @@
     },
     "node_modules/npm/node_modules/err-code": {
       "version": "2.0.3",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/fastest-levenshtein": {
       "version": "1.0.12",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/fs-minipass": {
       "version": "2.1.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7787,19 +7855,16 @@
     },
     "node_modules/npm/node_modules/fs.realpath": {
       "version": "1.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/function-bind": {
       "version": "1.1.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/gauge": {
       "version": "4.0.4",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7818,7 +7883,6 @@
     },
     "node_modules/npm/node_modules/glob": {
       "version": "8.0.3",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7837,13 +7901,11 @@
     },
     "node_modules/npm/node_modules/graceful-fs": {
       "version": "4.2.10",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/has": {
       "version": "1.0.3",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7855,7 +7917,6 @@
     },
     "node_modules/npm/node_modules/has-flag": {
       "version": "4.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "engines": {
@@ -7864,13 +7925,11 @@
     },
     "node_modules/npm/node_modules/has-unicode": {
       "version": "2.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/hosted-git-info": {
       "version": "5.1.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7882,13 +7941,11 @@
     },
     "node_modules/npm/node_modules/http-cache-semantics": {
       "version": "4.1.0",
-      "dev": true,
       "inBundle": true,
       "license": "BSD-2-Clause"
     },
     "node_modules/npm/node_modules/http-proxy-agent": {
       "version": "5.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7902,7 +7959,6 @@
     },
     "node_modules/npm/node_modules/https-proxy-agent": {
       "version": "5.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7915,7 +7971,6 @@
     },
     "node_modules/npm/node_modules/humanize-ms": {
       "version": "1.2.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -7924,7 +7979,6 @@
     },
     "node_modules/npm/node_modules/iconv-lite": {
       "version": "0.6.3",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "optional": true,
@@ -7937,7 +7991,6 @@
     },
     "node_modules/npm/node_modules/ignore-walk": {
       "version": "5.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7949,7 +8002,6 @@
     },
     "node_modules/npm/node_modules/imurmurhash": {
       "version": "0.1.4",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "engines": {
@@ -7958,7 +8010,6 @@
     },
     "node_modules/npm/node_modules/indent-string": {
       "version": "4.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "engines": {
@@ -7967,13 +8018,11 @@
     },
     "node_modules/npm/node_modules/infer-owner": {
       "version": "1.0.4",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/inflight": {
       "version": "1.0.6",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -7983,13 +8032,11 @@
     },
     "node_modules/npm/node_modules/inherits": {
       "version": "2.0.4",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/ini": {
       "version": "3.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "engines": {
@@ -7998,7 +8045,6 @@
     },
     "node_modules/npm/node_modules/init-package-json": {
       "version": "3.0.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8016,13 +8062,11 @@
     },
     "node_modules/npm/node_modules/ip": {
       "version": "2.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/ip-regex": {
       "version": "4.3.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "engines": {
@@ -8031,7 +8075,6 @@
     },
     "node_modules/npm/node_modules/is-cidr": {
       "version": "4.0.2",
-      "dev": true,
       "inBundle": true,
       "license": "BSD-2-Clause",
       "dependencies": {
@@ -8043,7 +8086,6 @@
     },
     "node_modules/npm/node_modules/is-core-module": {
       "version": "2.10.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -8055,7 +8097,6 @@
     },
     "node_modules/npm/node_modules/is-fullwidth-code-point": {
       "version": "3.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "engines": {
@@ -8064,25 +8105,21 @@
     },
     "node_modules/npm/node_modules/is-lambda": {
       "version": "1.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/isexe": {
       "version": "2.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/json-parse-even-better-errors": {
       "version": "2.3.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/json-stringify-nice": {
       "version": "1.1.4",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "funding": {
@@ -8091,7 +8128,6 @@
     },
     "node_modules/npm/node_modules/jsonparse": {
       "version": "1.3.1",
-      "dev": true,
       "engines": [
         "node >= 0.2.0"
       ],
@@ -8100,19 +8136,16 @@
     },
     "node_modules/npm/node_modules/just-diff": {
       "version": "5.1.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/just-diff-apply": {
       "version": "5.4.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/libnpmaccess": {
       "version": "6.0.4",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8127,7 +8160,6 @@
     },
     "node_modules/npm/node_modules/libnpmdiff": {
       "version": "4.0.5",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8146,7 +8178,6 @@
     },
     "node_modules/npm/node_modules/libnpmexec": {
       "version": "4.0.12",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8171,7 +8202,6 @@
     },
     "node_modules/npm/node_modules/libnpmfund": {
       "version": "3.0.3",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8183,7 +8213,6 @@
     },
     "node_modules/npm/node_modules/libnpmhook": {
       "version": "8.0.4",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8196,7 +8225,6 @@
     },
     "node_modules/npm/node_modules/libnpmorg": {
       "version": "4.0.4",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8209,7 +8237,6 @@
     },
     "node_modules/npm/node_modules/libnpmpack": {
       "version": "4.1.3",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8223,7 +8250,6 @@
     },
     "node_modules/npm/node_modules/libnpmpublish": {
       "version": "6.0.5",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8239,7 +8265,6 @@
     },
     "node_modules/npm/node_modules/libnpmsearch": {
       "version": "5.0.4",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8251,7 +8276,6 @@
     },
     "node_modules/npm/node_modules/libnpmteam": {
       "version": "4.0.4",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8264,7 +8288,6 @@
     },
     "node_modules/npm/node_modules/libnpmversion": {
       "version": "3.0.7",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8280,7 +8303,6 @@
     },
     "node_modules/npm/node_modules/lru-cache": {
       "version": "7.13.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "engines": {
@@ -8289,7 +8311,6 @@
     },
     "node_modules/npm/node_modules/make-fetch-happen": {
       "version": "10.2.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8316,7 +8337,6 @@
     },
     "node_modules/npm/node_modules/minimatch": {
       "version": "5.1.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8328,7 +8348,6 @@
     },
     "node_modules/npm/node_modules/minipass": {
       "version": "3.3.4",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8340,7 +8359,6 @@
     },
     "node_modules/npm/node_modules/minipass-collect": {
       "version": "1.0.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8352,7 +8370,6 @@
     },
     "node_modules/npm/node_modules/minipass-fetch": {
       "version": "2.1.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -8369,7 +8386,6 @@
     },
     "node_modules/npm/node_modules/minipass-flush": {
       "version": "1.0.5",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8381,7 +8397,6 @@
     },
     "node_modules/npm/node_modules/minipass-json-stream": {
       "version": "1.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -8391,7 +8406,6 @@
     },
     "node_modules/npm/node_modules/minipass-pipeline": {
       "version": "1.2.4",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8403,7 +8417,6 @@
     },
     "node_modules/npm/node_modules/minipass-sized": {
       "version": "1.0.3",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8415,7 +8428,6 @@
     },
     "node_modules/npm/node_modules/minizlib": {
       "version": "2.1.2",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -8428,7 +8440,6 @@
     },
     "node_modules/npm/node_modules/mkdirp": {
       "version": "1.0.4",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "bin": {
@@ -8440,7 +8451,6 @@
     },
     "node_modules/npm/node_modules/mkdirp-infer-owner": {
       "version": "2.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8454,19 +8464,16 @@
     },
     "node_modules/npm/node_modules/ms": {
       "version": "2.1.3",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/mute-stream": {
       "version": "0.0.8",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/negotiator": {
       "version": "0.6.3",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "engines": {
@@ -8475,7 +8482,6 @@
     },
     "node_modules/npm/node_modules/node-gyp": {
       "version": "9.1.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -8499,7 +8505,6 @@
     },
     "node_modules/npm/node_modules/node-gyp/node_modules/brace-expansion": {
       "version": "1.1.11",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -8509,7 +8514,6 @@
     },
     "node_modules/npm/node_modules/node-gyp/node_modules/glob": {
       "version": "7.2.3",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8529,7 +8533,6 @@
     },
     "node_modules/npm/node_modules/node-gyp/node_modules/minimatch": {
       "version": "3.1.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8541,7 +8544,6 @@
     },
     "node_modules/npm/node_modules/node-gyp/node_modules/nopt": {
       "version": "5.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8556,7 +8558,6 @@
     },
     "node_modules/npm/node_modules/nopt": {
       "version": "6.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8571,7 +8572,6 @@
     },
     "node_modules/npm/node_modules/normalize-package-data": {
       "version": "4.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "BSD-2-Clause",
       "dependencies": {
@@ -8586,7 +8586,6 @@
     },
     "node_modules/npm/node_modules/npm-audit-report": {
       "version": "3.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8598,7 +8597,6 @@
     },
     "node_modules/npm/node_modules/npm-bundled": {
       "version": "2.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8610,7 +8608,6 @@
     },
     "node_modules/npm/node_modules/npm-bundled/node_modules/npm-normalize-package-bin": {
       "version": "2.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "engines": {
@@ -8619,7 +8616,6 @@
     },
     "node_modules/npm/node_modules/npm-install-checks": {
       "version": "5.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "BSD-2-Clause",
       "dependencies": {
@@ -8631,13 +8627,11 @@
     },
     "node_modules/npm/node_modules/npm-normalize-package-bin": {
       "version": "1.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/npm-package-arg": {
       "version": "9.1.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8652,7 +8646,6 @@
     },
     "node_modules/npm/node_modules/npm-packlist": {
       "version": "5.1.3",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8670,7 +8663,6 @@
     },
     "node_modules/npm/node_modules/npm-packlist/node_modules/npm-normalize-package-bin": {
       "version": "2.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "engines": {
@@ -8679,7 +8671,6 @@
     },
     "node_modules/npm/node_modules/npm-pick-manifest": {
       "version": "7.0.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8694,7 +8685,6 @@
     },
     "node_modules/npm/node_modules/npm-pick-manifest/node_modules/npm-normalize-package-bin": {
       "version": "2.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "engines": {
@@ -8703,7 +8693,6 @@
     },
     "node_modules/npm/node_modules/npm-profile": {
       "version": "6.2.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8716,7 +8705,6 @@
     },
     "node_modules/npm/node_modules/npm-registry-fetch": {
       "version": "13.3.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8734,13 +8722,11 @@
     },
     "node_modules/npm/node_modules/npm-user-validate": {
       "version": "1.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "BSD-2-Clause"
     },
     "node_modules/npm/node_modules/npmlog": {
       "version": "6.0.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8755,7 +8741,6 @@
     },
     "node_modules/npm/node_modules/once": {
       "version": "1.4.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8764,7 +8749,6 @@
     },
     "node_modules/npm/node_modules/opener": {
       "version": "1.5.2",
-      "dev": true,
       "inBundle": true,
       "license": "(WTFPL OR MIT)",
       "bin": {
@@ -8773,7 +8757,6 @@
     },
     "node_modules/npm/node_modules/p-map": {
       "version": "4.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -8788,7 +8771,6 @@
     },
     "node_modules/npm/node_modules/pacote": {
       "version": "13.6.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8823,7 +8805,6 @@
     },
     "node_modules/npm/node_modules/parse-conflict-json": {
       "version": "2.0.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8837,7 +8818,6 @@
     },
     "node_modules/npm/node_modules/path-is-absolute": {
       "version": "1.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "engines": {
@@ -8846,7 +8826,6 @@
     },
     "node_modules/npm/node_modules/postcss-selector-parser": {
       "version": "6.0.10",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -8859,7 +8838,6 @@
     },
     "node_modules/npm/node_modules/proc-log": {
       "version": "2.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "engines": {
@@ -8868,7 +8846,6 @@
     },
     "node_modules/npm/node_modules/promise-all-reject-late": {
       "version": "1.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "funding": {
@@ -8877,7 +8854,6 @@
     },
     "node_modules/npm/node_modules/promise-call-limit": {
       "version": "1.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "funding": {
@@ -8886,13 +8862,11 @@
     },
     "node_modules/npm/node_modules/promise-inflight": {
       "version": "1.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/promise-retry": {
       "version": "2.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -8905,7 +8879,6 @@
     },
     "node_modules/npm/node_modules/promzard": {
       "version": "0.3.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8914,7 +8887,6 @@
     },
     "node_modules/npm/node_modules/qrcode-terminal": {
       "version": "0.12.0",
-      "dev": true,
       "inBundle": true,
       "bin": {
         "qrcode-terminal": "bin/qrcode-terminal.js"
@@ -8922,7 +8894,6 @@
     },
     "node_modules/npm/node_modules/read": {
       "version": "1.0.7",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8934,7 +8905,6 @@
     },
     "node_modules/npm/node_modules/read-cmd-shim": {
       "version": "3.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "engines": {
@@ -8943,7 +8913,6 @@
     },
     "node_modules/npm/node_modules/read-package-json": {
       "version": "5.0.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8958,7 +8927,6 @@
     },
     "node_modules/npm/node_modules/read-package-json-fast": {
       "version": "2.0.3",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -8971,7 +8939,6 @@
     },
     "node_modules/npm/node_modules/read-package-json/node_modules/npm-normalize-package-bin": {
       "version": "2.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "engines": {
@@ -8980,7 +8947,6 @@
     },
     "node_modules/npm/node_modules/readable-stream": {
       "version": "3.6.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -8994,7 +8960,6 @@
     },
     "node_modules/npm/node_modules/readdir-scoped-modules": {
       "version": "1.1.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -9006,7 +8971,6 @@
     },
     "node_modules/npm/node_modules/retry": {
       "version": "0.12.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "engines": {
@@ -9015,7 +8979,6 @@
     },
     "node_modules/npm/node_modules/rimraf": {
       "version": "3.0.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -9030,7 +8993,6 @@
     },
     "node_modules/npm/node_modules/rimraf/node_modules/brace-expansion": {
       "version": "1.1.11",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -9040,7 +9002,6 @@
     },
     "node_modules/npm/node_modules/rimraf/node_modules/glob": {
       "version": "7.2.3",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -9060,7 +9021,6 @@
     },
     "node_modules/npm/node_modules/rimraf/node_modules/minimatch": {
       "version": "3.1.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -9072,7 +9032,6 @@
     },
     "node_modules/npm/node_modules/safe-buffer": {
       "version": "5.2.1",
-      "dev": true,
       "funding": [
         {
           "type": "github",
@@ -9092,14 +9051,12 @@
     },
     "node_modules/npm/node_modules/safer-buffer": {
       "version": "2.1.2",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "optional": true
     },
     "node_modules/npm/node_modules/semver": {
       "version": "7.3.7",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -9114,7 +9071,6 @@
     },
     "node_modules/npm/node_modules/semver/node_modules/lru-cache": {
       "version": "6.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -9126,19 +9082,16 @@
     },
     "node_modules/npm/node_modules/set-blocking": {
       "version": "2.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/signal-exit": {
       "version": "3.0.7",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/smart-buffer": {
       "version": "4.2.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "engines": {
@@ -9148,7 +9101,6 @@
     },
     "node_modules/npm/node_modules/socks": {
       "version": "2.7.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -9162,7 +9114,6 @@
     },
     "node_modules/npm/node_modules/socks-proxy-agent": {
       "version": "7.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -9176,7 +9127,6 @@
     },
     "node_modules/npm/node_modules/spdx-correct": {
       "version": "3.1.1",
-      "dev": true,
       "inBundle": true,
       "license": "Apache-2.0",
       "dependencies": {
@@ -9186,13 +9136,11 @@
     },
     "node_modules/npm/node_modules/spdx-exceptions": {
       "version": "2.3.0",
-      "dev": true,
       "inBundle": true,
       "license": "CC-BY-3.0"
     },
     "node_modules/npm/node_modules/spdx-expression-parse": {
       "version": "3.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -9202,13 +9150,11 @@
     },
     "node_modules/npm/node_modules/spdx-license-ids": {
       "version": "3.0.11",
-      "dev": true,
       "inBundle": true,
       "license": "CC0-1.0"
     },
     "node_modules/npm/node_modules/ssri": {
       "version": "9.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -9220,7 +9166,6 @@
     },
     "node_modules/npm/node_modules/string_decoder": {
       "version": "1.3.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -9229,7 +9174,6 @@
     },
     "node_modules/npm/node_modules/string-width": {
       "version": "4.2.3",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -9243,7 +9187,6 @@
     },
     "node_modules/npm/node_modules/strip-ansi": {
       "version": "6.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -9255,7 +9198,6 @@
     },
     "node_modules/npm/node_modules/supports-color": {
       "version": "7.2.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -9267,7 +9209,6 @@
     },
     "node_modules/npm/node_modules/tar": {
       "version": "6.1.11",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -9284,19 +9225,16 @@
     },
     "node_modules/npm/node_modules/text-table": {
       "version": "0.2.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/tiny-relative-date": {
       "version": "1.3.0",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/treeverse": {
       "version": "2.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "engines": {
@@ -9305,7 +9243,6 @@
     },
     "node_modules/npm/node_modules/unique-filename": {
       "version": "2.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -9317,7 +9254,6 @@
     },
     "node_modules/npm/node_modules/unique-slug": {
       "version": "3.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -9329,13 +9265,11 @@
     },
     "node_modules/npm/node_modules/util-deprecate": {
       "version": "1.0.2",
-      "dev": true,
       "inBundle": true,
       "license": "MIT"
     },
     "node_modules/npm/node_modules/validate-npm-package-license": {
       "version": "3.0.4",
-      "dev": true,
       "inBundle": true,
       "license": "Apache-2.0",
       "dependencies": {
@@ -9345,7 +9279,6 @@
     },
     "node_modules/npm/node_modules/validate-npm-package-name": {
       "version": "4.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -9357,13 +9290,11 @@
     },
     "node_modules/npm/node_modules/walk-up-path": {
       "version": "1.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/wcwidth": {
       "version": "1.0.1",
-      "dev": true,
       "inBundle": true,
       "license": "MIT",
       "dependencies": {
@@ -9372,7 +9303,6 @@
     },
     "node_modules/npm/node_modules/which": {
       "version": "2.0.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -9387,7 +9317,6 @@
     },
     "node_modules/npm/node_modules/wide-align": {
       "version": "1.1.5",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -9396,13 +9325,11 @@
     },
     "node_modules/npm/node_modules/wrappy": {
       "version": "1.0.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
     "node_modules/npm/node_modules/write-file-atomic": {
       "version": "4.0.2",
-      "dev": true,
       "inBundle": true,
       "license": "ISC",
       "dependencies": {
@@ -9415,7 +9342,6 @@
     },
     "node_modules/npm/node_modules/yallist": {
       "version": "4.0.0",
-      "dev": true,
       "inBundle": true,
       "license": "ISC"
     },
@@ -13931,6 +13857,97 @@
       "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/@semantic-release/error/-/error-3.0.0.tgz",
       "integrity": "sha512-5hiM4Un+tpl4cKw3lV4UgzJj+SmfNIDCLLw0TepzQxz9ZGV5ixnqkzIVF+3tp0ZHgcMKE+VNGHJjEeyFG2dcSw==",
       "dev": true
+    },
+    "@semantic-release/git": {
+      "version": "10.0.1",
+      "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/@semantic-release/git/-/git-10.0.1.tgz",
+      "integrity": "sha512-eWrx5KguUcU2wUPaO6sfvZI0wPafUKAMNC18aXY4EnNcrZL86dEmpNVnC9uMpGZkmZJ9EfCVJBQx4pV4EMGT1w==",
+      "dev": true,
+      "requires": {
+        "@semantic-release/error": "^3.0.0",
+        "aggregate-error": "^3.0.0",
+        "debug": "^4.0.0",
+        "dir-glob": "^3.0.0",
+        "execa": "^5.0.0",
+        "lodash": "^4.17.4",
+        "micromatch": "^4.0.0",
+        "p-reduce": "^2.0.0"
+      },
+      "dependencies": {
+        "braces": {
+          "version": "3.0.2",
+          "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/braces/-/braces-3.0.2.tgz",
+          "integrity": "sha512-b8um+L1RzM3WDSzvhm6gIz1yfTbBt6YTlcEKAvsmqCZZFw46z626lVj9j1yEPW33H5H+lBQpZMP1k8l+78Ha0A==",
+          "dev": true,
+          "requires": {
+            "fill-range": "^7.0.1"
+          }
+        },
+        "debug": {
+          "version": "4.3.4",
+          "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/debug/-/debug-4.3.4.tgz",
+          "integrity": "sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==",
+          "dev": true,
+          "requires": {
+            "ms": "2.1.2"
+          }
+        },
+        "dir-glob": {
+          "version": "3.0.1",
+          "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/dir-glob/-/dir-glob-3.0.1.tgz",
+          "integrity": "sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==",
+          "dev": true,
+          "requires": {
+            "path-type": "^4.0.0"
+          }
+        },
+        "fill-range": {
+          "version": "7.0.1",
+          "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/fill-range/-/fill-range-7.0.1.tgz",
+          "integrity": "sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==",
+          "dev": true,
+          "requires": {
+            "to-regex-range": "^5.0.1"
+          }
+        },
+        "is-number": {
+          "version": "7.0.0",
+          "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/is-number/-/is-number-7.0.0.tgz",
+          "integrity": "sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==",
+          "dev": true
+        },
+        "micromatch": {
+          "version": "4.0.5",
+          "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/micromatch/-/micromatch-4.0.5.tgz",
+          "integrity": "sha512-DMy+ERcEW2q8Z2Po+WNXuw3c5YaUSFjAO5GsJqfEl7UjvtIuFKO6ZrKvcItdy98dwFI2N1tg3zNIdKaQT+aNdA==",
+          "dev": true,
+          "requires": {
+            "braces": "^3.0.2",
+            "picomatch": "^2.3.1"
+          }
+        },
+        "ms": {
+          "version": "2.1.2",
+          "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/ms/-/ms-2.1.2.tgz",
+          "integrity": "sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==",
+          "dev": true
+        },
+        "path-type": {
+          "version": "4.0.0",
+          "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/path-type/-/path-type-4.0.0.tgz",
+          "integrity": "sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==",
+          "dev": true
+        },
+        "to-regex-range": {
+          "version": "5.0.1",
+          "resolved": "https://artifactory.tools.post.ch/artifactory/api/npm/npm-virtual/to-regex-range/-/to-regex-range-5.0.1.tgz",
+          "integrity": "sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==",
+          "dev": true,
+          "requires": {
+            "is-number": "^7.0.0"
+          }
+        }
+      }
     },
     "@semantic-release/github": {
       "version": "8.0.6",
@@ -18684,23 +18701,19 @@
         "@colors/colors": {
           "version": "1.5.0",
           "bundled": true,
-          "dev": true,
           "optional": true
         },
         "@gar/promisify": {
           "version": "1.1.3",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "@isaacs/string-locale-compare": {
           "version": "1.1.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "@npmcli/arborist": {
           "version": "5.6.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "@isaacs/string-locale-compare": "^1.1.0",
             "@npmcli/installed-package-contents": "^1.0.7",
@@ -18742,13 +18755,11 @@
         },
         "@npmcli/ci-detect": {
           "version": "2.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "@npmcli/config": {
           "version": "4.2.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "@npmcli/map-workspaces": "^2.0.2",
             "ini": "^3.0.0",
@@ -18763,7 +18774,6 @@
         "@npmcli/disparity-colors": {
           "version": "2.0.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "ansi-styles": "^4.3.0"
           }
@@ -18771,7 +18781,6 @@
         "@npmcli/fs": {
           "version": "2.1.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "@gar/promisify": "^1.1.3",
             "semver": "^7.3.5"
@@ -18780,7 +18789,6 @@
         "@npmcli/git": {
           "version": "3.0.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "@npmcli/promise-spawn": "^3.0.0",
             "lru-cache": "^7.4.4",
@@ -18796,7 +18804,6 @@
         "@npmcli/installed-package-contents": {
           "version": "1.0.7",
           "bundled": true,
-          "dev": true,
           "requires": {
             "npm-bundled": "^1.1.1",
             "npm-normalize-package-bin": "^1.0.1"
@@ -18805,7 +18812,6 @@
             "npm-bundled": {
               "version": "1.1.2",
               "bundled": true,
-              "dev": true,
               "requires": {
                 "npm-normalize-package-bin": "^1.0.1"
               }
@@ -18815,7 +18821,6 @@
         "@npmcli/map-workspaces": {
           "version": "2.0.4",
           "bundled": true,
-          "dev": true,
           "requires": {
             "@npmcli/name-from-folder": "^1.0.1",
             "glob": "^8.0.1",
@@ -18826,7 +18831,6 @@
         "@npmcli/metavuln-calculator": {
           "version": "3.1.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "cacache": "^16.0.0",
             "json-parse-even-better-errors": "^2.3.1",
@@ -18837,7 +18841,6 @@
         "@npmcli/move-file": {
           "version": "2.0.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "mkdirp": "^1.0.4",
             "rimraf": "^3.0.2"
@@ -18845,18 +18848,15 @@
         },
         "@npmcli/name-from-folder": {
           "version": "1.0.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "@npmcli/node-gyp": {
           "version": "2.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "@npmcli/package-json": {
           "version": "2.0.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "json-parse-even-better-errors": "^2.3.1"
           }
@@ -18864,7 +18864,6 @@
         "@npmcli/promise-spawn": {
           "version": "3.0.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "infer-owner": "^1.0.4"
           }
@@ -18872,7 +18871,6 @@
         "@npmcli/query": {
           "version": "1.2.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "npm-package-arg": "^9.1.0",
             "postcss-selector-parser": "^6.0.10",
@@ -18882,7 +18880,6 @@
         "@npmcli/run-script": {
           "version": "4.2.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "@npmcli/node-gyp": "^2.0.0",
             "@npmcli/promise-spawn": "^3.0.0",
@@ -18893,18 +18890,15 @@
         },
         "@tootallnate/once": {
           "version": "2.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "abbrev": {
           "version": "1.1.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "agent-base": {
           "version": "6.0.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "debug": "4"
           }
@@ -18912,7 +18906,6 @@
         "agentkeepalive": {
           "version": "4.2.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "debug": "^4.1.0",
             "depd": "^1.1.2",
@@ -18922,7 +18915,6 @@
         "aggregate-error": {
           "version": "3.1.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "clean-stack": "^2.0.0",
             "indent-string": "^4.0.0"
@@ -18930,31 +18922,26 @@
         },
         "ansi-regex": {
           "version": "5.0.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "ansi-styles": {
           "version": "4.3.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "color-convert": "^2.0.1"
           }
         },
         "aproba": {
           "version": "2.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "archy": {
           "version": "1.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "are-we-there-yet": {
           "version": "3.0.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "delegates": "^1.0.0",
             "readable-stream": "^3.6.0"
@@ -18962,18 +18949,15 @@
         },
         "asap": {
           "version": "2.0.6",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "balanced-match": {
           "version": "1.0.2",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "bin-links": {
           "version": "3.0.3",
           "bundled": true,
-          "dev": true,
           "requires": {
             "cmd-shim": "^5.0.0",
             "mkdirp-infer-owner": "^2.0.0",
@@ -18985,20 +18969,17 @@
           "dependencies": {
             "npm-normalize-package-bin": {
               "version": "2.0.0",
-              "bundled": true,
-              "dev": true
+              "bundled": true
             }
           }
         },
         "binary-extensions": {
           "version": "2.2.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "brace-expansion": {
           "version": "2.0.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "balanced-match": "^1.0.0"
           }
@@ -19006,7 +18987,6 @@
         "builtins": {
           "version": "5.0.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "semver": "^7.0.0"
           }
@@ -19014,7 +18994,6 @@
         "cacache": {
           "version": "16.1.3",
           "bundled": true,
-          "dev": true,
           "requires": {
             "@npmcli/fs": "^2.1.0",
             "@npmcli/move-file": "^2.0.0",
@@ -19039,7 +19018,6 @@
         "chalk": {
           "version": "4.1.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "ansi-styles": "^4.1.0",
             "supports-color": "^7.1.0"
@@ -19047,26 +19025,22 @@
         },
         "chownr": {
           "version": "2.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "cidr-regex": {
           "version": "3.1.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "ip-regex": "^4.1.0"
           }
         },
         "clean-stack": {
           "version": "2.2.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "cli-columns": {
           "version": "4.0.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "string-width": "^4.2.3",
             "strip-ansi": "^6.0.1"
@@ -19075,7 +19049,6 @@
         "cli-table3": {
           "version": "0.6.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "@colors/colors": "1.5.0",
             "string-width": "^4.2.0"
@@ -19083,13 +19056,11 @@
         },
         "clone": {
           "version": "1.0.4",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "cmd-shim": {
           "version": "5.0.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "mkdirp-infer-owner": "^2.0.0"
           }
@@ -19097,25 +19068,21 @@
         "color-convert": {
           "version": "2.0.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "color-name": "~1.1.4"
           }
         },
         "color-name": {
           "version": "1.1.4",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "color-support": {
           "version": "1.1.3",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "columnify": {
           "version": "1.6.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "strip-ansi": "^6.0.1",
             "wcwidth": "^1.0.0"
@@ -19123,66 +19090,55 @@
         },
         "common-ancestor-path": {
           "version": "1.0.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "concat-map": {
           "version": "0.0.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "console-control-strings": {
           "version": "1.1.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "cssesc": {
           "version": "3.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "debug": {
           "version": "4.3.4",
           "bundled": true,
-          "dev": true,
           "requires": {
             "ms": "2.1.2"
           },
           "dependencies": {
             "ms": {
               "version": "2.1.2",
-              "bundled": true,
-              "dev": true
+              "bundled": true
             }
           }
         },
         "debuglog": {
           "version": "1.0.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "defaults": {
           "version": "1.0.3",
           "bundled": true,
-          "dev": true,
           "requires": {
             "clone": "^1.0.2"
           }
         },
         "delegates": {
           "version": "1.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "depd": {
           "version": "1.1.2",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "dezalgo": {
           "version": "1.0.4",
           "bundled": true,
-          "dev": true,
           "requires": {
             "asap": "^2.0.0",
             "wrappy": "1"
@@ -19190,18 +19146,15 @@
         },
         "diff": {
           "version": "5.1.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "emoji-regex": {
           "version": "8.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "encoding": {
           "version": "0.1.13",
           "bundled": true,
-          "dev": true,
           "optional": true,
           "requires": {
             "iconv-lite": "^0.6.2"
@@ -19209,41 +19162,34 @@
         },
         "env-paths": {
           "version": "2.2.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "err-code": {
           "version": "2.0.3",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "fastest-levenshtein": {
           "version": "1.0.12",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "fs-minipass": {
           "version": "2.1.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "minipass": "^3.0.0"
           }
         },
         "fs.realpath": {
           "version": "1.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "function-bind": {
           "version": "1.1.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "gauge": {
           "version": "4.0.4",
           "bundled": true,
-          "dev": true,
           "requires": {
             "aproba": "^1.0.3 || ^2.0.0",
             "color-support": "^1.1.3",
@@ -19258,7 +19204,6 @@
         "glob": {
           "version": "8.0.3",
           "bundled": true,
-          "dev": true,
           "requires": {
             "fs.realpath": "^1.0.0",
             "inflight": "^1.0.4",
@@ -19269,44 +19214,37 @@
         },
         "graceful-fs": {
           "version": "4.2.10",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "has": {
           "version": "1.0.3",
           "bundled": true,
-          "dev": true,
           "requires": {
             "function-bind": "^1.1.1"
           }
         },
         "has-flag": {
           "version": "4.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "has-unicode": {
           "version": "2.0.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "hosted-git-info": {
           "version": "5.1.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "lru-cache": "^7.5.1"
           }
         },
         "http-cache-semantics": {
           "version": "4.1.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "http-proxy-agent": {
           "version": "5.0.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "@tootallnate/once": "2",
             "agent-base": "6",
@@ -19316,7 +19254,6 @@
         "https-proxy-agent": {
           "version": "5.0.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "agent-base": "6",
             "debug": "4"
@@ -19325,7 +19262,6 @@
         "humanize-ms": {
           "version": "1.2.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "ms": "^2.0.0"
           }
@@ -19333,7 +19269,6 @@
         "iconv-lite": {
           "version": "0.6.3",
           "bundled": true,
-          "dev": true,
           "optional": true,
           "requires": {
             "safer-buffer": ">= 2.1.2 < 3.0.0"
@@ -19342,30 +19277,25 @@
         "ignore-walk": {
           "version": "5.0.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "minimatch": "^5.0.1"
           }
         },
         "imurmurhash": {
           "version": "0.1.4",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "indent-string": {
           "version": "4.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "infer-owner": {
           "version": "1.0.4",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "inflight": {
           "version": "1.0.6",
           "bundled": true,
-          "dev": true,
           "requires": {
             "once": "^1.3.0",
             "wrappy": "1"
@@ -19373,18 +19303,15 @@
         },
         "inherits": {
           "version": "2.0.4",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "ini": {
           "version": "3.0.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "init-package-json": {
           "version": "3.0.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "npm-package-arg": "^9.0.1",
             "promzard": "^0.3.0",
@@ -19397,18 +19324,15 @@
         },
         "ip": {
           "version": "2.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "ip-regex": {
           "version": "4.3.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "is-cidr": {
           "version": "4.0.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "cidr-regex": "^3.1.1"
           }
@@ -19416,55 +19340,45 @@
         "is-core-module": {
           "version": "2.10.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "has": "^1.0.3"
           }
         },
         "is-fullwidth-code-point": {
           "version": "3.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "is-lambda": {
           "version": "1.0.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "isexe": {
           "version": "2.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "json-parse-even-better-errors": {
           "version": "2.3.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "json-stringify-nice": {
           "version": "1.1.4",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "jsonparse": {
           "version": "1.3.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "just-diff": {
           "version": "5.1.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "just-diff-apply": {
           "version": "5.4.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "libnpmaccess": {
           "version": "6.0.4",
           "bundled": true,
-          "dev": true,
           "requires": {
             "aproba": "^2.0.0",
             "minipass": "^3.1.1",
@@ -19475,7 +19389,6 @@
         "libnpmdiff": {
           "version": "4.0.5",
           "bundled": true,
-          "dev": true,
           "requires": {
             "@npmcli/disparity-colors": "^2.0.0",
             "@npmcli/installed-package-contents": "^1.0.7",
@@ -19490,7 +19403,6 @@
         "libnpmexec": {
           "version": "4.0.12",
           "bundled": true,
-          "dev": true,
           "requires": {
             "@npmcli/arborist": "^5.6.1",
             "@npmcli/ci-detect": "^2.0.0",
@@ -19511,7 +19423,6 @@
         "libnpmfund": {
           "version": "3.0.3",
           "bundled": true,
-          "dev": true,
           "requires": {
             "@npmcli/arborist": "^5.6.1"
           }
@@ -19519,7 +19430,6 @@
         "libnpmhook": {
           "version": "8.0.4",
           "bundled": true,
-          "dev": true,
           "requires": {
             "aproba": "^2.0.0",
             "npm-registry-fetch": "^13.0.0"
@@ -19528,7 +19438,6 @@
         "libnpmorg": {
           "version": "4.0.4",
           "bundled": true,
-          "dev": true,
           "requires": {
             "aproba": "^2.0.0",
             "npm-registry-fetch": "^13.0.0"
@@ -19537,7 +19446,6 @@
         "libnpmpack": {
           "version": "4.1.3",
           "bundled": true,
-          "dev": true,
           "requires": {
             "@npmcli/run-script": "^4.1.3",
             "npm-package-arg": "^9.0.1",
@@ -19547,7 +19455,6 @@
         "libnpmpublish": {
           "version": "6.0.5",
           "bundled": true,
-          "dev": true,
           "requires": {
             "normalize-package-data": "^4.0.0",
             "npm-package-arg": "^9.0.1",
@@ -19559,7 +19466,6 @@
         "libnpmsearch": {
           "version": "5.0.4",
           "bundled": true,
-          "dev": true,
           "requires": {
             "npm-registry-fetch": "^13.0.0"
           }
@@ -19567,7 +19473,6 @@
         "libnpmteam": {
           "version": "4.0.4",
           "bundled": true,
-          "dev": true,
           "requires": {
             "aproba": "^2.0.0",
             "npm-registry-fetch": "^13.0.0"
@@ -19576,7 +19481,6 @@
         "libnpmversion": {
           "version": "3.0.7",
           "bundled": true,
-          "dev": true,
           "requires": {
             "@npmcli/git": "^3.0.0",
             "@npmcli/run-script": "^4.1.3",
@@ -19587,13 +19491,11 @@
         },
         "lru-cache": {
           "version": "7.13.2",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "make-fetch-happen": {
           "version": "10.2.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "agentkeepalive": "^4.2.1",
             "cacache": "^16.1.0",
@@ -19616,7 +19518,6 @@
         "minimatch": {
           "version": "5.1.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "brace-expansion": "^2.0.1"
           }
@@ -19624,7 +19525,6 @@
         "minipass": {
           "version": "3.3.4",
           "bundled": true,
-          "dev": true,
           "requires": {
             "yallist": "^4.0.0"
           }
@@ -19632,7 +19532,6 @@
         "minipass-collect": {
           "version": "1.0.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "minipass": "^3.0.0"
           }
@@ -19640,7 +19539,6 @@
         "minipass-fetch": {
           "version": "2.1.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "encoding": "^0.1.13",
             "minipass": "^3.1.6",
@@ -19651,7 +19549,6 @@
         "minipass-flush": {
           "version": "1.0.5",
           "bundled": true,
-          "dev": true,
           "requires": {
             "minipass": "^3.0.0"
           }
@@ -19659,7 +19556,6 @@
         "minipass-json-stream": {
           "version": "1.0.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "jsonparse": "^1.3.1",
             "minipass": "^3.0.0"
@@ -19668,7 +19564,6 @@
         "minipass-pipeline": {
           "version": "1.2.4",
           "bundled": true,
-          "dev": true,
           "requires": {
             "minipass": "^3.0.0"
           }
@@ -19676,7 +19571,6 @@
         "minipass-sized": {
           "version": "1.0.3",
           "bundled": true,
-          "dev": true,
           "requires": {
             "minipass": "^3.0.0"
           }
@@ -19684,7 +19578,6 @@
         "minizlib": {
           "version": "2.1.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "minipass": "^3.0.0",
             "yallist": "^4.0.0"
@@ -19692,13 +19585,11 @@
         },
         "mkdirp": {
           "version": "1.0.4",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "mkdirp-infer-owner": {
           "version": "2.0.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "chownr": "^2.0.0",
             "infer-owner": "^1.0.4",
@@ -19707,23 +19598,19 @@
         },
         "ms": {
           "version": "2.1.3",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "mute-stream": {
           "version": "0.0.8",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "negotiator": {
           "version": "0.6.3",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "node-gyp": {
           "version": "9.1.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "env-paths": "^2.2.0",
             "glob": "^7.1.4",
@@ -19740,7 +19627,6 @@
             "brace-expansion": {
               "version": "1.1.11",
               "bundled": true,
-              "dev": true,
               "requires": {
                 "balanced-match": "^1.0.0",
                 "concat-map": "0.0.1"
@@ -19749,7 +19635,6 @@
             "glob": {
               "version": "7.2.3",
               "bundled": true,
-              "dev": true,
               "requires": {
                 "fs.realpath": "^1.0.0",
                 "inflight": "^1.0.4",
@@ -19762,7 +19647,6 @@
             "minimatch": {
               "version": "3.1.2",
               "bundled": true,
-              "dev": true,
               "requires": {
                 "brace-expansion": "^1.1.7"
               }
@@ -19770,7 +19654,6 @@
             "nopt": {
               "version": "5.0.0",
               "bundled": true,
-              "dev": true,
               "requires": {
                 "abbrev": "1"
               }
@@ -19780,7 +19663,6 @@
         "nopt": {
           "version": "6.0.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "abbrev": "^1.0.0"
           }
@@ -19788,7 +19670,6 @@
         "normalize-package-data": {
           "version": "4.0.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "hosted-git-info": "^5.0.0",
             "is-core-module": "^2.8.1",
@@ -19799,7 +19680,6 @@
         "npm-audit-report": {
           "version": "3.0.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "chalk": "^4.0.0"
           }
@@ -19807,35 +19687,30 @@
         "npm-bundled": {
           "version": "2.0.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "npm-normalize-package-bin": "^2.0.0"
           },
           "dependencies": {
             "npm-normalize-package-bin": {
               "version": "2.0.0",
-              "bundled": true,
-              "dev": true
+              "bundled": true
             }
           }
         },
         "npm-install-checks": {
           "version": "5.0.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "semver": "^7.1.1"
           }
         },
         "npm-normalize-package-bin": {
           "version": "1.0.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "npm-package-arg": {
           "version": "9.1.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "hosted-git-info": "^5.0.0",
             "proc-log": "^2.0.1",
@@ -19846,7 +19721,6 @@
         "npm-packlist": {
           "version": "5.1.3",
           "bundled": true,
-          "dev": true,
           "requires": {
             "glob": "^8.0.1",
             "ignore-walk": "^5.0.1",
@@ -19856,15 +19730,13 @@
           "dependencies": {
             "npm-normalize-package-bin": {
               "version": "2.0.0",
-              "bundled": true,
-              "dev": true
+              "bundled": true
             }
           }
         },
         "npm-pick-manifest": {
           "version": "7.0.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "npm-install-checks": "^5.0.0",
             "npm-normalize-package-bin": "^2.0.0",
@@ -19874,15 +19746,13 @@
           "dependencies": {
             "npm-normalize-package-bin": {
               "version": "2.0.0",
-              "bundled": true,
-              "dev": true
+              "bundled": true
             }
           }
         },
         "npm-profile": {
           "version": "6.2.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "npm-registry-fetch": "^13.0.1",
             "proc-log": "^2.0.0"
@@ -19891,7 +19761,6 @@
         "npm-registry-fetch": {
           "version": "13.3.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "make-fetch-happen": "^10.0.6",
             "minipass": "^3.1.6",
@@ -19904,13 +19773,11 @@
         },
         "npm-user-validate": {
           "version": "1.0.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "npmlog": {
           "version": "6.0.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "are-we-there-yet": "^3.0.0",
             "console-control-strings": "^1.1.0",
@@ -19921,20 +19788,17 @@
         "once": {
           "version": "1.4.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "wrappy": "1"
           }
         },
         "opener": {
           "version": "1.5.2",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "p-map": {
           "version": "4.0.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "aggregate-error": "^3.0.0"
           }
@@ -19942,7 +19806,6 @@
         "pacote": {
           "version": "13.6.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "@npmcli/git": "^3.0.0",
             "@npmcli/installed-package-contents": "^1.0.7",
@@ -19970,7 +19833,6 @@
         "parse-conflict-json": {
           "version": "2.0.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "json-parse-even-better-errors": "^2.3.1",
             "just-diff": "^5.0.1",
@@ -19979,13 +19841,11 @@
         },
         "path-is-absolute": {
           "version": "1.0.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "postcss-selector-parser": {
           "version": "6.0.10",
           "bundled": true,
-          "dev": true,
           "requires": {
             "cssesc": "^3.0.0",
             "util-deprecate": "^1.0.2"
@@ -19993,28 +19853,23 @@
         },
         "proc-log": {
           "version": "2.0.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "promise-all-reject-late": {
           "version": "1.0.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "promise-call-limit": {
           "version": "1.0.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "promise-inflight": {
           "version": "1.0.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "promise-retry": {
           "version": "2.0.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "err-code": "^2.0.2",
             "retry": "^0.12.0"
@@ -20023,33 +19878,28 @@
         "promzard": {
           "version": "0.3.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "read": "1"
           }
         },
         "qrcode-terminal": {
           "version": "0.12.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "read": {
           "version": "1.0.7",
           "bundled": true,
-          "dev": true,
           "requires": {
             "mute-stream": "~0.0.4"
           }
         },
         "read-cmd-shim": {
           "version": "3.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "read-package-json": {
           "version": "5.0.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "glob": "^8.0.1",
             "json-parse-even-better-errors": "^2.3.1",
@@ -20059,15 +19909,13 @@
           "dependencies": {
             "npm-normalize-package-bin": {
               "version": "2.0.0",
-              "bundled": true,
-              "dev": true
+              "bundled": true
             }
           }
         },
         "read-package-json-fast": {
           "version": "2.0.3",
           "bundled": true,
-          "dev": true,
           "requires": {
             "json-parse-even-better-errors": "^2.3.0",
             "npm-normalize-package-bin": "^1.0.1"
@@ -20076,7 +19924,6 @@
         "readable-stream": {
           "version": "3.6.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "inherits": "^2.0.3",
             "string_decoder": "^1.1.1",
@@ -20086,7 +19933,6 @@
         "readdir-scoped-modules": {
           "version": "1.1.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "debuglog": "^1.0.1",
             "dezalgo": "^1.0.0",
@@ -20096,13 +19942,11 @@
         },
         "retry": {
           "version": "0.12.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "rimraf": {
           "version": "3.0.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "glob": "^7.1.3"
           },
@@ -20110,7 +19954,6 @@
             "brace-expansion": {
               "version": "1.1.11",
               "bundled": true,
-              "dev": true,
               "requires": {
                 "balanced-match": "^1.0.0",
                 "concat-map": "0.0.1"
@@ -20119,7 +19962,6 @@
             "glob": {
               "version": "7.2.3",
               "bundled": true,
-              "dev": true,
               "requires": {
                 "fs.realpath": "^1.0.0",
                 "inflight": "^1.0.4",
@@ -20132,7 +19974,6 @@
             "minimatch": {
               "version": "3.1.2",
               "bundled": true,
-              "dev": true,
               "requires": {
                 "brace-expansion": "^1.1.7"
               }
@@ -20141,19 +19982,16 @@
         },
         "safe-buffer": {
           "version": "5.2.1",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "safer-buffer": {
           "version": "2.1.2",
           "bundled": true,
-          "dev": true,
           "optional": true
         },
         "semver": {
           "version": "7.3.7",
           "bundled": true,
-          "dev": true,
           "requires": {
             "lru-cache": "^6.0.0"
           },
@@ -20161,7 +19999,6 @@
             "lru-cache": {
               "version": "6.0.0",
               "bundled": true,
-              "dev": true,
               "requires": {
                 "yallist": "^4.0.0"
               }
@@ -20170,23 +20007,19 @@
         },
         "set-blocking": {
           "version": "2.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "signal-exit": {
           "version": "3.0.7",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "smart-buffer": {
           "version": "4.2.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "socks": {
           "version": "2.7.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "ip": "^2.0.0",
             "smart-buffer": "^4.2.0"
@@ -20195,7 +20028,6 @@
         "socks-proxy-agent": {
           "version": "7.0.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "agent-base": "^6.0.2",
             "debug": "^4.3.3",
@@ -20205,7 +20037,6 @@
         "spdx-correct": {
           "version": "3.1.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "spdx-expression-parse": "^3.0.0",
             "spdx-license-ids": "^3.0.0"
@@ -20213,13 +20044,11 @@
         },
         "spdx-exceptions": {
           "version": "2.3.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "spdx-expression-parse": {
           "version": "3.0.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "spdx-exceptions": "^2.1.0",
             "spdx-license-ids": "^3.0.0"
@@ -20227,13 +20056,11 @@
         },
         "spdx-license-ids": {
           "version": "3.0.11",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "ssri": {
           "version": "9.0.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "minipass": "^3.1.1"
           }
@@ -20241,7 +20068,6 @@
         "string_decoder": {
           "version": "1.3.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "safe-buffer": "~5.2.0"
           }
@@ -20249,7 +20075,6 @@
         "string-width": {
           "version": "4.2.3",
           "bundled": true,
-          "dev": true,
           "requires": {
             "emoji-regex": "^8.0.0",
             "is-fullwidth-code-point": "^3.0.0",
@@ -20259,7 +20084,6 @@
         "strip-ansi": {
           "version": "6.0.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "ansi-regex": "^5.0.1"
           }
@@ -20267,7 +20091,6 @@
         "supports-color": {
           "version": "7.2.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "has-flag": "^4.0.0"
           }
@@ -20275,7 +20098,6 @@
         "tar": {
           "version": "6.1.11",
           "bundled": true,
-          "dev": true,
           "requires": {
             "chownr": "^2.0.0",
             "fs-minipass": "^2.0.0",
@@ -20287,23 +20109,19 @@
         },
         "text-table": {
           "version": "0.2.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "tiny-relative-date": {
           "version": "1.3.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "treeverse": {
           "version": "2.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "unique-filename": {
           "version": "2.0.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "unique-slug": "^3.0.0"
           }
@@ -20311,20 +20129,17 @@
         "unique-slug": {
           "version": "3.0.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "imurmurhash": "^0.1.4"
           }
         },
         "util-deprecate": {
           "version": "1.0.2",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "validate-npm-package-license": {
           "version": "3.0.4",
           "bundled": true,
-          "dev": true,
           "requires": {
             "spdx-correct": "^3.0.0",
             "spdx-expression-parse": "^3.0.0"
@@ -20333,20 +20148,17 @@
         "validate-npm-package-name": {
           "version": "4.0.0",
           "bundled": true,
-          "dev": true,
           "requires": {
             "builtins": "^5.0.0"
           }
         },
         "walk-up-path": {
           "version": "1.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "wcwidth": {
           "version": "1.0.1",
           "bundled": true,
-          "dev": true,
           "requires": {
             "defaults": "^1.0.3"
           }
@@ -20354,7 +20166,6 @@
         "which": {
           "version": "2.0.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "isexe": "^2.0.0"
           }
@@ -20362,20 +20173,17 @@
         "wide-align": {
           "version": "1.1.5",
           "bundled": true,
-          "dev": true,
           "requires": {
             "string-width": "^1.0.2 || 2 || 3 || 4"
           }
         },
         "wrappy": {
           "version": "1.0.2",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         },
         "write-file-atomic": {
           "version": "4.0.2",
           "bundled": true,
-          "dev": true,
           "requires": {
             "imurmurhash": "^0.1.4",
             "signal-exit": "^3.0.7"
@@ -20383,8 +20191,7 @@
         },
         "yallist": {
           "version": "4.0.0",
-          "bundled": true,
-          "dev": true
+          "bundled": true
         }
       }
     },

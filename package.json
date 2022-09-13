@@ -22,7 +22,10 @@
   "release": {
     "branches": [
       "master",
-      { "name": "develop", "channel": "next" }
+      {
+        "name": "develop",
+        "channel": "next"
+      }
     ],
     "plugins": [
       "@semantic-release/commit-analyzer",
@@ -86,6 +89,8 @@
     "yamljs": "0.2.8"
   },
   "devDependencies": {
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/npm": "^9.0.1",
     "brfs": "1.4.3",
     "browserify": "13.0.0",
     "crlf": "1.1.0",
