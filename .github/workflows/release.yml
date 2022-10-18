@@ -1,9 +1,10 @@
 name: Publish
 on:
+  pull_request:
   push:
     branches:
-      - master      
       - develop
+      - master
 
 env:
   GIT_AUTHOR_NAME: "@swisspost-devs"
@@ -24,9 +25,19 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: 10
+        
     - name: Install dependencies
       run: npm i --from-lockfile
+    
+    - name: Release (dry-run)
+      if: github.event_name == 'pull_request'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      run: npx -p node@14 -c "npx semantic-release --dry-run"
+      
     - name: Release
+      if: github.event_name == 'push'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
