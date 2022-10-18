@@ -28,9 +28,9 @@ jobs:
         
     - name: Install dependencies
       run: |
-        rm -rf node_modules/*
-        npm i --from-lockfile
+        rm -rf node_modules
         npm i --no-save node@14
+        npm i --from-lockfile
     
     - name: Release (dry-run)
       if: github.event_name == 'pull_request'
