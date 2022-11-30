@@ -29,7 +29,10 @@ $ = function (f) {
 
     Handlebars.templates.signature = Handlebars.compile('{{sanitize signature}}');
 
-    var url = getUrlParameter('url');
+    var url = "../model/openapi/api.yaml";
+    if(window.location.search !="?url="+url) {
+        window.location.search = "?url="+url;
+    }
     if (!url) {
         alert('Please specify the API to display using the "url" query parameter.\nE.g. ' + location.origin + location.pathname + '?url=/src/openapi/api.yaml');
         return;
