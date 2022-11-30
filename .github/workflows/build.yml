@@ -1,0 +1,35 @@
+name: Build project
+on:
+  pull_request:
+  push:
+    branches:
+      - develop
+      - master
+
+env:
+  DEBUG: 1 # Use DEBUG mode to ensure more accurate tests.
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [8, 10]
+    steps:    
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Install node.js 10
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run tests
+      run: npm test
+
+    - name: Build
+      run: npm run build

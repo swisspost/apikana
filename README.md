@@ -1,11 +1,11 @@
-<p align='right'>A <a href="http://www.swisspush.org">swisspush</a> project <a href="http://www.swisspush.org" border=0><img align="top"  src='https://1.gravatar.com/avatar/cf7292487846085732baf808def5685a?s=32'></a></p>
+<p align='right'>A <a href="https://developer.post.ch/">swisspost</a> project <a href="https://developer.post.ch/" border=0><img align="top"  src='https://avatars.githubusercontent.com/u/92710854?s=32&v=4'></a></p>
 <p align="center">
   <img src="https://cloud.githubusercontent.com/assets/692124/21751899/37cc152c-d5cf-11e6-97ac-a5811f48c070.png"/>
 </p>
 
 # Apikana
 
-<a href="https://travis-ci.org/swisspush/apikana"><img src="https://travis-ci.org/swisspush/apikana.svg?branch=develop"/></a> <a href="https://www.npmjs.com/package/apikana"><img src="https://img.shields.io/npm/v/apikana"/></a>
+[![Build project](https://github.com/swisspost/apikana/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/swisspost/apikana/actions/workflows/build.yml) <a href="https://www.npmjs.com/package/apikana"><img src="https://img.shields.io/npm/v/apikana"/></a>
 
 Integrated tools for REST and Messaging API design.
 
@@ -123,7 +123,9 @@ Then simply run `npm run start`.
 ## Development
 
 Development is done within feature branches in forked repositories. When ready
-it gets merged to _swisspush/develop_ via merge request (at best including review).
+it gets merged to _swisspost/develop_ via merge request (at best including review).
+
+> Make sure to comply with the [conventional commits specification](https://www.conventionalcommits.org/en/v1.0.0/) when writing commit or squash commit messages, as they control the next version when releasing!
 
 
 ### Testing
@@ -133,14 +135,17 @@ You can run tests using `npm test` within projects root directory.
 
 ### Releasing
 
-Releasing is done by updating the version with `npm version patch|minor|major`
-and merging _develop_ into _master_. Then [Travis CI](https://travis-ci.org)
-will notice the changes on master and perform the release.
+Releasing is done automatically using [semantic-release](https://semantic-release.gitbook.io/semantic-release/) when merging to develop and master.
 
+Merging to `develop` will release to the `next` distribution channel on npm, merging to `master` will publish that release to the main distribution channel.
+
+> **IMPORTANT**
+>
+> If the conventional commits result in a new release (i.e. having `feat:`, `fix:` or `BREAKING` in a message), merging to `master` will trigger a new release on _npmjs.org_ **automatically** without any further user interaction!
 
 ### Publishing
 
-To publish to _npmjs.org_, environment variable `NPM_TOKEN` must be set. You
+To publish to _npmjs.org_ locally, the environment variable `NPM_TOKEN` must be set. You
 can accomplish this by executing `npm login` locally and afterwards extracting
 corresponding value from `~/.nmprc`.
 
