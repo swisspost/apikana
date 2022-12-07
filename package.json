@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/swisspush/apikana.git"
+    "url": "git+https://github.com/swisspost/apikana.git"
   },
   "release": {
     "branches": [
@@ -50,9 +50,9 @@
   ],
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/swisspush/apikana/issues"
+    "url": "https://github.com/swisspost/apikana/issues"
   },
-  "homepage": "https://github.com/swisspush/apikana#readme",
+  "homepage": "https://github.com/swisspost/apikana#readme",
   "engines": {
     "node": "<11.0.0"
   },

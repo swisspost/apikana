@@ -44,5 +44,5 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         # Override node 10 .npmrc created by Gihub Action
-        NPM_CONFIG_USERCONFIG: .npmrc
+        NPM_CONFIG_USERCONFIG: ./.npmrc
       run: npx -p node@14 -c "npx semantic-release"
