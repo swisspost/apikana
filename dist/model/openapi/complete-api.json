@@ -1,0 +1,34 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Garden Pet Stream API",
+    "description": "Information about the pets in your garden",
+    "contact": {
+      "name": "coyote"
+    },
+    "version": "1.0.0-rc.1"
+  },
+  "host": "server:8080",
+  "basePath": "Kafka",
+  "paths": {
+    "garden.pet.Pet-event": {
+      "get": {
+        "summary": "What occurs on pets",
+        "description": "Usual events in the life of a pet",
+        "tags": [
+          "garden.pet"
+        ],
+        "responses": {
+          "200": {
+            "description": "The event which occured",
+            "schema": {
+              "type": "array",
+              "$ref": "#/definitions/PetEvent"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {}
+}

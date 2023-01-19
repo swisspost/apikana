@@ -24,6 +24,7 @@ module.exports = {
                 log.info('Found definition', colors.magenta(name));
                 var schema = schemas[name];
                 var v3 = handleAllOf(schema);
+                unquoteEnumValues(schema);
                 removeDefinitions(schema);
                 replaceLocalRef(schema);
                 replaceLocalRef(v3);
@@ -151,6 +152,16 @@ module.exports = {
                     }
                 }
                 return def;
+            }
+        }
+
+        function unquoteEnumValues(schema) {
+            if (schema.enum) {
+                schema.enum = schema.enum.map(v => v
+                    .replace(/^"/, "")
+                    .replace(/^'/, "")
+                    .replace(/"$/, "")
+                    .replace(/'$/, ""));
             }
         }
 
