@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
-    "baseUrl": "../../node_modules/-api-dependencies/ts"
+    "baseUrl": "../..",
+    "paths": {
+      "apikana/default-types": ["../src/model/ts/default-types.ts"]
+    }
   }
 }

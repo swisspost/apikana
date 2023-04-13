@@ -25,20 +25,46 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: 10
-        
+
     - name: Install dependencies
       run: |
         rm -rf node_modules
         npm i node@14 --no-save
-    
-    - name: Release (dry-run)
+        cd packages/default-types
+        rm -rf node_modules
+        npm i node@14 --no-save
+        cd ../..
+
+    - name: Release default-types (dry-run)
+      if: github.event_name = 'pull_request'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      run: |
+        cd packages/default-types
+        npx -p node@14 -c "npx semantic-release --dry-run"
+        cd ../..
+
+    - name: Release apikana (dry-run)
       if: github.event_name == 'pull_request'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: npx -p node@14 -c "npx semantic-release --dry-run"
-      
-    - name: Release
+
+    - name: Release default-types
+      if: github.event_name == 'push'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        # Override node 10 .npmrc created by Gihub Action
+        NPM_CONFIG_USERCONFIG: ./.npmrc
+      run: |
+        cd packages/default-types
+        npx -p node@14 -c "npx semantic-release"
+        cd ../..
+
+    - name: Release apikana
       if: github.event_name == 'push'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

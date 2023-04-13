@@ -378,11 +378,6 @@ module.exports = {
                 unpack('dist/model', 'json-schema-v4', '**/*.json'),
                 unpack('dist/ui', 'style', '**/*', true),
                 unpack('dist/model', 'ts', '**/*.ts'),
-                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath})
-                    .pipe(gulp.dest(path.join('ts','apikana'), {cwd: dependencyPath})),
-                // apikana-defaults.ts is a special case. This file has to be copied also under node_modules/apikana/ directory.
-                gulp.src('src/model/ts/**/*.ts', {cwd: apikanaPath})
-                    .pipe(gulp.dest('apikana', {cwd: path.join(dependencyPath, '..')}))
             );
         });
 

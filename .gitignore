@@ -6,3 +6,4 @@ node_modules/
 test/dist/
 generated-logo.js
 /default-types.ts
+**/dist
