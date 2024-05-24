@@ -25,7 +25,7 @@ const jsonSchemaAvro = require('./generate-avro');
 const migrate = require("./schema-migrate");
 
 module.exports = {
-    generate: function (source, dest, done) {
+    generate: function (defaults, source, dest, done) {
         var uiPath = path.resolve(dest, 'ui');
         var apikanaPath = path.resolve(__dirname, '..');
         var privateModules = path.resolve(apikanaPath, 'node_modules');
@@ -521,6 +521,10 @@ module.exports = {
             var cleanRestApi = obj = JSON.parse(JSON.stringify(restApi));
             var cleanCompleteApi = obj = JSON.parse(JSON.stringify(completeApi));
 
+            for (const pathObj of Object.values(cleanRestApi.paths)) {
+                appendMetadataToDescription(pathObj);
+            }
+
             var promises = modelNames
                 .map(modelName => ({ modelName, schema: Object.assign({}, completeApi.definitions[modelName])}))
                 .filter(model => model.schema.type == "object")
@@ -553,6 +557,34 @@ module.exports = {
                 fs.writeFileSync(path.resolve(out, 'complete-api.yaml'), yaml.stringify(cleanCompleteApi, 6, 2));
             });
         });
+
+        function appendMetadataToDescription(pathObj) {
+            const descNL = "<br />";
+            const {
+                matchProps: metadataCondition = /^x-.*$/,
+                mappedKeys: metaKeyMapping = {}
+            } = defaults.metadata || {};
+
+            const isPropMetadata = (key) => key.match(metadataCondition);
+
+            let metadataProps = [];
+            let nonMetadataProps = [];
+            for (const prop of Object.entries(pathObj)) {
+                (isPropMetadata(prop[0]) ? metadataProps : nonMetadataProps).push(prop);
+            }
+
+            let metaDesc = "";
+            for (const [_, propVal] of metadataProps) {
+                for (const [metaKey, metaValue] of Object.entries(propVal)) {
+                    metaDesc += `${descNL}${metaKeyMapping[metaKey] || metaKey}: ${metaValue}`;
+                }
+            };
+
+            for (const [nonMetaK, nonMetaV] of nonMetadataProps) {
+                if (nonMetaK.startsWith("x-")) continue;
+                nonMetaV.description += descNL + metaDesc;
+            }
+        }
 
         function writeFullSchemaFiles(destination, fileName, schema){
 

@@ -134,7 +134,7 @@ function generate() {
         var generator = plop.getGenerator('start');
         const model = Object.assign({}, packageJSON, { api: openapi });
         generator.runActions(model).then(_ => {
-            require('../src/generate').generate(path.resolve(source), params.target());
+            require('../src/generate').generate(defaults, path.resolve(source), params.target());
         });
     }
 
