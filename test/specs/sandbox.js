@@ -67,7 +67,7 @@ module.exports = () => {
             var plop = nodePlop(`${__dirname}/../../src/plopfile_start.js`, {logLevel});
             return plop.getGenerator('start').runActions(packageJSON)
                 .then(_ => new Promise((resolve, reject) =>
-                    generator.generate('src', 'dist', (err) =>
+                    generator.generate({}, 'src', 'dist', (err) =>
                         err ? reject(err) : resolve({dir}))))
         }
     }

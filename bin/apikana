@@ -133,8 +133,27 @@ function generate() {
         var plop = nodePlop(__dirname + '/../src/plopfile_start.js', { defaults });
         var generator = plop.getGenerator('start');
         const model = Object.assign({}, packageJSON, { api: openapi });
+
+        // Workaround for validatorjs to fix wildcard on `paths`
+        const paths = [];
+        Object.values(model.api.paths).forEach(path => paths.push(path));
+        model.api.paths = paths;
+
+        if (defaults.validation) {
+            const Validator = require('validatorjs')
+            const validator = new Validator(model.api, defaults.validation);
+            if(!validator.check()) {
+                log(colors.bold(colors.red('Validation of the OpenAPI definition has failed with ' + validator.errorCount + ' errors')));
+                Object.entries(validator.errors.all()).forEach(errorEntry => {
+                  const [errorField, error] = errorEntry;
+                  log(colors.bold(colors.red(errorField + ": " + error)))
+                });
+                process.exit(1);
+            }
+        }
+
         generator.runActions(model).then(_ => {
-            require('../src/generate').generate(path.resolve(source), params.target());
+            require('../src/generate').generate(defaults, path.resolve(source), params.target());
         });
     }
 
