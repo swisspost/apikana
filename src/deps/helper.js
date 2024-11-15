@@ -29,14 +29,18 @@ $ = function (f) {
 
     Handlebars.templates.signature = Handlebars.compile('{{sanitize signature}}');
 
-    var url = "../model/openapi/api.yaml";
-    if(window.location.search !="?url="+url) {
-        window.location.search = "?url="+url;
-    }
+    var url = new URL(window.location).searchParams.get('url')
+    
     if (!url) {
         alert('Please specify the API to display using the "url" query parameter.\nE.g. ' + location.origin + location.pathname + '?url=/src/openapi/api.yaml');
         return;
     }
+   
+    var fallbackUrl = "../model/openapi/api.yaml";
+    if(!isValidUrl(url)) {
+        window.location.search = "?url="+fallbackUrl;
+    }
+
     if (!window.fetch) {
         alert('Please use a Browser.\nIt should at least support "fetch".');
         return;
@@ -110,6 +114,22 @@ $ = function (f) {
                 w.postMessage(models);
             }
         )
+    }
+
+    function isValidUrl(referencedUrl){
+        // must be relative url
+        if(!referencedUrl.startsWith('../')){
+            return false;
+        }
+        // only allow referencing max two parent directories
+        var matches = referencedUrl.match(/\.\.\//g);
+        if(matches && matches.length > 2){
+            return false;
+        }
+
+        // additional check
+        var referencedAbsoluteUrl = getAbsoluteUrl(referencedUrl)
+        return new URL(referencedAbsoluteUrl).origin == new URL(location.href).origin
     }
 
     function isLocalSchema(models, schema) {
