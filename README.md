@@ -1,7 +1,7 @@
 <p align='right'>A <a href="https://developer.post.ch/">swisspost</a> project <a href="https://developer.post.ch/" border=0><img align="top"  src='https://avatars.githubusercontent.com/u/92710854?s=32&v=4'></a></p>
 <p align="center">
   <img src="https://cloud.githubusercontent.com/assets/692124/21751899/37cc152c-d5cf-11e6-97ac-a5811f48c070.png"/>
-</p>
+</p> 
 
 # Apikana
 
