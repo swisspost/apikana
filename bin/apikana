@@ -134,16 +134,18 @@ function generate() {
         var generator = plop.getGenerator('start');
         const model = Object.assign({}, packageJSON, { api: openapi });
 
-        // Workaround for validatorjs to fix wildcard on `paths`
-        const paths = [];
-        Object.values(model.api.paths).forEach(path => paths.push(path));
-        model.api.paths = paths;
-
         if (defaults.validation) {
-            const Validator = require('validatorjs')
-            const validator = new Validator(model.api, defaults.validation);
+
+            // Workaround for validatorjs to validate also 'paths' with wildcard
+            var openapiToValidate = JSON.parse(JSON.stringify(openapi));
+            openapiToValidate.paths = Object.values(openapiToValidate.paths);
+
+            const Validator = require('validatorjs');
+
+            const validator = new Validator(openapiToValidate, defaults.validation);
             if(!validator.check()) {
-                log(colors.bold(colors.red('Validation of the OpenAPI definition has failed with ' + validator.errorCount + ' errors')));
+                log(colors.bold(colors.red('Validation of the OpenAPI (api.yaml) has failed with ' + validator.errorCount + ' error(s).')));
+                log(colors.bold(colors.red('Validation rules your API must conform are defined in: '+path.join(defaults.dir,'index.js'))));
                 Object.entries(validator.errors.all()).forEach(errorEntry => {
                   const [errorField, error] = errorEntry;
                   log(colors.bold(colors.red(errorField + ": " + error)))
