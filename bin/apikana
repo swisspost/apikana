@@ -11,7 +11,7 @@ var argc = process.argv.length;
 
 require('../src/logo');
 
-if(!process.version.startsWith('v8') && !process.version.startsWith('v10')) {
+if (!process.version.startsWith('v8') && !process.version.startsWith('v10')) {
     log(colors.bold(colors.red('Expected node version v8.x or v10.x but current version is ' + process.version)));
     process.exit(1);
 }
@@ -25,26 +25,26 @@ if (argc === 2) {
         process.exit(1);
     }
     switch (process.argv[2]) {
-    case 'init':
-        require('../src/init/init');
-        break;
-    case 'start':
-        generate();
-        break;
-    case 'stop':
-        require('../src/server/stop').stop(params.port(), function () {
-            log('Stopped');
-        });
-        break;
-    case 'create-sample':
-        createSample();
-        break;
-    case 'validate-samples':
-        validateSamples();
-        break;
-    default:
-        help();
-        break;
+        case 'init':
+            require('../src/init/init');
+            break;
+        case 'start':
+            generate();
+            break;
+        case 'stop':
+            require('../src/server/stop').stop(params.port(), function () {
+                log('Stopped');
+            });
+            break;
+        case 'create-sample':
+            createSample();
+            break;
+        case 'validate-samples':
+            validateSamples();
+            break;
+        default:
+            help();
+            break;
     }
 }
 
@@ -55,30 +55,30 @@ function help() {
     log('               source', '                    Directory containing the APIs and models. Default: src');
     log(colors.gray('             --api=<file>'), '                The main api file (yaml or json). Default: openapi/api.yaml');
     log(colors.gray('             --models=<path>'), '             The directory containing the models, if no api file is given.\n' +
-                    '                                                     Default: ts');
+        '                                                     Default: ts');
     log(colors.gray('             --style=<path>'), '              The directory containing css files for the swagger GUI.\n' +
-                    '                                                     Default: style');
+        '                                                     Default: style');
     log(colors.gray('             --config=<file>'), '             Read additional options from a file in JSON format.');
     log(colors.gray('             --javaPackage=<name>'), '        Java package to use.');
-    log(colors.gray('             --pathPrefix=<prefix>'), '       The common prefix for api paths to be used in generated *Paths files.\n'+
-                    '                                                     Default: none');
+    log(colors.gray('             --pathPrefix=<prefix>'), '       The common prefix for api paths to be used in generated *Paths files.\n' +
+        '                                                     Default: none');
     log(colors.gray('             --basePath=<path>'), '           Override basePath specified in api file');
-    log(colors.gray('             --generate1stGenPaths=<boolean>'),'\n' +
-                    '                                                     Enable/disable generator for 1st generation path constants.\n' +
-                    '                                                     Since: v0.5.1\n' +
-                    '                                                     Default: true (enabled)');
-    log(colors.gray('             --generate2ndGenPaths=<boolean>'),'\n' +
-                    '                                                     Enable/disable generator for 2nd generation path constants.\n' +
-                    '                                                     Since: v0.5.1\n' +
-                    '                                                     Default: true (enabled)');
-    log(colors.gray('             --generate3rdGenPaths=<boolean>'),'\n' +
-                    '                                                     Enable/disable generator for 3rd generation path constants.\n' +
-                    '                                                     Since: v0.5.0\n' +
-                    '                                                     Default: false (disabled)');
-    log(colors.gray('             --deploy=<boolean>'), '          If the sources should be copied into the target directory. \n'+
-                    '                                                     Default: false');
-    log(colors.gray('             --dependencyPath=<path>'), '     Directory containing API dependencies.\n'+
-                    '                                                     Default: node_modules/-api-dependencies');
+    log(colors.gray('             --generate1stGenPaths=<boolean>'), '\n' +
+        '                                                     Enable/disable generator for 1st generation path constants.\n' +
+        '                                                     Since: v0.5.1\n' +
+        '                                                     Default: true (enabled)');
+    log(colors.gray('             --generate2ndGenPaths=<boolean>'), '\n' +
+        '                                                     Enable/disable generator for 2nd generation path constants.\n' +
+        '                                                     Since: v0.5.1\n' +
+        '                                                     Default: true (enabled)');
+    log(colors.gray('             --generate3rdGenPaths=<boolean>'), '\n' +
+        '                                                     Enable/disable generator for 3rd generation path constants.\n' +
+        '                                                     Since: v0.5.0\n' +
+        '                                                     Default: false (disabled)');
+    log(colors.gray('             --deploy=<boolean>'), '          If the sources should be copied into the target directory. \n' +
+        '                                                     Default: false');
+    log(colors.gray('             --dependencyPath=<path>'), '     Directory containing API dependencies.\n' +
+        '                                                     Default: node_modules/-api-dependencies');
     log(colors.gray('             --port=<number>'), '             Port to serve the HTML documentation. Default: 8333');
     log(colors.gray('             --serve=<boolean>'), '           If the HTML documentation should be served over HTTP. Default: true');
     log(colors.gray('             --openBrowser=<boolean>'), '     If the browser should be opened at first start. Default: true');
@@ -130,23 +130,25 @@ function generate() {
     });
 
     function run(defaults) {
-        var plop = nodePlop(__dirname + '/../src/plopfile_start.js', { defaults });
+        var plop = nodePlop(__dirname + '/../src/plopfile_start.js', {defaults});
         var generator = plop.getGenerator('start');
-        const model = Object.assign({}, packageJSON, { api: openapi });
-
-        // Workaround for validatorjs to fix wildcard on `paths`
-        const paths = [];
-        Object.values(model.api.paths).forEach(path => paths.push(path));
-        model.api.paths = paths;
+        const model = Object.assign({}, packageJSON, {api: openapi});
 
         if (defaults.validation) {
-            const Validator = require('validatorjs')
-            const validator = new Validator(model.api, defaults.validation);
-            if(!validator.check()) {
-                log(colors.bold(colors.red('Validation of the OpenAPI definition has failed with ' + validator.errorCount + ' errors')));
+
+            // Workaround for validatorjs to validate also 'paths' with wildcard
+            var openapiToValidate = JSON.parse(JSON.stringify(openapi));
+            openapiToValidate.paths = Object.values(openapiToValidate.paths);
+
+            const Validator = require('validatorjs');
+
+            const validator = new Validator(openapiToValidate, defaults.validation);
+            if (!validator.check()) {
+                log(colors.bold(colors.red('Validation of the OpenAPI (api.yaml) has failed with ' + validator.errorCount + ' error(s).')));
+                log(colors.bold(colors.red('Validation rules your API must conform are defined in: ' + path.join(defaults.dir, 'index.js'))));
                 Object.entries(validator.errors.all()).forEach(errorEntry => {
-                  const [errorField, error] = errorEntry;
-                  log(colors.bold(colors.red(errorField + ": " + error)))
+                    const [errorField, error] = errorEntry;
+                    log(colors.bold(colors.red(errorField + ": " + error)))
                 });
                 process.exit(1);
             }
@@ -160,7 +162,7 @@ function generate() {
     var defaultsVersion = packageJSON.devDependencies['apikana-defaults'];
 
     if (defaultsVersion) {
-        if(defaultsVersion != "0.0.0") {
+        if (defaultsVersion != "0.0.0") {
             process.stdout.write("Using defaults " + defaultsVersion + "\n");
         }
         var defaultsDir = path.join(process.cwd(), 'node_modules', 'apikana-defaults');
@@ -170,12 +172,12 @@ function generate() {
     } else {
         process.stdout.write("Loading defaults... ");
         manager.install('apikana-defaults').then((e) => {
-            process.stdout.write("found "+e.version+"\n");
+            process.stdout.write("found " + e.version + "\n");
             var defaults = manager.require('apikana-defaults');
             var defaultsDir = path.join(os.tmpdir(), 'apikana-plugin-packages', 'apikana-defaults');
             defaults.dir = defaultsDir;
             var version = JSON.parse(fs.readFileSync(path.join(defaultsDir, 'package.json'))).version;
-            if(version != "0.0.0") {
+            if (version != "0.0.0") {
                 log(colors.bold(`WARNING: | The build is unpredictable because of an implicit dependency.`));
                 log(colors.bold(`         | It may break anytime when a new version of the dependency is available in the registry.`));
                 log(colors.bold(`         | To fix this, freeze the dependency in your API project:`));
