@@ -18,8 +18,9 @@ export type DateTime=string // @format date-time
 
 /**
  * <a href="https://swagger.io/docs/specification/data-models/data-types/#string">String @format date</a>,
- * as defined by <a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC 3339, section 5.6</a>,
- * for example: <code>2017-07-21</code>.
+ * as defined by <a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC 3339, section 5.6</a> as full-date,
+ * for example: <code>2017-07-21</code>. DateOnly is a description of a date, as used for birthdays. It cannot
+ * represent an instant on the time-line without additional information such as an offset or time-zone.
  */
 export type DateOnly=string // @format date
 
