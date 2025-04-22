@@ -73,7 +73,7 @@ function throwIfPathV3GeneratorOptionsBad( options ){
 
     if( !options.javaPackage ) throw Error("Arg 'options.javaPackage' missing.");
     if( typeof(options.javaPackage) !== "string" ) throw Error( "Arg 'options.javaPackage' string expected but got '"+typeof(options.javaPackage)+"'" );
-    if( !/^(?![0-9])(?!.*\.[0-9])[A-Za-z0-9.]+$/.test(options.javaPackage) ) throw Error( "Illegal chars in javaPackage" );
+    if( !/^(?![0-9])(?!.*\.[0-9])[A-Za-z0-9._]+$/.test(options.javaPackage) ) throw Error( "Illegal chars in javaPackage" );
 
     if( !options.pathPrefix ){
         Log.debug("'options.pathPrefix' not set. Assume empty.");
