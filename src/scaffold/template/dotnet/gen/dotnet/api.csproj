@@ -14,7 +14,7 @@
             If there is a suffix, the NuGet-Package will be treated as pre-release.
      -->
     <Version>{{ version }}</Version>
-
+    <RepositoryUrl>$(repositoryUrl)</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
