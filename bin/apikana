@@ -11,8 +11,8 @@ var argc = process.argv.length;
 
 require('../src/logo');
 
-if (!process.version.startsWith('v8') && !process.version.startsWith('v10')) {
-    log(colors.bold(colors.red('Expected node version v8.x or v10.x but current version is ' + process.version)));
+if (!process.version.startsWith('v22')) {
+    log(colors.bold(colors.red('Expected node version v22.x.x but current version is ' + process.version + '. Use nvm (windows: https://github.com/coreybutler/nvm-windows, linux: https://github.com/nvm-sh/nvm) to manage node versions.')));
     process.exit(1);
 }
 

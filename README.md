@@ -1,7 +1,7 @@
 <p align='right'>A <a href="https://developer.post.ch/">swisspost</a> project <a href="https://developer.post.ch/" border=0><img align="top"  src='https://avatars.githubusercontent.com/u/92710854?s=32&v=4'></a></p>
 <p align="center">
   <img src="https://cloud.githubusercontent.com/assets/692124/21751899/37cc152c-d5cf-11e6-97ac-a5811f48c070.png"/>
-</p> 
+</p>
 
 # Apikana
 
@@ -26,14 +26,16 @@ Serialization/Deserialization of java objects:
 
 ## Usage
 
+### Prerequisites
+
+- Node.js ``22.x.x`` or higher, use [windows-nvm](https://github.com/coreybutler/nvm-windows) or [nvm](https://github.com/nvm-sh/nvm) (Linux) to easily switch between versions (e.g. ``nvm install 22``, ``nvm use 22``)
+- npm ``10.9.x`` or higher (comes with Node.js)
+
 ### Create a new API project
 
-Install apikana `npm install -g apikana`.
-Run `apikana init`.
-
-This starts an interactive wizard that lets you define the main aspects of the API project.
-
-Then enter the project directory and run `npm install` to install all the required dependencies.
+1. Install apikana `npm install -g apikana`.
+2. Run `apikana init`. This starts an interactive wizard that lets you define the main aspects of the API project.
+3. Enter the project directory and run `npm install` to install all the required dependencies.
 
 ### Use as a global tool
 
@@ -71,14 +73,14 @@ export interface User {
 }
 ```
 
-Annotations like `@pattern` can be used to specify more precise constraints. They correspond to the [JSON Schema validation keywords](https://json-schema.org/latest/json-schema-validation.html#rfc.section.6).  
+Annotations like `@pattern` can be used to specify more precise constraints. They correspond to the [JSON Schema validation keywords](https://json-schema.org/latest/json-schema-validation.html#rfc.section.6).
 
 The `src/style` directory can contain `css` and image files which can be used to style the generated HTML document.
 
 The `gen` directory contain the generated files relative to the enabled plugins.
 This files can be overwritten by defining a `templates` directory in the root folder of the project using the following directory structure:
 `root_directory/templates/plugin_name/gen/plugin_name/filename.ext` where:
-* `root_directory` is the root directory of the project, 
+* `root_directory` is the root directory of the project,
 * `plugin_name` is the plugin name (for example `maven` or `dotnet`) and
 * `filename.ext` is the file to copy in the `gen` directory (for example `pom.xml` or `api.csproj`).
 
